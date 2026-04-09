@@ -3,856 +3,656 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Garden Guardians - Player</title>
+<title>Garden Guardians</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   :root {
-    --role-color: #4CAF50;
-    --role-color-light: rgba(76,175,80,0.15);
+    --role: #4CAF50;
+    --role-light: rgba(76,175,80,0.15);
+    --bg: #1a2e12;
   }
 
   body {
     font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    background: #1a1a2e;
+    background: var(--bg);
     color: #fafafa;
-    min-height: 100vh;
-    min-height: 100dvh;
+    min-height: 100vh; min-height: 100dvh;
     overflow-x: hidden;
     -webkit-tap-highlight-color: transparent;
+    font-size: 18px;
   }
 
-  /* ====== JOIN SCREEN ====== */
+  /* ====== SCREENS ====== */
   .screen { display: none; min-height: 100vh; min-height: 100dvh; }
   .screen.active { display: flex; }
 
-  .join-screen {
+  /* ====== JOIN ====== */
+  .join {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 24px;
-    gap: 20px;
-    background: linear-gradient(160deg, #1a3a0a 0%, #2E4F1F 50%, #3a6b24 100%);
+    padding: 28px 20px;
+    gap: 18px;
+    background: linear-gradient(160deg, #1a3a0a, #2E4F1F, #3a6b24);
   }
-
   .join-logos {
-    display: flex; align-items: center; gap: 16px; margin-bottom: 4px;
+    display: flex; align-items: center; gap: 14px;
   }
   .join-logos img {
-    height: 48px; border-radius: 8px; background: #fff; padding: 4px;
+    height: 50px; border-radius: 8px; background: #fff; padding: 4px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.3);
   }
-  .join-logos .logo-fallback {
-    height: 48px; border-radius: 8px; background: #fff; padding: 4px 10px;
-    display: none; align-items: center; color: #1a237e; font-weight: 800; font-size: 10px;
+  .join-logos .logo-fb {
+    height: 50px; border-radius: 8px; background: #fff; padding: 4px 12px;
+    display: none; align-items: center; color: #1a237e; font-weight: 800; font-size: 11px;
     text-align: center; line-height: 1.1;
   }
+  .join-title { font-size: 1.8rem; font-weight: 900; text-align: center; }
 
-  .join-title {
-    font-size: 1.8rem; font-weight: 900; text-align: center;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  }
-
-  .join-form {
+  .join-box {
     background: rgba(0,0,0,0.3);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 18px;
-    padding: 28px 24px;
-    width: 100%;
-    max-width: 360px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 24px 20px;
+    width: 100%; max-width: 380px;
   }
-  .join-form label {
-    display: block; font-size: 0.9rem; font-weight: 600;
-    margin-bottom: 6px; opacity: 0.8;
+  .join-box label {
+    display: block; font-size: 1.1rem; font-weight: 700;
+    margin-bottom: 8px;
   }
-  .join-form input {
-    width: 100%;
-    padding: 14px 16px;
-    border: 2px solid rgba(255,255,255,0.15);
-    border-radius: 12px;
-    background: rgba(255,255,255,0.08);
-    color: #fff;
-    font-size: 1.1rem;
-    margin-bottom: 16px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .join-form input:focus { border-color: rgba(255,255,255,0.4); }
-  .join-form input::placeholder { color: rgba(255,255,255,0.35); }
-  .join-form input.code-input {
-    text-align: center;
-    font-size: 1.8rem;
-    font-weight: 900;
-    letter-spacing: 8px;
-    text-transform: uppercase;
-  }
-
-  .btn-join {
-    width: 100%;
-    padding: 16px;
-    background: linear-gradient(135deg, #43A047, #2E7D32);
-    color: #fff;
-    border: none;
+  .join-box input {
+    width: 100%; padding: 16px 18px;
+    border: 3px solid rgba(255,255,255,0.15);
     border-radius: 14px;
-    font-size: 1.2rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
+    background: rgba(255,255,255,0.08);
+    color: #fff; font-size: 1.2rem;
+    margin-bottom: 18px; outline: none;
+  }
+  .join-box input:focus { border-color: rgba(255,255,255,0.4); }
+  .join-box input::placeholder { color: rgba(255,255,255,0.3); }
+  .join-box .code-input {
+    text-align: center; font-size: 2.2rem; font-weight: 900;
+    letter-spacing: 10px; text-transform: uppercase;
+  }
+  .btn-join {
+    width: 100%; padding: 18px;
+    background: linear-gradient(135deg, #43A047, #2E7D32);
+    color: #fff; border: none; border-radius: 16px;
+    font-size: 1.4rem; font-weight: 800; cursor: pointer;
     box-shadow: 0 4px 16px rgba(0,0,0,0.3);
   }
   .btn-join:active { transform: scale(0.97); }
   .btn-join:disabled { opacity: 0.5; }
+  .join-error { color: #EF9A9A; font-size: 1rem; text-align: center; margin-top: 10px; min-height: 24px; }
 
-  .join-error {
-    color: #EF9A9A;
-    font-size: 0.9rem;
-    text-align: center;
-    margin-top: 10px;
-    min-height: 20px;
+  .join-help {
+    background: rgba(0,0,0,0.2); border-radius: 14px;
+    padding: 16px 18px; max-width: 380px; width: 100%;
+    font-size: 1rem; line-height: 1.8; opacity: 0.7;
   }
 
-  .join-instructions {
-    background: rgba(0,0,0,0.2);
-    border-radius: 12px;
-    padding: 16px 20px;
-    max-width: 360px;
-    width: 100%;
-    font-size: 0.85rem;
-    line-height: 1.7;
-    opacity: 0.75;
-  }
-  .join-instructions strong { opacity: 1; }
-
-  /* ====== WAITING SCREEN ====== */
-  .waiting-screen {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 32px;
-    gap: 20px;
+  /* ====== WAITING ====== */
+  .waiting {
+    flex-direction: column; align-items: center;
+    justify-content: center; padding: 32px; gap: 20px;
     background: linear-gradient(160deg, #1a3a0a, #2E4F1F);
   }
   .role-card {
     background: rgba(0,0,0,0.3);
-    border: 3px solid var(--role-color);
-    border-radius: 20px;
-    padding: 32px;
-    text-align: center;
-    width: 100%;
-    max-width: 320px;
+    border: 4px solid var(--role);
+    border-radius: 24px; padding: 36px;
+    text-align: center; width: 100%; max-width: 340px;
   }
-  .role-icon { font-size: 3.5rem; margin-bottom: 10px; }
-  .role-name { font-size: 1.6rem; font-weight: 800; color: var(--role-color); margin-bottom: 6px; }
-  .role-desc { font-size: 0.95rem; opacity: 0.8; line-height: 1.5; }
-  .waiting-text { font-size: 1rem; opacity: 0.6; animation: dots 1.5s steps(3) infinite; }
-  @keyframes dots {
-    0% { content: '.'; }
-    33% { content: '..'; }
-    66% { content: '...'; }
-  }
-  .player-name-display { font-size: 1.2rem; font-weight: 700; }
+  .role-icon-big { font-size: 5rem; margin-bottom: 12px; display: block; }
+  .role-title { font-size: 2rem; font-weight: 900; color: var(--role); margin-bottom: 8px; }
+  .role-desc { font-size: 1.2rem; opacity: 0.8; line-height: 1.6; }
+  .waiting-text { font-size: 1.2rem; opacity: 0.5; }
+  .your-name { font-size: 1.4rem; font-weight: 700; }
 
-  /* ====== GAME SCREEN ====== */
-  .game-screen {
-    flex-direction: column;
-    background: #121212;
-  }
+  /* ====== GAME ====== */
+  .game { flex-direction: column; background: #111; }
 
-  .game-header {
-    background: var(--role-color);
-    padding: 12px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  .game-top {
+    background: var(--role);
+    padding: 14px 18px;
+    display: flex; align-items: center; justify-content: space-between;
     flex-shrink: 0;
   }
-  .game-header-left {
-    display: flex; align-items: center; gap: 8px;
-    font-weight: 700; font-size: 1rem;
-  }
-  .game-header-right {
-    display: flex; align-items: center; gap: 14px;
-    font-size: 0.85rem;
-  }
-  .header-timer {
-    font-weight: 800; font-size: 1.1rem;
-    font-variant-numeric: tabular-nums;
-  }
-  .header-timer.warning { animation: pulse-text 0.8s ease-in-out infinite; }
-  @keyframes pulse-text {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
+  .game-top-left { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.2rem; }
+  .game-top-right { display: flex; align-items: center; gap: 16px; }
+  .game-timer { font-weight: 900; font-size: 1.4rem; font-variant-numeric: tabular-nums; }
+  .game-timer.warn { animation: pulse-text 0.8s ease-in-out infinite; }
+  @keyframes pulse-text { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
   .game-body {
-    flex: 1;
-    overflow-y: auto;
-    padding: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
+    flex: 1; overflow-y: auto; padding: 14px;
+    display: flex; flex-direction: column; gap: 14px;
   }
 
-  /* Stats bar */
-  .stats-bar {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
+  /* Stats */
+  .stats-row { display: flex; gap: 8px; }
+  .stat-box {
+    flex: 1; background: rgba(255,255,255,0.07);
+    border-radius: 12px; padding: 10px; text-align: center;
   }
-  .stat-pill {
-    background: rgba(255,255,255,0.08);
-    border-radius: 10px;
-    padding: 8px 14px;
-    font-size: 0.85rem;
-    flex: 1;
-    text-align: center;
-    min-width: 80px;
-  }
-  .stat-pill .stat-val { font-weight: 800; font-size: 1.1rem; }
+  .stat-label { font-size: 0.85rem; opacity: 0.5; }
+  .stat-num { font-size: 1.5rem; font-weight: 900; }
 
-  /* Clues section */
-  .clues-section h3 {
-    font-size: 1rem; margin-bottom: 10px;
-    display: flex; align-items: center; gap: 6px;
+  /* Action banner */
+  .action-banner {
+    background: var(--role); border-radius: 14px;
+    padding: 16px 20px; text-align: center;
+    font-weight: 800; font-size: 1.3rem; line-height: 1.4;
   }
 
-  .clue-card {
+  /* Clues */
+  .section-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; }
+
+  .clue {
     background: rgba(255,255,255,0.06);
-    border: 2px solid rgba(255,255,255,0.1);
-    border-radius: 12px;
-    padding: 14px 16px;
+    border: 3px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 16px 18px;
     margin-bottom: 8px;
-    font-size: 0.95rem;
+    font-size: 1.3rem; font-weight: 600;
     line-height: 1.5;
+    display: flex; align-items: center; gap: 12px;
     transition: all 0.3s;
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
   }
-  .clue-card .clue-status {
-    font-size: 1.4rem;
+  .clue-dot {
+    width: 18px; height: 18px; border-radius: 50%;
     flex-shrink: 0;
-    line-height: 1;
-    margin-top: 2px;
+    background: #EF5350;
+    box-shadow: 0 0 8px rgba(239,83,80,0.5);
+    animation: dot-pulse 1.5s ease-in-out infinite;
   }
-  .clue-card.solved {
-    border-color: #66BB6A;
-    background: rgba(102,187,106,0.1);
-    opacity: 0.6;
-  }
-  .clue-card.solved .clue-status::after { content: '\u2705'; }
-  .clue-card:not(.solved) .clue-status::after { content: '\u{1F534}'; }
+  @keyframes dot-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
+  .clue.done { border-color: #66BB6A; background: rgba(102,187,106,0.1); opacity: 0.5; }
+  .clue.done .clue-dot { background: #66BB6A; box-shadow: none; animation: none; }
 
-  /* Phone garden grid */
-  .garden-section h3 {
-    font-size: 1rem; margin-bottom: 10px;
-    display: flex; align-items: center; gap: 6px;
-  }
-
-  .phone-garden {
+  /* Phone Garden */
+  .phone-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
+    gap: 10px;
   }
-  .phone-plot {
+  .phone-cell {
     aspect-ratio: 1;
-    background: rgba(255,255,255,0.06);
-    border: 2px solid rgba(255,255,255,0.12);
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.15s;
-    position: relative;
-    min-height: 65px;
+    background: rgba(255,255,255,0.05);
+    border: 3px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    cursor: pointer; position: relative;
+    min-height: 72px;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
+    transition: all 0.15s;
   }
-  .phone-plot:active:not(.disabled) {
-    transform: scale(0.93);
-  }
-  .phone-plot .plot-emoji {
-    font-size: 1.6rem;
+  .phone-cell:active:not(.off) { transform: scale(0.92); }
+  .phone-cell .cell-emoji { font-size: 2rem; pointer-events: none; }
+  .phone-cell .cell-label {
+    position: absolute; top: 2px; left: 5px;
+    font-size: 0.7rem; opacity: 0.35; font-weight: 700;
     pointer-events: none;
   }
-  .phone-plot .plot-label {
-    font-size: 0.6rem;
-    opacity: 0.35;
-    position: absolute;
-    top: 3px; left: 5px;
-    pointer-events: none;
-  }
-  .phone-plot .plot-indicator {
-    position: absolute;
-    bottom: 3px;
-    font-size: 0.55rem;
-    opacity: 0.6;
+  .phone-cell .cell-hint {
+    position: absolute; bottom: 2px;
+    font-size: 0.65rem; opacity: 0.5;
     pointer-events: none;
   }
 
-  /* Highlighted plot (has a problem for this role) */
-  .phone-plot.target {
-    border-color: var(--role-color);
-    background: var(--role-color-light);
-    animation: target-glow 1.5s ease-in-out infinite;
+  /* Target cell - glowing border */
+  .phone-cell.target {
+    border-color: var(--role);
+    background: var(--role-light);
+    animation: glow 1.2s ease-in-out infinite;
+    box-shadow: 0 0 12px var(--role);
   }
-  @keyframes target-glow {
-    0%, 100% { box-shadow: 0 0 4px rgba(255,255,255,0.1); }
-    50% { box-shadow: 0 0 14px var(--role-color); }
+  @keyframes glow {
+    0%, 100% { box-shadow: 0 0 8px var(--role); }
+    50% { box-shadow: 0 0 22px var(--role); }
   }
 
-  .phone-plot.solved-plot {
+  .phone-cell.done-cell {
     border-color: #66BB6A;
-    background: rgba(102,187,106,0.12);
-    animation: none;
+    background: rgba(102,187,106,0.1);
+    animation: none; box-shadow: none;
   }
-  .phone-plot.solved-plot::after {
-    content: '\u2714';
-    position: absolute;
-    top: 4px; right: 5px;
-    font-size: 0.8rem;
-    color: #66BB6A;
-    pointer-events: none;
+  .phone-cell.done-cell::after {
+    content: '\u2714'; position: absolute; top: 3px; right: 5px;
+    font-size: 1rem; color: #66BB6A; pointer-events: none;
   }
 
-  .phone-plot.disabled {
-    opacity: 0.4;
-    cursor: default;
-  }
+  .phone-cell.shake { animation: shake 0.35s ease; }
+  @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
 
-  .phone-plot.wrong-flash {
-    animation: wrong-shake 0.4s ease;
-  }
-  @keyframes wrong-shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-6px); }
-    75% { transform: translateX(6px); }
-  }
+  .phone-cell.pop { animation: pop 0.45s ease; }
+  @keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.18); } 100% { transform: scale(1); } }
 
-  .phone-plot.correct-flash {
-    animation: correct-pop 0.5s ease;
-  }
-  @keyframes correct-pop {
-    0% { transform: scale(1); }
-    40% { transform: scale(1.15); background: rgba(102,187,106,0.3); }
-    100% { transform: scale(1); }
-  }
-
-  /* Action hint */
-  .action-hint {
-    background: var(--role-color);
-    border-radius: 12px;
-    padding: 14px 18px;
-    text-align: center;
-    font-weight: 700;
-    font-size: 1rem;
-    line-height: 1.4;
-  }
-
-  /* Feedback toast */
-  .feedback-toast {
-    position: fixed;
-    top: 70px; left: 50%;
+  /* Toast */
+  .toast {
+    position: fixed; top: 72px; left: 50%;
     transform: translateX(-50%);
-    padding: 12px 24px;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 1rem;
-    z-index: 200;
-    opacity: 0;
+    padding: 14px 28px; border-radius: 14px;
+    font-weight: 800; font-size: 1.3rem;
+    z-index: 200; opacity: 0;
     transition: all 0.3s ease;
-    pointer-events: none;
-    text-align: center;
+    pointer-events: none; text-align: center;
     max-width: 90%;
   }
-  .feedback-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .feedback-toast.good { background: #2E7D32; color: #fff; }
-  .feedback-toast.bad { background: #C62828; color: #fff; }
+  .toast.show { opacity: 1; }
+  .toast.ok { background: #2E7D32; color: #fff; }
+  .toast.no { background: #C62828; color: #fff; }
 
-  /* ====== ROUND END SCREEN ====== */
-  .round-end-screen {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 32px;
-    gap: 16px;
+  /* ====== ROUND END ====== */
+  .round-end {
+    flex-direction: column; align-items: center;
+    justify-content: center; padding: 36px; gap: 18px;
     background: linear-gradient(160deg, #1a3a0a, #2E4F1F);
     text-align: center;
   }
-  .re-emoji { font-size: 3.5rem; }
-  .re-title { font-size: 1.6rem; font-weight: 900; }
-  .re-stats { font-size: 1.1rem; line-height: 2; }
-  .re-message { font-size: 0.95rem; opacity: 0.7; }
+  .re-icon { font-size: 5rem; }
+  .re-head { font-size: 2rem; font-weight: 900; }
+  .re-body { font-size: 1.4rem; line-height: 2.2; }
+  .re-note { font-size: 1.1rem; opacity: 0.5; }
 
-  /* ====== GAME OVER SCREEN ====== */
-  .gameover-screen {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 32px;
-    gap: 14px;
+  /* ====== GAME OVER ====== */
+  .game-over {
+    flex-direction: column; align-items: center;
+    justify-content: center; padding: 36px; gap: 14px;
     background: linear-gradient(160deg, #1a3a0a, #2E4F1F);
     text-align: center;
   }
-  .go-emoji { font-size: 4rem; }
-  .go-title { font-size: 2rem; font-weight: 900; }
-  .go-stars { font-size: 2rem; }
-  .go-rating { font-size: 1.3rem; font-weight: 700; color: #FFD54F; }
-  .go-stats { font-size: 1.1rem; line-height: 2; }
-  .go-message { font-size: 1rem; margin-top: 6px; }
-
+  .go-icon { font-size: 5rem; }
+  .go-head { font-size: 2.2rem; font-weight: 900; }
+  .go-stars { font-size: 2.4rem; }
+  .go-rating { font-size: 1.6rem; font-weight: 700; color: #FFD54F; }
+  .go-body { font-size: 1.4rem; line-height: 2.2; }
+  .go-msg { font-size: 1.1rem; margin-top: 6px; }
   .btn-again {
-    margin-top: 16px;
-    padding: 14px 36px;
+    margin-top: 18px; padding: 16px 40px;
     background: linear-gradient(135deg, #43A047, #2E7D32);
-    color: #fff; border: none; border-radius: 14px;
-    font-size: 1.1rem; font-weight: 700;
-    cursor: pointer;
+    color: #fff; border: none; border-radius: 16px;
+    font-size: 1.4rem; font-weight: 800; cursor: pointer;
   }
   .btn-again:active { transform: scale(0.97); }
 </style>
 </head>
 <body>
 
-  <!-- JOIN SCREEN -->
-  <div class="screen join-screen active" id="join-screen">
+  <!-- JOIN -->
+  <div class="screen join active" id="scr-join">
     <div class="join-logos">
       <img src="images/crest-logo.png" alt="Crest" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-      <div class="logo-fallback">CREST<br>SECONDARY</div>
+      <div class="logo-fb">CREST<br>SECONDARY</div>
       <img src="images/weeswares-logo.png" alt="WeesWares" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-      <div class="logo-fallback">WEESWARES</div>
+      <div class="logo-fb">WEESWARES</div>
     </div>
-
     <div class="join-title">&#x1F33F; Garden Guardians</div>
 
-    <div class="join-form">
-      <label for="name-input">Your Name</label>
-      <input type="text" id="name-input" placeholder="Enter your name" maxlength="20" autocomplete="off">
-
-      <label for="code-input">Room Code</label>
-      <input type="text" id="code-input" class="code-input" placeholder="- - - -" maxlength="4" autocomplete="off">
-
-      <button class="btn-join" id="btn-join" onclick="joinGame()">Join Garden</button>
-      <div class="join-error" id="join-error"></div>
+    <div class="join-box">
+      <label>Your Name</label>
+      <input type="text" id="inp-name" placeholder="Type your name" maxlength="20" autocomplete="off">
+      <label>Room Code (from TV)</label>
+      <input type="text" id="inp-code" class="code-input" placeholder="- - - -" maxlength="4" autocomplete="off">
+      <button class="btn-join" id="btn-join" onclick="doJoin()">Join Game</button>
+      <div class="join-error" id="join-err"></div>
     </div>
 
-    <div class="join-instructions">
+    <div class="join-help">
       <strong>How to play:</strong><br>
-      1. Enter your name and the room code from the TV.<br>
-      2. You will get a special role in the garden.<br>
-      3. <strong>Don't show your phone</strong> to other players!<br>
-      4. <strong>Talk to your team</strong> to solve garden problems together.<br>
-      5. Tap the right plots to help the garden grow!
+      1. Type your name and room code.<br>
+      2. You get a job in the garden.<br>
+      3. <strong>Don't show</strong> your phone!<br>
+      4. <strong>Talk</strong> to your team.<br>
+      5. Tap the right box to help!
     </div>
   </div>
 
-  <!-- WAITING SCREEN -->
-  <div class="screen waiting-screen" id="waiting-screen">
-    <div class="player-name-display" id="player-name-display"></div>
+  <!-- WAITING -->
+  <div class="screen waiting" id="scr-wait">
+    <div class="your-name" id="disp-name"></div>
     <div class="role-card">
-      <div class="role-icon" id="role-icon"></div>
-      <div class="role-name" id="role-name"></div>
-      <div class="role-desc" id="role-desc"></div>
+      <span class="role-icon-big" id="disp-icon"></span>
+      <div class="role-title" id="disp-role"></div>
+      <div class="role-desc" id="disp-desc"></div>
     </div>
-    <div class="waiting-text">Waiting for host to start the game...</div>
+    <div class="waiting-text">Waiting for game to start...</div>
   </div>
 
-  <!-- GAME SCREEN -->
-  <div class="screen game-screen" id="game-screen">
-    <div class="game-header">
-      <div class="game-header-left">
-        <span id="gh-icon"></span>
-        <span id="gh-role"></span>
+  <!-- GAME -->
+  <div class="screen game" id="scr-game">
+    <div class="game-top">
+      <div class="game-top-left">
+        <span id="gt-icon"></span>
+        <span id="gt-role"></span>
       </div>
-      <div class="game-header-right">
-        <span>R<span id="gh-round">1</span>/5</span>
-        <span class="header-timer" id="gh-timer">3:00</span>
+      <div class="game-top-right">
+        <span>R<span id="gt-round">1</span>/5</span>
+        <span class="game-timer" id="gt-timer">3:00</span>
       </div>
     </div>
 
     <div class="game-body">
-      <div class="stats-bar">
-        <div class="stat-pill">
-          <div>&#x1F3AF; Score</div>
-          <div class="stat-val" id="stat-score">0</div>
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-label">Score</div>
+          <div class="stat-num" id="st-score">0</div>
         </div>
-        <div class="stat-pill">
-          <div>&#x1F33F; Health</div>
-          <div class="stat-val" id="stat-health">100%</div>
+        <div class="stat-box">
+          <div class="stat-label">Health</div>
+          <div class="stat-num" id="st-health">100%</div>
         </div>
-        <div class="stat-pill">
-          <div>&#x2705; Solved</div>
-          <div class="stat-val" id="stat-solved">0/0</div>
+        <div class="stat-box">
+          <div class="stat-label">Done</div>
+          <div class="stat-num" id="st-done">0/0</div>
         </div>
       </div>
 
-      <div class="action-hint" id="action-hint">
-        Tap a highlighted plot to help the garden!
+      <div class="action-banner" id="action-banner">
+        Tap a glowing box to help!
       </div>
 
-      <div class="clues-section">
-        <h3>&#x1F4DD; Your Clues</h3>
-        <div id="clues-list"></div>
+      <div>
+        <div class="section-title">&#x1F4CB; Your Tasks</div>
+        <div id="clue-list"></div>
       </div>
 
-      <div class="garden-section">
-        <h3>&#x1F33B; Garden &mdash; Tap a plot to act!</h3>
-        <div class="phone-garden" id="phone-garden"></div>
+      <div>
+        <div class="section-title">&#x1F33B; Garden &mdash; Tap to act!</div>
+        <div class="phone-grid" id="phone-grid"></div>
       </div>
     </div>
   </div>
 
-  <!-- ROUND END SCREEN -->
-  <div class="screen round-end-screen" id="round-end-screen">
-    <div class="re-emoji" id="re-emoji">&#x1F33F;</div>
-    <div class="re-title" id="re-title">Round Complete!</div>
-    <div class="re-stats" id="re-stats"></div>
-    <div class="re-message">Get ready for the next round...</div>
+  <!-- ROUND END -->
+  <div class="screen round-end" id="scr-rend">
+    <div class="re-icon" id="re-icon">&#x1F33F;</div>
+    <div class="re-head" id="re-head">Round Done!</div>
+    <div class="re-body" id="re-body"></div>
+    <div class="re-note">Next round coming...</div>
   </div>
 
-  <!-- GAME OVER SCREEN -->
-  <div class="screen gameover-screen" id="gameover-screen">
-    <div class="go-emoji" id="go-emoji">&#x1F338;</div>
-    <div class="go-title" id="go-title">Game Over!</div>
+  <!-- GAME OVER -->
+  <div class="screen game-over" id="scr-over">
+    <div class="go-icon" id="go-icon">&#x1F338;</div>
+    <div class="go-head" id="go-head">Game Over!</div>
     <div class="go-stars" id="go-stars"></div>
     <div class="go-rating" id="go-rating"></div>
-    <div class="go-stats" id="go-stats"></div>
-    <div class="go-message" id="go-message"></div>
+    <div class="go-body" id="go-body"></div>
+    <div class="go-msg" id="go-msg"></div>
     <button class="btn-again" onclick="location.reload()">Play Again</button>
   </div>
 
-  <!-- FEEDBACK TOAST -->
-  <div class="feedback-toast" id="feedback-toast"></div>
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
 (function() {
   const socket = io();
-
-  // State
-  let myRole = '';
-  let myRoleName = '';
-  let clues = [];
-  let garden = null;
-  let timerInterval = null;
-  let timeLeft = 0;
-  let canAct = false;
-  let cooldown = false;
-
+  let myRole = '', myRoleName = '', clues = [], garden = null;
+  let timerInt = null, timeLeft = 0, canAct = false, cooldown = false;
   const $ = id => document.getElementById(id);
+
+  // ====== SOUND (Web Audio API - gentle, calming) ======
+  const AC = window.AudioContext || window.webkitAudioContext;
+  let ctx = null;
+  function audio() { if (!ctx) ctx = new AC(); return ctx; }
+
+  function tone(freq, dur, type, vol) {
+    try {
+      const c = audio();
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = type || 'sine'; o.frequency.value = freq;
+      g.gain.value = vol || 0.15;
+      g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + dur);
+      o.connect(g); g.connect(c.destination);
+      o.start(); o.stop(c.currentTime + dur);
+    } catch(e) {}
+  }
+
+  // Gentle chime for correct action
+  function sfxGood() {
+    tone(660, 0.15, 'sine', 0.2);
+    setTimeout(() => tone(880, 0.25, 'sine', 0.18), 100);
+  }
+  // Soft low tone for wrong
+  function sfxBad() { tone(220, 0.25, 'triangle', 0.1); }
+  // Water drop sound
+  function sfxWater() { tone(1200, 0.08, 'sine', 0.12); setTimeout(() => tone(800, 0.15, 'sine', 0.1), 80); }
+  // Sun shade sound
+  function sfxSun() { tone(550, 0.2, 'sine', 0.1); setTimeout(() => tone(440, 0.2, 'sine', 0.08), 150); }
+  // Plant seed sound
+  function sfxSeed() { tone(400, 0.1, 'sine', 0.12); setTimeout(() => tone(500, 0.1, 'sine', 0.12), 80); setTimeout(() => tone(600, 0.15, 'sine', 0.12), 160); }
+  // Shoo animal sound
+  function sfxShoo() { tone(700, 0.08, 'square', 0.06); setTimeout(() => tone(900, 0.08, 'square', 0.05), 60); setTimeout(() => tone(1100, 0.1, 'square', 0.04), 120); }
+  // Role-specific correct sound
+  function sfxAction() {
+    const m = { water: sfxWater, sun: sfxSun, seed: sfxSeed, animal: sfxShoo };
+    (m[myRole] || sfxGood)();
+  }
+  // Round start chime
+  function sfxStart() { tone(523, 0.15, 'sine', 0.14); setTimeout(() => tone(659, 0.15, 'sine', 0.14), 120); setTimeout(() => tone(784, 0.3, 'sine', 0.14), 240); }
+  // Win melody
+  function sfxWin() { [523,659,784,1047].forEach((f,i) => setTimeout(() => tone(f, 0.3, 'sine', 0.14), i*160)); }
+  // Lose
+  function sfxLose() { [392,349,330,262].forEach((f,i) => setTimeout(() => tone(f, 0.35, 'sine', 0.08), i*220)); }
+  // Tap feedback
+  function sfxTap() { tone(600, 0.04, 'sine', 0.08); }
+
+  // Init audio on touch
+  document.addEventListener('touchstart', () => audio(), { once: true });
+  document.addEventListener('click', () => audio(), { once: true });
 
   // Auto-fill room code from URL
   const params = new URLSearchParams(window.location.search);
-  if (params.get('room')) {
-    $('code-input').value = params.get('room');
-  }
+  if (params.get('room')) $('inp-code').value = params.get('room');
 
   // ====== JOIN ======
-
-  window.joinGame = () => {
-    const name = $('name-input').value.trim();
-    const code = $('code-input').value.trim().toUpperCase();
-
-    if (!name) { showJoinError('Please enter your name.'); return; }
-    if (code.length < 4) { showJoinError('Please enter the 4-character room code.'); return; }
-
+  window.doJoin = () => {
+    const name = $('inp-name').value.trim();
+    const code = $('inp-code').value.trim().toUpperCase();
+    if (!name) { $('join-err').textContent = 'Please type your name.'; return; }
+    if (code.length < 4) { $('join-err').textContent = 'Type the 4-letter code from TV.'; return; }
     $('btn-join').disabled = true;
-    $('join-error').textContent = '';
+    $('join-err').textContent = '';
     socket.emit('join-room', { code, name });
   };
 
-  // Enter key on inputs
-  $('code-input').addEventListener('keydown', e => { if (e.key === 'Enter') joinGame(); });
-  $('name-input').addEventListener('keydown', e => { if (e.key === 'Enter') $('code-input').focus(); });
+  $('inp-code').addEventListener('keydown', e => { if (e.key === 'Enter') doJoin(); });
+  $('inp-name').addEventListener('keydown', e => { if (e.key === 'Enter') $('inp-code').focus(); });
+  $('inp-code').addEventListener('input', function() { this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); });
 
-  // Auto uppercase code
-  $('code-input').addEventListener('input', function() {
-    this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-  });
-
-  socket.on('join-error', ({ message }) => {
-    showJoinError(message);
-    $('btn-join').disabled = false;
-  });
-
-  function showJoinError(msg) { $('join-error').textContent = msg; }
+  socket.on('join-error', ({ message }) => { $('join-err').textContent = message; $('btn-join').disabled = false; });
 
   // ====== JOINED ======
-
   socket.on('joined', (data) => {
-    myRole = data.role;
-    myRoleName = data.roleName;
-
-    document.documentElement.style.setProperty('--role-color', data.roleColor);
-    document.documentElement.style.setProperty('--role-color-light', data.roleColor + '22');
-
-    $('player-name-display').textContent = 'Welcome, ' + data.playerName + '!';
-    $('role-icon').textContent = data.roleIcon;
-    $('role-name').textContent = data.roleName;
-    $('role-desc').textContent = data.roleDesc;
-
-    showScreen('waiting-screen');
+    myRole = data.role; myRoleName = data.roleName;
+    document.documentElement.style.setProperty('--role', data.roleColor);
+    document.documentElement.style.setProperty('--role-light', data.roleColor + '22');
+    $('disp-name').textContent = 'Hello, ' + data.playerName + '!';
+    $('disp-icon').textContent = data.roleIcon;
+    $('disp-role').textContent = data.roleName;
+    $('disp-desc').textContent = data.roleDesc;
+    show('scr-wait');
   });
 
   // ====== GAME STARTING ======
-
   socket.on('game-starting', () => {
-    // Stay on waiting screen, update text
+    sfxStart();
     const wt = document.querySelector('.waiting-text');
-    if (wt) wt.textContent = 'Game starting! Get ready...';
+    if (wt) wt.textContent = 'Starting! Get ready...';
   });
 
   // ====== ROUND START ======
-
   socket.on('round-start', (data) => {
-    clues = data.clues || [];
-    garden = data.garden;
-    timeLeft = data.duration;
-    canAct = true;
-
-    $('gh-icon').textContent = getRoleIcon(myRole);
-    $('gh-role').textContent = myRoleName;
-    $('gh-round').textContent = data.round;
-    $('stat-score').textContent = data.score;
-    $('stat-health').textContent = data.health + '%';
-    updateSolvedCount();
-
-    setActionHint();
-    renderClues();
-    renderPhoneGarden();
+    clues = data.clues || []; garden = data.garden;
+    timeLeft = data.duration; canAct = true;
+    sfxStart();
+    $('gt-icon').textContent = roleIcon(myRole);
+    $('gt-role').textContent = myRoleName;
+    $('gt-round').textContent = data.round;
+    $('st-score').textContent = data.score;
+    $('st-health').textContent = data.health + '%';
+    updateDone();
+    setBanner();
+    drawClues(); drawGrid();
     startTimer(data.duration);
-
-    showScreen('game-screen');
+    show('scr-game');
   });
 
   // ====== CLUES UPDATE ======
-
   socket.on('clues-update', (data) => {
     clues = data.clues || clues;
-    $('stat-score').textContent = data.score;
-    $('stat-health').textContent = data.health + '%';
-    updateSolvedCount();
-    renderClues();
-    renderPhoneGarden();
+    $('st-score').textContent = data.score;
+    $('st-health').textContent = data.health + '%';
+    updateDone(); drawClues(); drawGrid();
   });
 
   // ====== ACTION FEEDBACK ======
-
   socket.on('action-feedback', (data) => {
     if (data.success) {
-      showToast(data.msg, 'good');
+      sfxAction(); sfxGood();
+      showToast(data.msg, 'ok');
     } else {
-      showToast(data.msg, 'bad');
+      sfxBad();
+      showToast(data.msg, 'no');
     }
   });
 
   // ====== ROUND END ======
-
   socket.on('round-end', (data) => {
-    canAct = false;
-    stopTimer();
-
-    const pct = data.total > 0 ? Math.round((data.solved / data.total) * 100) : 0;
-    let emoji = pct >= 80 ? '\u{1F33B}' : pct >= 50 ? '\u{1F33F}' : '\u{1F940}';
-
-    $('re-emoji').textContent = emoji;
-    $('re-title').textContent = 'Round ' + data.round + ' Complete!';
-    $('re-stats').innerHTML =
-      'Problems solved: <strong>' + data.solved + ' / ' + data.total + '</strong><br>' +
-      'Garden Health: <strong>' + data.health + '%</strong><br>' +
-      'Team Score: <strong>' + data.score + '</strong>';
-
-    showScreen('round-end-screen');
+    canAct = false; stopTimer();
+    const pct = data.total > 0 ? Math.round((data.solved/data.total)*100) : 0;
+    $('re-icon').textContent = pct >= 80 ? '\u{1F33B}' : pct >= 50 ? '\u{1F33F}' : '\u{1F940}';
+    $('re-head').textContent = 'Round ' + data.round + ' Done!';
+    $('re-body').innerHTML =
+      'Solved: <strong>' + data.solved + '/' + data.total + '</strong><br>' +
+      'Health: <strong>' + data.health + '%</strong><br>' +
+      'Score: <strong>' + data.score + '</strong>';
+    show('scr-rend');
   });
 
   // ====== GAME OVER ======
-
   socket.on('game-over', (data) => {
-    canAct = false;
-    stopTimer();
-
-    $('go-emoji').textContent = data.rating.emoji;
-    $('go-title').textContent = data.win ? 'You Win!' : 'Game Over!';
+    canAct = false; stopTimer();
+    data.win ? sfxWin() : sfxLose();
+    $('go-icon').textContent = data.rating.emoji;
+    $('go-head').textContent = data.win ? 'You Win!' : 'Game Over';
     $('go-stars').textContent = '\u{2B50}'.repeat(data.rating.stars);
     $('go-rating').textContent = data.rating.name;
-    $('go-stats').innerHTML =
-      'Final Score: <strong>' + data.score + '</strong><br>' +
-      'Garden Health: <strong>' + data.health + '%</strong>';
-    $('go-message').textContent = data.message;
-
-    showScreen('gameover-screen');
+    $('go-body').innerHTML = 'Score: <strong>' + data.score + '</strong><br>Health: <strong>' + data.health + '%</strong>';
+    $('go-msg').textContent = data.message;
+    show('scr-over');
   });
 
-  // ====== ERROR ======
+  socket.on('game-error', ({ message }) => { alert(message); });
 
-  socket.on('game-error', ({ message }) => {
-    alert(message);
-  });
-
-  // ====== RENDER FUNCTIONS ======
-
-  function renderClues() {
-    const list = $('clues-list');
-    list.innerHTML = '';
-
-    if (clues.length === 0) {
-      list.innerHTML = '<div style="opacity:0.5; padding:10px;">No clues for this round yet.</div>';
-      return;
-    }
-
+  // ====== DRAW FUNCTIONS ======
+  function drawClues() {
+    const el = $('clue-list'); el.innerHTML = '';
+    if (!clues.length) { el.innerHTML = '<div style="opacity:0.4; padding:8px; font-size:1.1rem;">No tasks yet.</div>'; return; }
     clues.forEach(c => {
-      const div = document.createElement('div');
-      div.className = 'clue-card' + (c.solved ? ' solved' : '');
-      div.innerHTML = '<span class="clue-status"></span><span>' + escHtml(c.clue) + '</span>';
-      list.appendChild(div);
+      const d = document.createElement('div');
+      d.className = 'clue' + (c.solved ? ' done' : '');
+      d.innerHTML = '<span class="clue-dot"></span><span>' + esc(c.clue) + '</span>';
+      el.appendChild(d);
     });
   }
 
-  function renderPhoneGarden() {
+  function drawGrid() {
     if (!garden) return;
-    const grid = $('phone-garden');
-    grid.innerHTML = '';
-
-    // Build set of target plots (unsolved problems for my role)
-    const targets = new Set();
-    const solvedSet = new Set();
+    const g = $('phone-grid'); g.innerHTML = '';
+    const targets = new Set(), solved = new Set();
     clues.forEach(c => {
-      const key = c.row + ',' + c.col;
-      if (c.solved) solvedSet.add(key);
-      else targets.add(key);
+      const k = c.row+','+c.col;
+      if (c.solved) solved.add(k); else targets.add(k);
     });
 
     for (let r = 0; r < 4; r++) {
       for (let c = 0; c < 4; c++) {
-        const plot = garden[r][c];
-        const div = document.createElement('div');
-        div.className = 'phone-plot';
-        const key = r + ',' + c;
+        const p = garden[r][c];
+        const d = document.createElement('div');
+        d.className = 'phone-cell';
+        const k = r+','+c;
+        if (targets.has(k)) d.classList.add('target');
+        else if (solved.has(k)) d.classList.add('done-cell');
 
-        if (targets.has(key)) div.classList.add('target');
-        else if (solvedSet.has(key)) div.classList.add('solved-plot');
-
-        // Label
-        div.innerHTML = '<span class="plot-label">' + String.fromCharCode(65 + r) + (c + 1) + '</span>';
-
-        // Emoji
-        let emoji = '';
-        if (plot.plant) {
-          emoji = plot.displayEmoji || '';
+        let em = '';
+        if (p.plant) em = p.displayEmoji || '';
+        if (p.animal) {
+          em += (p.animal === 'rabbit' ? '\u{1F430}' : p.animal === 'bird' ? '\u{1F426}' : '\u{1F40C}');
         }
-        if (plot.animal) {
-          const ae = plot.animal === 'rabbit' ? '\u{1F430}' : plot.animal === 'bird' ? '\u{1F426}' : '\u{1F40C}';
-          emoji = (emoji ? emoji : '') + ae;
-        }
-        div.innerHTML += '<span class="plot-emoji">' + emoji + '</span>';
+        d.innerHTML =
+          '<span class="cell-label">' + String.fromCharCode(65+r) + (c+1) + '</span>' +
+          '<span class="cell-emoji">' + em + '</span>';
 
-        // Role-specific indicator
-        if (myRole === 'water') {
-          const lvl = plot.moisture < 30 ? '\u{1F4A7}\u{2757}' : '\u{1F4A7}';
-          div.innerHTML += '<span class="plot-indicator">' + lvl + '</span>';
-        } else if (myRole === 'sun') {
-          const lvl = plot.sunlight > 75 ? '\u{2600}\u{FE0F}\u{2757}' : '\u{2600}\u{FE0F}';
-          div.innerHTML += '<span class="plot-indicator">' + lvl + '</span>';
-        } else if (myRole === 'seed') {
-          if (!plot.plant) div.innerHTML += '<span class="plot-indicator">\u{1F331}\u{2753}</span>';
-        } else if (myRole === 'animal') {
-          if (plot.animal) div.innerHTML += '<span class="plot-indicator">\u{26A0}\u{FE0F}</span>';
-        }
+        // Simple visual hint per role
+        if (myRole === 'water' && p.moisture < 30) d.innerHTML += '<span class="cell-hint">\u{1F4A7}\u{2757}</span>';
+        if (myRole === 'sun' && p.sunlight > 75) d.innerHTML += '<span class="cell-hint">\u{2600}\u{FE0F}\u{2757}</span>';
+        if (myRole === 'seed' && !p.plant) d.innerHTML += '<span class="cell-hint">\u{1F331}</span>';
+        if (myRole === 'animal' && p.animal) d.innerHTML += '<span class="cell-hint">\u{26A0}\u{FE0F}</span>';
 
-        // Tap handler
-        div.addEventListener('click', () => handlePlotTap(r, c, div));
-
-        grid.appendChild(div);
+        d.addEventListener('click', () => tapCell(r, c, d));
+        g.appendChild(d);
       }
     }
   }
 
-  function handlePlotTap(row, col, el) {
+  function tapCell(row, col, el) {
     if (!canAct || cooldown) return;
-
-    // Brief cooldown to prevent double-tap
-    cooldown = true;
-    setTimeout(() => cooldown = false, 600);
-
+    sfxTap();
+    cooldown = true; setTimeout(() => cooldown = false, 600);
     socket.emit('player-action', { row, col });
 
-    // Optimistic visual feedback
-    const key = row + ',' + col;
     const isTarget = clues.some(c => !c.solved && c.row === row && c.col === col);
-
-    if (isTarget) {
-      el.classList.add('correct-flash');
-      setTimeout(() => el.classList.remove('correct-flash'), 500);
-    } else {
-      el.classList.add('wrong-flash');
-      setTimeout(() => el.classList.remove('wrong-flash'), 400);
-    }
+    el.classList.add(isTarget ? 'pop' : 'shake');
+    setTimeout(() => { el.classList.remove('pop'); el.classList.remove('shake'); }, 500);
   }
 
-  function setActionHint() {
-    const hints = {
-      water: '\u{1F4A7} Tap plots that need water! Look for dry soil clues.',
-      sun: '\u{2600}\u{FE0F} Tap scorched plots to add shade! Check sun clues.',
-      seed: '\u{1F331} Tap empty plots to plant new flowers! Find fertile soil.',
-      animal: '\u{1F6E1}\u{FE0F} Tap plots with animals to shoo them away!'
+  function setBanner() {
+    const banners = {
+      water: '\u{1F4A7} Tap the glowing box to water it!',
+      sun: '\u{2600}\u{FE0F} Tap the glowing box to add shade!',
+      seed: '\u{1F331} Tap the glowing box to plant!',
+      animal: '\u{1F6E1}\u{FE0F} Tap the glowing box to shoo!'
     };
-    $('action-hint').textContent = hints[myRole] || 'Tap plots to help the garden!';
+    $('action-banner').textContent = banners[myRole] || 'Tap a glowing box!';
   }
 
-  function updateSolvedCount() {
-    const solved = clues.filter(c => c.solved).length;
-    $('stat-solved').textContent = solved + '/' + clues.length;
+  function updateDone() {
+    $('st-done').textContent = clues.filter(c => c.solved).length + '/' + clues.length;
   }
 
-  function startTimer(duration) {
-    stopTimer();
-    timeLeft = duration;
-    updateTimerDisplay();
-    timerInterval = setInterval(() => {
-      timeLeft--;
-      if (timeLeft < 0) timeLeft = 0;
-      updateTimerDisplay();
-    }, 1000);
+  function startTimer(dur) {
+    stopTimer(); timeLeft = dur; showTime();
+    timerInt = setInterval(() => { timeLeft--; if (timeLeft < 0) timeLeft = 0; showTime(); }, 1000);
   }
-
-  function stopTimer() {
-    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-  }
-
-  function updateTimerDisplay() {
-    const m = Math.floor(timeLeft / 60);
-    const s = timeLeft % 60;
-    const el = $('gh-timer');
-    el.textContent = m + ':' + String(s).padStart(2, '0');
-    el.className = 'header-timer' + (timeLeft <= 30 ? ' warning' : '');
+  function stopTimer() { if (timerInt) { clearInterval(timerInt); timerInt = null; } }
+  function showTime() {
+    const m = Math.floor(timeLeft/60), s = timeLeft%60;
+    $('gt-timer').textContent = m + ':' + String(s).padStart(2,'0');
+    $('gt-timer').className = 'game-timer' + (timeLeft <= 30 ? ' warn' : '');
   }
 
   function showToast(msg, type) {
-    const toast = $('feedback-toast');
-    toast.textContent = msg;
-    toast.className = 'feedback-toast ' + type + ' show';
-    setTimeout(() => toast.classList.remove('show'), 2200);
+    const t = $('toast');
+    t.textContent = msg;
+    t.className = 'toast ' + type + ' show';
+    setTimeout(() => t.classList.remove('show'), 2000);
   }
 
-  function showScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+  function show(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); $(id).classList.add('active'); }
+
+  function roleIcon(r) {
+    return { water: '\u{1F4A7}', sun: '\u{2600}\u{FE0F}', seed: '\u{1F331}', animal: '\u{1F6E1}\u{FE0F}' }[r] || '';
   }
 
-  function getRoleIcon(role) {
-    const icons = { water: '\u{1F4A7}', sun: '\u{2600}\u{FE0F}', seed: '\u{1F331}', animal: '\u{1F6E1}\u{FE0F}' };
-    return icons[role] || '';
-  }
+  function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
-  function escHtml(s) {
-    const d = document.createElement('div');
-    d.textContent = s;
-    return d.innerHTML;
-  }
-
-  // Time sync
   socket.on('time-sync', ({ timeLeft: t }) => { timeLeft = t; });
   setInterval(() => { if (canAct) socket.emit('get-time'); }, 15000);
 })();

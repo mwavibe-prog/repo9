@@ -212,130 +212,78 @@ function generateProblems(game) {
 
 function makeClue(type, plot, game) {
   const label = `${ROW_LABELS[plot.row]}${plot.col + 1}`;
-  const r = plot.row + 1;
-  const c = plot.col + 1;
-  const plantName = plot.plant ? plot.plant.type.replace('_', ' ') : 'empty soil';
+  const animalEmoji = plot.animal === 'rabbit' ? '\u{1F430}' : plot.animal === 'bird' ? '\u{1F426}' : '\u{1F40C}';
 
-  // Position descriptions
-  const positions = [];
-  if (plot.row === 0) positions.push('top');
-  if (plot.row === GRID_SIZE - 1) positions.push('bottom');
-  if (plot.col === 0) positions.push('left');
-  if (plot.col === GRID_SIZE - 1) positions.push('right');
-  const posDesc = positions.length ? positions.join('-') + ' area' : 'middle area';
-
+  // Simple, short clues for all rounds - easy for elderly to read
   if (game.round <= 2) {
-    // EASY: direct plot labels
     switch (type) {
       case 'NEEDS_WATER':
-        return pick([
-          `Plot ${label} is very dry! The soil is cracking.`,
-          `The plant at ${label} is thirsty and needs water.`,
-          `Row ${r}, Column ${c} \u2014 this plot needs watering!`
-        ]);
+        return `\u{1F4A7} Water ${label}`;
       case 'NEEDS_SHADE':
-        return pick([
-          `Plot ${label} is getting scorched by the sun!`,
-          `Too much sunlight at ${label}! It needs shade.`,
-          `Row ${r}, Column ${c} \u2014 the sun is too strong here!`
-        ]);
+        return `\u{2600}\u{FE0F} Shade ${label}`;
       case 'ANIMAL_ALERT':
-        return pick([
-          `A ${plot.animal} appeared at plot ${label}! Chase it away!`,
-          `Watch out! A ${plot.animal} is near ${label}!`,
-          `Row ${r}, Column ${c} \u2014 a ${plot.animal} is bothering the plants!`
-        ]);
+        return `${animalEmoji} Shoo at ${label}`;
       case 'READY_TO_PLANT':
-        return pick([
-          `Plot ${label} has rich soil ready for planting!`,
-          `There\u2019s an empty spot at ${label}. Plant something!`,
-          `Row ${r}, Column ${c} \u2014 perfect soil for a new plant!`
-        ]);
+        return `\u{1F331} Plant at ${label}`;
     }
   } else if (game.round <= 4) {
-    // MEDIUM: descriptive / positional
+    // Slightly more descriptive but still short
+    const posWords = [];
+    if (plot.row === 0) posWords.push('top');
+    if (plot.row === GRID_SIZE - 1) posWords.push('bottom');
+    if (plot.col === 0) posWords.push('left');
+    if (plot.col === GRID_SIZE - 1) posWords.push('right');
+    const where = posWords.length ? posWords.join('-') : 'middle';
+
     switch (type) {
       case 'NEEDS_WATER':
-        return pick([
-          `In the ${posDesc} of the garden, a ${plantName} is thirsty. It\u2019s in row ${r}.`,
-          `Count ${r} rows down from the top, then ${c} from the left. That plant needs a drink!`,
-          `The ${plantName} at plot ${label} is wilting from thirst. Can you find it?`
-        ]);
+        return `\u{1F4A7} ${label} is dry! (${where})`;
       case 'NEEDS_SHADE':
-        return pick([
-          `A ${plantName} in the ${posDesc} is burning up! It\u2019s in column ${c}.`,
-          `Row ${r}, starting from top \u2014 the plant ${c} spots from the left needs shade.`,
-          `The sun is too harsh on the ${plantName} at ${label}. Help it!`
-        ]);
+        return `\u{2600}\u{FE0F} ${label} too hot! (${where})`;
       case 'ANIMAL_ALERT':
-        return pick([
-          `Something is moving in the ${posDesc}! A ${plot.animal} is at row ${r}, column ${c}.`,
-          `A little ${plot.animal} has wandered to the ${posDesc}. Check row ${r}!`,
-          `The ${plantName} in the ${posDesc} has an unwanted ${plot.animal} visitor!`
-        ]);
+        return `${animalEmoji} at ${label}! (${where})`;
       case 'READY_TO_PLANT':
-        return pick([
-          `The ${posDesc} of the garden has empty soil in row ${r}, column ${c}.`,
-          `Count ${r} rows down and ${c} across \u2014 there\u2019s room for a new plant!`,
-          `An empty patch in the ${posDesc} is calling for seeds. Row ${r}!`
-        ]);
+        return `\u{1F331} Empty at ${label} (${where})`;
     }
   } else {
-    // HARD: riddles / deduction
-    const neighborDesc = getNeighborHint(plot, game.garden);
+    // Round 5: use neighbor hints for mind exercise
+    const hint = getNeighborHint(plot, game.garden);
     switch (type) {
       case 'NEEDS_WATER':
-        return pick([
-          `I\u2019m in row ${r}. ${neighborDesc} I\u2019m so thirsty!`,
-          `Find the ${posDesc}. The ${plantName} there hasn\u2019t been watered in ages!`,
-          `${neighborDesc} That\u2019s where the dry soil is. Row ${r}, help me!`
-        ]);
+        return `\u{1F4A7} Dry! ${hint}`;
       case 'NEEDS_SHADE':
-        return pick([
-          `The sun is burning me! ${neighborDesc} I\u2019m in column ${c}.`,
-          `${neighborDesc} That plant is getting too much sun in the ${posDesc}!`,
-          `I need shade urgently! I\u2019m the ${plantName} in row ${r}. ${neighborDesc}`
-        ]);
+        return `\u{2600}\u{FE0F} Hot! ${hint}`;
       case 'ANIMAL_ALERT':
-        return pick([
-          `A sneaky ${plot.animal}! ${neighborDesc} Quick, row ${r}!`,
-          `${neighborDesc} A ${plot.animal} is heading that way!`,
-          `Something furry near the ${posDesc}! ${neighborDesc} Row ${r}, column ${c}!`
-        ]);
+        return `${animalEmoji} ${hint}`;
       case 'READY_TO_PLANT':
-        return pick([
-          `${neighborDesc} Next to it is empty soil perfect for planting!`,
-          `The ${posDesc} has a bare spot. ${neighborDesc} Plant something in row ${r}!`,
-          `${neighborDesc} There\u2019s room for a new friend beside it! Column ${c}.`
-        ]);
+        return `\u{1F331} Empty! ${hint}`;
     }
   }
-  return `Check plot ${label}!`;
+  return `Check ${label}`;
 }
 
 function getNeighborHint(plot, garden) {
-  const neighbors = [];
-  const dirs = [[-1,0,'above'],[1,0,'below'],[0,-1,'to my left'],[0,1,'to my right']];
+  const dirs = [[-1,0,'above'],[1,0,'below'],[0,-1,'left of'],[0,1,'right of']];
   for (const [dr, dc, desc] of dirs) {
     const nr = plot.row + dr, nc = plot.col + dc;
     if (nr >= 0 && nr < GRID_SIZE && nc >= 0 && nc < GRID_SIZE) {
       const n = garden[nr][nc];
       if (n.plant && n.plant.stage === 'bloom') {
-        return `There\u2019s a ${n.plant.type.replace('_',' ')} ${desc} me.`;
+        return `${desc} the ${n.plant.emoji}`;
       }
     }
   }
-  // Fallback to any neighbor with plant
   for (const [dr, dc, desc] of dirs) {
     const nr = plot.row + dr, nc = plot.col + dc;
     if (nr >= 0 && nr < GRID_SIZE && nc >= 0 && nc < GRID_SIZE) {
       const n = garden[nr][nc];
       if (n.plant) {
-        return `A plant is growing ${desc} me.`;
+        return `${desc} a \u{1F33F}`;
       }
     }
   }
-  return `I\u2019m in the ${plot.row === 0 ? 'top' : plot.row === 3 ? 'bottom' : 'middle'} of the garden.`;
+  const label = `${ROW_LABELS[plot.row]}${plot.col + 1}`;
+  return `at ${label}`;
 }
 
 // ======================== ACTION PROCESSING ========================
@@ -366,7 +314,7 @@ function processAction(game, socketId, row, col) {
 
     return {
       success: true,
-      msg: pick(['Great job!', 'Well done!', 'Wonderful!', 'Perfect!', 'Excellent!']),
+      msg: pick(['Good job!', 'Well done!', 'Nice!', 'Yes!']),
       sparkle: true
     };
   } else {
@@ -375,10 +323,10 @@ function processAction(game, socketId, row, col) {
     return {
       success: false,
       msg: pick([
-        'Hmm, that plot doesn\u2019t need that right now.',
-        'Oops! Try a different plot.',
-        'Not quite \u2014 check your clues again.',
-        'That plot is fine! Look at your clues carefully.'
+        'Not this one. Try again!',
+        'Oops! Wrong spot.',
+        'Check your clues!',
+        'Try another spot!'
       ])
     };
   }

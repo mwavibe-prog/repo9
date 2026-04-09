@@ -16,82 +16,50 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: 24px;
     overflow-y: auto;
   }
 
   .logos {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 30px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
+    display: flex; align-items: center; justify-content: center;
+    gap: 24px; margin-bottom: 24px; flex-wrap: wrap;
   }
   .logos img {
-    height: 80px;
-    border-radius: 10px;
-    background: #fff;
-    padding: 6px;
+    height: 80px; border-radius: 12px; background: #fff; padding: 6px;
     box-shadow: 0 4px 16px rgba(0,0,0,0.3);
   }
-  .logos .logo-text {
-    height: 80px;
-    border-radius: 10px;
-    background: #fff;
-    padding: 10px 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    font-size: 14px;
-    color: #1a237e;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-    text-align: center;
-    line-height: 1.2;
+  .logos .logo-fb {
+    height: 80px; border-radius: 12px; background: #fff; padding: 10px 18px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 15px; color: #1a237e;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3); text-align: center; line-height: 1.2;
   }
 
   .title {
-    font-size: clamp(2rem, 6vw, 3.5rem);
-    font-weight: 900;
-    text-align: center;
+    font-size: clamp(2.2rem, 7vw, 3.8rem);
+    font-weight: 900; text-align: center;
     margin-bottom: 8px;
     text-shadow: 0 3px 12px rgba(0,0,0,0.4);
-    letter-spacing: -1px;
   }
   .title .leaf { display: inline-block; animation: sway 3s ease-in-out infinite; }
-  @keyframes sway {
-    0%, 100% { transform: rotate(-5deg); }
-    50% { transform: rotate(5deg); }
-  }
+  @keyframes sway { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
 
   .subtitle {
-    font-size: clamp(1rem, 2.5vw, 1.3rem);
-    text-align: center;
-    margin-bottom: 36px;
-    opacity: 0.85;
-    max-width: 500px;
+    font-size: clamp(1.1rem, 3vw, 1.5rem);
+    text-align: center; margin-bottom: 36px; opacity: 0.8;
   }
 
   .cards {
-    display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 40px;
+    display: flex; gap: 24px; flex-wrap: wrap; justify-content: center;
+    margin-bottom: 36px;
   }
   .card {
     background: rgba(255,255,255,0.1);
-    backdrop-filter: blur(10px);
-    border: 2px solid rgba(255,255,255,0.2);
-    border-radius: 20px;
-    padding: 32px 28px;
-    width: 260px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    text-decoration: none;
-    color: #fafafa;
+    border: 3px solid rgba(255,255,255,0.15);
+    border-radius: 24px; padding: 36px 32px;
+    width: 280px; text-align: center;
+    cursor: pointer; transition: all 0.25s ease;
+    text-decoration: none; color: #fafafa;
   }
   .card:hover {
     transform: translateY(-6px);
@@ -99,43 +67,33 @@
     border-color: rgba(255,255,255,0.4);
     box-shadow: 0 12px 36px rgba(0,0,0,0.3);
   }
-  .card-icon { font-size: 3.5rem; margin-bottom: 14px; display: block; }
-  .card-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 8px; }
-  .card-desc { font-size: 0.95rem; opacity: 0.8; line-height: 1.5; }
+  .card-icon { font-size: 4rem; margin-bottom: 14px; display: block; }
+  .card-title { font-size: 1.6rem; font-weight: 800; margin-bottom: 8px; }
+  .card-desc { font-size: 1.1rem; opacity: 0.7; line-height: 1.5; }
 
   .rules {
-    background: rgba(0,0,0,0.25);
-    border-radius: 16px;
-    padding: 28px 32px;
-    max-width: 620px;
-    width: 100%;
-    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(0,0,0,0.25); border-radius: 20px;
+    padding: 28px 32px; max-width: 560px; width: 100%;
+    border: 1px solid rgba(255,255,255,0.08);
   }
-  .rules h2 { font-size: 1.3rem; margin-bottom: 16px; text-align: center; }
+  .rules h2 { font-size: 1.5rem; margin-bottom: 16px; text-align: center; }
   .rules ol {
-    padding-left: 22px;
-    line-height: 1.8;
-    font-size: 0.95rem;
-    opacity: 0.9;
+    padding-left: 24px; line-height: 2.2;
+    font-size: 1.15rem; opacity: 0.85;
   }
-  .rules li { margin-bottom: 4px; }
 
-  .roles-preview {
+  .roles-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-    gap: 12px;
-    margin-top: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px; margin-top: 20px;
   }
-  .role-badge {
-    background: rgba(255,255,255,0.08);
-    padding: 10px;
-    border-radius: 10px;
-    text-align: center;
-    font-size: 0.85rem;
-    line-height: 1.4;
+  .role-box {
+    background: rgba(255,255,255,0.07);
+    padding: 12px; border-radius: 12px;
+    text-align: center; font-size: 1rem; line-height: 1.4;
   }
-  .role-badge .icon { font-size: 1.8rem; display: block; margin-bottom: 4px; }
-  .role-badge .name { font-weight: 700; }
+  .role-box .ri { font-size: 2.2rem; display: block; margin-bottom: 4px; }
+  .role-box .rn { font-weight: 800; }
 </style>
 </head>
 <body>
@@ -143,57 +101,56 @@
   <div class="logos">
     <img src="images/crest-logo.png" alt="Crest Secondary"
          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-    <div class="logo-text" style="display:none;">CREST<br>SECONDARY</div>
+    <div class="logo-fb" style="display:none;">CREST<br>SECONDARY</div>
     <img src="images/weeswares-logo.png" alt="WeesWares"
          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-    <div class="logo-text" style="display:none;">WEESWARES</div>
+    <div class="logo-fb" style="display:none;">WEESWARES</div>
   </div>
 
   <div class="title"><span class="leaf">&#x1F33F;</span> Garden Guardians <span class="leaf">&#x1F33F;</span></div>
-  <p class="subtitle">Work together to grow the most beautiful garden! A multiplayer game for up to 15 players.</p>
+  <p class="subtitle">Help your team grow a beautiful garden!</p>
 
   <div class="cards">
     <a href="tv.html" class="card">
       <span class="card-icon">&#x1F4FA;</span>
       <div class="card-title">TV Screen</div>
-      <div class="card-desc">Open this on the big screen.<br>Shows the garden for everyone to see.</div>
+      <div class="card-desc">Open on the big screen.</div>
     </a>
     <a href="phone.html" class="card">
       <span class="card-icon">&#x1F4F1;</span>
-      <div class="card-title">Join as Player</div>
-      <div class="card-desc">Open this on your phone.<br>Get your role and help the garden!</div>
+      <div class="card-title">Join Game</div>
+      <div class="card-desc">Open on your phone.</div>
     </a>
   </div>
 
   <div class="rules">
     <h2>&#x1F4D6; How to Play</h2>
     <ol>
-      <li><strong>TV screen</strong> shows the garden for everyone to see.</li>
-      <li><strong>Players join</strong> on their phones by entering the room code.</li>
-      <li>Each player gets a <strong>different role</strong> with special abilities.</li>
-      <li><strong>Don't show</strong> your phone screen to others!</li>
-      <li><strong>Talk to each other</strong> &mdash; describe your clues and work as a team.</li>
-      <li>Each round lasts <strong>3 minutes</strong>. There are <strong>5 rounds</strong>.</li>
-      <li>Tap the right plots on your phone to <strong>solve garden problems</strong>.</li>
-      <li>If the garden is healthy after 5 rounds, <strong>your team wins!</strong></li>
+      <li>Open <strong>TV Screen</strong> on the big screen.</li>
+      <li>Join on your <strong>phone</strong> with the room code.</li>
+      <li>You get a <strong>job</strong> in the garden.</li>
+      <li><strong>Don't show</strong> your phone to others!</li>
+      <li><strong>Talk</strong> to your team to solve problems.</li>
+      <li>Tap the right boxes on your phone.</li>
+      <li>Keep the garden <strong>healthy</strong> to win!</li>
     </ol>
 
-    <div class="roles-preview">
-      <div class="role-badge">
-        <span class="icon">&#x1F4A7;</span>
-        <span class="name">Water Keeper</span><br>Waters dry plants
+    <div class="roles-row">
+      <div class="role-box">
+        <span class="ri">&#x1F4A7;</span>
+        <span class="rn">Water</span><br>Water dry plants
       </div>
-      <div class="role-badge">
-        <span class="icon">&#x2600;&#xFE0F;</span>
-        <span class="name">Sun Guide</span><br>Controls shade
+      <div class="role-box">
+        <span class="ri">&#x2600;&#xFE0F;</span>
+        <span class="rn">Sun</span><br>Add shade
       </div>
-      <div class="role-badge">
-        <span class="icon">&#x1F331;</span>
-        <span class="name">Seed Planter</span><br>Plants new flowers
+      <div class="role-box">
+        <span class="ri">&#x1F331;</span>
+        <span class="rn">Plant</span><br>Plant seeds
       </div>
-      <div class="role-badge">
-        <span class="icon">&#x1F6E1;&#xFE0F;</span>
-        <span class="name">Animal Guardian</span><br>Protects from animals
+      <div class="role-box">
+        <span class="ri">&#x1F6E1;&#xFE0F;</span>
+        <span class="rn">Guard</span><br>Shoo animals
       </div>
     </div>
   </div>

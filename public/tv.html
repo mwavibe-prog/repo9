@@ -20,29 +20,23 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 24px;
-    background: rgba(0,0,0,0.3);
-    border-bottom: 2px solid rgba(255,255,255,0.1);
+    padding: 8px 20px;
+    background: rgba(0,0,0,0.35);
+    border-bottom: 3px solid rgba(255,255,255,0.08);
   }
-  .topbar-left { display: flex; align-items: center; gap: 14px; }
+  .topbar-left { display: flex; align-items: center; gap: 12px; }
   .topbar-left img {
-    height: 44px;
-    border-radius: 6px;
-    background: #fff;
-    padding: 3px;
+    height: 46px; border-radius: 8px; background: #fff; padding: 3px;
   }
   .topbar-left .logo-fallback {
-    height: 44px; border-radius: 6px; background: #fff; padding: 4px 10px;
-    display: none; align-items: center; color: #1a237e; font-weight: 800; font-size: 11px; text-align: center; line-height: 1.1;
+    height: 46px; border-radius: 8px; background: #fff; padding: 4px 12px;
+    display: none; align-items: center; color: #1a237e; font-weight: 800; font-size: 12px;
+    text-align: center; line-height: 1.1;
   }
-  .topbar-title {
-    font-size: 1.6rem; font-weight: 900; letter-spacing: -0.5px;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  }
-  .topbar-right { display: flex; align-items: center; gap: 20px; font-size: 1rem; }
+  .topbar-title { font-size: 1.8rem; font-weight: 900; }
 
   /* ====== SCREENS ====== */
-  .screen { display: none; width: 100%; height: calc(100vh - 66px); }
+  .screen { display: none; width: 100%; height: calc(100vh - 65px); }
   .screen.active { display: flex; }
 
   /* ====== LOBBY ====== */
@@ -50,282 +44,206 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 24px;
-    padding: 20px;
+    gap: 20px;
+    padding: 16px;
   }
-  .lobby-title { font-size: 2.2rem; font-weight: 900; text-align: center; }
-  .lobby-sub { font-size: 1.1rem; opacity: 0.8; text-align: center; }
+  .lobby-title { font-size: 2.8rem; font-weight: 900; text-align: center; }
+  .lobby-sub { font-size: 1.4rem; opacity: 0.8; text-align: center; }
 
   .code-area {
     background: rgba(0,0,0,0.35);
-    border: 2px solid rgba(255,255,255,0.15);
-    border-radius: 20px;
-    padding: 28px 40px;
+    border: 3px solid rgba(255,255,255,0.12);
+    border-radius: 24px;
+    padding: 24px 40px;
     text-align: center;
   }
-  .code-label { font-size: 1rem; opacity: 0.7; margin-bottom: 8px; }
+  .code-label { font-size: 1.3rem; opacity: 0.6; margin-bottom: 6px; }
   .code-display {
-    font-size: 4rem; font-weight: 900; letter-spacing: 12px;
-    color: #A5D6A7; text-shadow: 0 0 20px rgba(165,214,167,0.4);
+    font-size: 5rem; font-weight: 900; letter-spacing: 16px;
+    color: #A5D6A7; text-shadow: 0 0 24px rgba(165,214,167,0.4);
   }
-  .code-url { font-size: 0.85rem; opacity: 0.6; margin-top: 8px; word-break: break-all; }
-  .qr-area { margin-top: 12px; }
-  .qr-area img { border-radius: 10px; background: #fff; padding: 8px; }
+  .code-url { font-size: 0.9rem; opacity: 0.5; margin-top: 6px; word-break: break-all; }
+  .qr-area { margin-top: 10px; }
+  .qr-area img { border-radius: 12px; background: #fff; padding: 8px; }
 
   .players-area {
     background: rgba(0,0,0,0.2);
-    border-radius: 16px;
-    padding: 20px 28px;
-    min-width: 340px;
-    max-height: 260px;
+    border-radius: 18px;
+    padding: 18px 24px;
+    min-width: 320px;
+    max-height: 240px;
     overflow-y: auto;
   }
-  .players-area h3 { font-size: 1.1rem; margin-bottom: 12px; text-align: center; opacity: 0.8; }
+  .players-area h3 { font-size: 1.3rem; margin-bottom: 10px; text-align: center; opacity: 0.8; }
   .player-list { list-style: none; }
   .player-list li {
     display: flex; align-items: center; gap: 10px;
-    padding: 8px 12px; border-radius: 8px;
+    padding: 8px 14px; border-radius: 10px;
     background: rgba(255,255,255,0.06); margin-bottom: 6px;
-    font-size: 1rem;
+    font-size: 1.2rem;
   }
-  .player-list .role-dot {
-    width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
-  }
-  .player-list .role-label { font-size: 0.8rem; opacity: 0.7; margin-left: auto; }
+  .player-list .role-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
+  .player-list .role-label { font-size: 0.9rem; opacity: 0.6; margin-left: auto; }
 
   .btn-start {
     background: linear-gradient(135deg, #43A047, #2E7D32);
-    color: #fff; border: none; border-radius: 14px;
-    padding: 18px 52px; font-size: 1.4rem; font-weight: 800;
+    color: #fff; border: none; border-radius: 16px;
+    padding: 20px 60px; font-size: 1.8rem; font-weight: 800;
     cursor: pointer; transition: all 0.2s;
     box-shadow: 0 6px 24px rgba(0,0,0,0.3);
-    letter-spacing: 0.5px;
   }
   .btn-start:hover { transform: translateY(-3px); box-shadow: 0 10px 32px rgba(0,0,0,0.4); }
   .btn-start:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
-  .waiting-msg { opacity: 0.6; font-size: 1rem; text-align: center; }
+  .waiting-msg { opacity: 0.5; font-size: 1.2rem; text-align: center; }
 
   /* ====== GAME SCREEN ====== */
-  .game {
-    flex-direction: row;
-    padding: 16px 20px;
-    gap: 20px;
-  }
+  .game { flex-direction: row; padding: 14px 18px; gap: 16px; }
 
-  /* Side panel */
   .side-panel {
-    width: 260px;
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
+    width: 240px; flex-shrink: 0;
+    display: flex; flex-direction: column; gap: 10px;
   }
   .info-card {
     background: rgba(0,0,0,0.3);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 14px;
-    padding: 16px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 14px 16px;
   }
-  .info-card h4 { font-size: 0.85rem; opacity: 0.6; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+  .info-card .label { font-size: 0.9rem; opacity: 0.5; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
 
-  .score-val { font-size: 2.2rem; font-weight: 900; color: #FFD54F; }
-  .round-val { font-size: 1.6rem; font-weight: 700; }
+  .score-val { font-size: 2.8rem; font-weight: 900; color: #FFD54F; }
+  .round-val { font-size: 2rem; font-weight: 700; }
 
   .health-bar-bg {
-    width: 100%; height: 22px; background: rgba(255,255,255,0.15);
-    border-radius: 11px; overflow: hidden; position: relative;
+    width: 100%; height: 26px; background: rgba(255,255,255,0.12);
+    border-radius: 13px; overflow: hidden;
   }
   .health-bar-fill {
-    height: 100%; border-radius: 11px;
+    height: 100%; border-radius: 13px;
     transition: width 0.6s ease, background-color 0.6s ease;
   }
-  .health-label { font-size: 0.85rem; margin-top: 6px; text-align: center; }
+  .health-label { font-size: 1.1rem; margin-top: 4px; text-align: center; font-weight: 700; }
 
   .timer-display {
-    font-size: 2.8rem; font-weight: 900; text-align: center;
+    font-size: 3.5rem; font-weight: 900; text-align: center;
     font-variant-numeric: tabular-nums;
   }
   .timer-display.warning { color: #FF8A65; animation: pulse-text 0.8s ease-in-out infinite; }
-  @keyframes pulse-text {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-  }
+  @keyframes pulse-text { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
   .activity-log {
-    flex: 1; overflow-y: auto; font-size: 0.8rem;
-    max-height: 200px; line-height: 1.6;
+    flex: 1; overflow-y: auto; font-size: 0.95rem;
+    max-height: 180px; line-height: 1.8;
   }
-  .activity-log .log-entry { padding: 3px 0; opacity: 0.8; }
+  .activity-log .log-entry { padding: 2px 0; opacity: 0.8; }
   .activity-log .log-entry.good { color: #A5D6A7; }
   .activity-log .log-entry.bad { color: #EF9A9A; }
 
   /* Garden area */
   .garden-area {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    flex: 1; display: flex; align-items: center; justify-content: center;
   }
   .garden-frame {
     background: linear-gradient(145deg, #33691E, #2E7D32);
-    border-radius: 24px;
-    padding: 20px;
-    border: 5px solid #5D4037;
+    border-radius: 28px; padding: 18px;
+    border: 6px solid #5D4037;
     box-shadow: 0 12px 48px rgba(0,0,0,0.4), inset 0 2px 8px rgba(255,255,255,0.1);
-    position: relative;
-  }
-  .garden-label {
-    text-align: center;
-    font-size: 0.85rem;
-    opacity: 0.5;
-    margin-bottom: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
   }
   .garden-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 10px;
   }
-  .row-labels {
-    position: absolute;
-    left: -30px;
-    top: 55px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
   .col-labels {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    text-align: center;
-    margin-bottom: 6px;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 10px; text-align: center; margin-bottom: 4px; margin-left: 30px;
   }
-  .grid-label { font-size: 0.75rem; opacity: 0.4; font-weight: 600; }
+  .grid-label { font-size: 1rem; opacity: 0.35; font-weight: 700; }
+  .row-label {
+    font-size: 1rem; opacity: 0.35; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    width: 24px;
+  }
 
   .plot {
-    width: clamp(90px, 12vw, 130px);
-    height: clamp(90px, 12vw, 130px);
+    width: clamp(100px, 13vw, 140px);
+    height: clamp(100px, 13vw, 140px);
     background: linear-gradient(180deg, #795548 0%, #5D4037 100%);
-    border-radius: 14px;
-    border: 3px solid #4E342E;
+    border-radius: 16px;
+    border: 4px solid #4E342E;
     position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    overflow: hidden;
-  }
-  .plot::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at 50% 120%, rgba(139,69,19,0.5) 0%, transparent 70%);
-    pointer-events: none;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    transition: all 0.3s ease; overflow: hidden;
   }
   .plot.has-plant { background: linear-gradient(180deg, #6D4C41 0%, #4E342E 60%, #33691E 100%); }
   .plot.empty-soil { background: linear-gradient(180deg, #8D6E63 0%, #6D4C41 100%); }
 
   .plant-emoji {
-    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-size: clamp(2.5rem, 5vw, 3.8rem);
     z-index: 2;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
     animation: gentle-sway 4s ease-in-out infinite;
   }
-  @keyframes gentle-sway {
-    0%, 100% { transform: rotate(-2deg); }
-    50% { transform: rotate(2deg); }
-  }
-  .plant-emoji.wilting { filter: saturate(0.4) drop-shadow(0 2px 4px rgba(0,0,0,0.3)); animation: none; }
+  @keyframes gentle-sway { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+  .plant-emoji.wilting { filter: saturate(0.3) drop-shadow(0 2px 4px rgba(0,0,0,0.3)); animation: none; }
 
   .animal-badge {
-    position: absolute;
-    top: -4px; right: -4px;
-    font-size: 1.6rem;
-    z-index: 3;
+    position: absolute; top: -2px; right: -2px;
+    font-size: 2rem; z-index: 3;
     animation: animal-bounce 0.6s ease-in-out infinite alternate;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
   }
-  @keyframes animal-bounce {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(-6px); }
-  }
+  @keyframes animal-bounce { 0% { transform: translateY(0); } 100% { transform: translateY(-8px); } }
 
   .moisture-bar {
-    position: absolute;
-    bottom: 5px; left: 6px; right: 6px;
-    height: 5px;
-    background: rgba(0,0,0,0.25);
-    border-radius: 3px;
-    z-index: 2;
+    position: absolute; bottom: 5px; left: 6px; right: 6px;
+    height: 6px; background: rgba(0,0,0,0.25); border-radius: 3px; z-index: 2;
   }
-  .moisture-fill {
-    height: 100%; border-radius: 3px;
-    background: #42A5F5;
-    transition: width 0.5s ease;
-  }
-  .moisture-fill.low { background: #EF5350; }
+  .moisture-fill { height: 100%; border-radius: 3px; background: #42A5F5; transition: width 0.5s ease; }
+  .moisture-fill.low { background: #EF5350; animation: bar-blink 1s ease-in-out infinite; }
+  @keyframes bar-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
   .sun-indicator {
-    position: absolute;
-    top: 4px; right: 6px;
-    font-size: 0.9rem;
-    z-index: 2;
-    opacity: 0.8;
+    position: absolute; top: 4px; right: 6px;
+    font-size: 1.2rem; z-index: 2;
+    animation: sun-pulse 1.2s ease-in-out infinite;
   }
+  @keyframes sun-pulse { 0%, 100% { opacity: 0.7; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
 
   .shade-overlay {
-    position: absolute; inset: 0;
-    background: rgba(0,0,0,0.2);
-    border-radius: 12px;
-    z-index: 1;
-    pointer-events: none;
+    position: absolute; inset: 0; background: rgba(0,0,0,0.2);
+    border-radius: 12px; z-index: 1; pointer-events: none;
   }
 
   .plot-label {
-    position: absolute;
-    top: 3px; left: 6px;
-    font-size: 0.65rem;
-    opacity: 0.35;
-    font-weight: 600;
-    z-index: 2;
+    position: absolute; top: 3px; left: 6px;
+    font-size: 0.85rem; opacity: 0.4; font-weight: 700; z-index: 2;
   }
 
-  /* Problem indicator */
   .plot.needs-attention {
     border-color: #FF7043;
-    box-shadow: 0 0 16px rgba(255,112,67,0.5);
-    animation: plot-pulse 1.5s ease-in-out infinite;
+    box-shadow: 0 0 20px rgba(255,112,67,0.5);
+    animation: plot-pulse 1.2s ease-in-out infinite;
   }
   @keyframes plot-pulse {
-    0%, 100% { box-shadow: 0 0 8px rgba(255,112,67,0.3); }
-    50% { box-shadow: 0 0 20px rgba(255,112,67,0.6); }
+    0%, 100% { box-shadow: 0 0 10px rgba(255,112,67,0.3); }
+    50% { box-shadow: 0 0 28px rgba(255,112,67,0.7); }
   }
 
-  .plot.solved-flash {
-    animation: solved-anim 0.8s ease;
-  }
+  .plot.solved-flash { animation: solved-anim 0.8s ease; }
   @keyframes solved-anim {
     0% { transform: scale(1); filter: brightness(1); }
-    30% { transform: scale(1.08); filter: brightness(1.5); }
+    30% { transform: scale(1.1); filter: brightness(1.6); }
     100% { transform: scale(1); filter: brightness(1); }
   }
 
-  /* Sparkle effect */
-  .sparkle {
-    position: absolute;
-    width: 100%; height: 100%;
-    pointer-events: none;
-    z-index: 10;
-  }
+  /* Sparkle */
+  .sparkle { position: absolute; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
   .sparkle-dot {
-    position: absolute;
-    width: 6px; height: 6px;
-    background: #FFD54F;
-    border-radius: 50%;
+    position: absolute; width: 8px; height: 8px;
+    background: #FFD54F; border-radius: 50%;
     animation: sparkle-fly 0.8s ease-out forwards;
   }
   @keyframes sparkle-fly {
@@ -333,81 +251,42 @@
     100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); }
   }
 
-  /* Action toast on TV */
-  .action-toast {
-    position: absolute;
-    bottom: 12px; left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0,0,0,0.7);
-    padding: 5px 12px;
-    border-radius: 8px;
-    font-size: 0.7rem;
-    white-space: nowrap;
-    z-index: 5;
-    animation: toast-fade 2s ease forwards;
-  }
-  @keyframes toast-fade {
-    0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
-    15% { opacity: 1; transform: translateX(-50%) translateY(0); }
-    70% { opacity: 1; }
-    100% { opacity: 0; }
-  }
-
-  /* Players sidebar in game */
-  .players-mini { font-size: 0.8rem; line-height: 1.7; }
+  /* Players sidebar */
+  .players-mini { font-size: 0.95rem; line-height: 2; }
   .players-mini .pm-item { display: flex; align-items: center; gap: 6px; }
-  .players-mini .pm-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .players-mini .pm-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
   /* ====== OVERLAYS ====== */
   .overlay {
-    display: none;
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.75);
-    z-index: 100;
-    align-items: center;
-    justify-content: center;
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.8); z-index: 100;
+    align-items: center; justify-content: center;
   }
   .overlay.active { display: flex; }
 
   .overlay-card {
     background: linear-gradient(160deg, #2E4F1F, #1a3a0a);
-    border: 2px solid rgba(255,255,255,0.15);
-    border-radius: 24px;
-    padding: 40px 48px;
-    text-align: center;
-    max-width: 520px;
-    width: 90%;
+    border: 3px solid rgba(255,255,255,0.12);
+    border-radius: 28px; padding: 44px 52px;
+    text-align: center; max-width: 520px; width: 90%;
     box-shadow: 0 20px 60px rgba(0,0,0,0.5);
   }
-  .overlay-card h2 { font-size: 2rem; margin-bottom: 14px; }
-  .overlay-card .stats { font-size: 1.2rem; line-height: 2; margin-bottom: 20px; }
-  .overlay-card .stars { font-size: 2.5rem; margin-bottom: 10px; }
-  .overlay-card .rating-name { font-size: 1.4rem; font-weight: 700; color: #FFD54F; }
-  .overlay-card .big-emoji { font-size: 4rem; margin-bottom: 10px; }
+  .overlay-card h2 { font-size: 2.4rem; margin-bottom: 16px; }
+  .overlay-card .stats { font-size: 1.5rem; line-height: 2.2; margin-bottom: 20px; }
+  .overlay-card .stars { font-size: 3rem; margin-bottom: 10px; }
+  .overlay-card .rating-name { font-size: 1.8rem; font-weight: 700; color: #FFD54F; }
+  .overlay-card .big-emoji { font-size: 5rem; margin-bottom: 10px; }
+  .countdown-text { font-size: 1.1rem; opacity: 0.5; margin-top: 12px; }
 
-  .countdown-text {
-    font-size: 1rem; opacity: 0.6; margin-top: 12px;
-  }
-
-  /* ====== STARTING SCREEN ====== */
   .starting-overlay {
-    display: none;
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.8);
-    z-index: 100;
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85); z-index: 100;
     align-items: center; justify-content: center;
-    flex-direction: column;
-    gap: 20px;
+    flex-direction: column; gap: 20px;
   }
   .starting-overlay.active { display: flex; }
-  .starting-text {
-    font-size: 3rem; font-weight: 900;
-    animation: zoom-pulse 1s ease-in-out infinite;
-  }
-  @keyframes zoom-pulse {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.1); opacity: 0.8; }
-  }
+  .starting-text { font-size: 3.5rem; font-weight: 900; animation: zoom-pulse 1s ease-in-out infinite; }
+  @keyframes zoom-pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.7; } }
 </style>
 </head>
 <body>
@@ -421,31 +300,29 @@
       <div class="logo-fallback">WEESWARES</div>
       <span class="topbar-title">&#x1F33F; Garden Guardians</span>
     </div>
-    <div class="topbar-right" id="topbar-info"></div>
   </div>
 
-  <!-- LOBBY SCREEN -->
+  <!-- LOBBY -->
   <div class="screen lobby active" id="lobby-screen">
-    <div class="lobby-title">&#x1F33B; Welcome to Garden Guardians! &#x1F33B;</div>
-    <div class="lobby-sub">Players: scan the QR code or enter the room code on your phone to join.</div>
+    <div class="lobby-title">&#x1F33B; Garden Guardians &#x1F33B;</div>
+    <div class="lobby-sub">Scan the code or type it on your phone to join!</div>
 
-    <div style="display:flex; gap: 28px; flex-wrap: wrap; justify-content: center; align-items: flex-start;">
+    <div style="display:flex; gap: 24px; flex-wrap: wrap; justify-content: center; align-items: flex-start;">
       <div class="code-area">
         <div class="code-label">ROOM CODE</div>
         <div class="code-display" id="room-code">----</div>
         <div class="code-url" id="join-url"></div>
         <div class="qr-area" id="qr-area"></div>
       </div>
-
       <div class="players-area">
-        <h3>&#x1F465; Players Joined (<span id="player-count">0</span>/15)</h3>
+        <h3>&#x1F465; Players (<span id="player-count">0</span>/15)</h3>
         <ul class="player-list" id="player-list"></ul>
-        <div class="waiting-msg" id="waiting-msg">Waiting for players to join...</div>
+        <div class="waiting-msg" id="waiting-msg">Waiting for players...</div>
       </div>
     </div>
 
     <button class="btn-start" id="btn-start" disabled onclick="startGame()">
-      Start Game
+      &#x25B6;&#xFE0F; Start Game
     </button>
   </div>
 
@@ -453,37 +330,36 @@
   <div class="screen game" id="game-screen">
     <div class="side-panel">
       <div class="info-card">
-        <h4>Round</h4>
+        <div class="label">Round</div>
         <div class="round-val" id="round-display">1 / 5</div>
       </div>
       <div class="info-card">
-        <h4>Time Left</h4>
+        <div class="label">Time</div>
         <div class="timer-display" id="timer-display">3:00</div>
       </div>
       <div class="info-card">
-        <h4>Team Score</h4>
+        <div class="label">Score</div>
         <div class="score-val" id="score-display">0</div>
       </div>
       <div class="info-card">
-        <h4>Garden Health</h4>
+        <div class="label">Health</div>
         <div class="health-bar-bg">
           <div class="health-bar-fill" id="health-fill" style="width:100%; background:#66BB6A;"></div>
         </div>
         <div class="health-label" id="health-label">100%</div>
       </div>
       <div class="info-card" style="flex:1; overflow:hidden;">
-        <h4>Activity</h4>
+        <div class="label">Activity</div>
         <div class="activity-log" id="activity-log"></div>
       </div>
       <div class="info-card">
-        <h4>Players</h4>
+        <div class="label">Team</div>
         <div class="players-mini" id="players-mini"></div>
       </div>
     </div>
 
     <div class="garden-area">
       <div class="garden-frame">
-        <div class="garden-label">&#x1F33F; THE GARDEN &#x1F33F;</div>
         <div class="col-labels">
           <span class="grid-label">1</span>
           <span class="grid-label">2</span>
@@ -491,11 +367,11 @@
           <span class="grid-label">4</span>
         </div>
         <div style="display:flex;">
-          <div style="display:flex; flex-direction:column; gap:10px; margin-right:8px; justify-content:center;">
-            <span class="grid-label" style="height:clamp(90px,12vw,130px); display:flex; align-items:center;">A</span>
-            <span class="grid-label" style="height:clamp(90px,12vw,130px); display:flex; align-items:center;">B</span>
-            <span class="grid-label" style="height:clamp(90px,12vw,130px); display:flex; align-items:center;">C</span>
-            <span class="grid-label" style="height:clamp(90px,12vw,130px); display:flex; align-items:center;">D</span>
+          <div style="display:flex; flex-direction:column; gap:10px; margin-right:6px; justify-content:space-around;">
+            <span class="row-label">A</span>
+            <span class="row-label">B</span>
+            <span class="row-label">C</span>
+            <span class="row-label">D</span>
           </div>
           <div class="garden-grid" id="garden-grid"></div>
         </div>
@@ -507,9 +383,9 @@
   <div class="overlay" id="round-end-overlay">
     <div class="overlay-card">
       <div class="big-emoji" id="round-end-emoji">&#x1F33F;</div>
-      <h2 id="round-end-title">Round Complete!</h2>
+      <h2 id="round-end-title">Round Done!</h2>
       <div class="stats" id="round-end-stats"></div>
-      <div class="countdown-text" id="round-end-countdown">Next round starting...</div>
+      <div class="countdown-text" id="round-end-countdown">Next round soon...</div>
     </div>
   </div>
 
@@ -521,51 +397,72 @@
       <div class="stars" id="gameover-stars"></div>
       <div class="rating-name" id="gameover-rating"></div>
       <div class="stats" id="gameover-stats"></div>
-      <button class="btn-start" onclick="location.reload()" style="margin-top:16px; font-size:1.1rem; padding:14px 36px;">Play Again</button>
+      <button class="btn-start" onclick="location.reload()" style="margin-top:16px; font-size:1.4rem; padding:16px 40px;">Play Again</button>
     </div>
   </div>
 
-  <!-- STARTING OVERLAY -->
+  <!-- STARTING -->
   <div class="starting-overlay" id="starting-overlay">
-    <div class="starting-text" id="starting-text">&#x1F331; Game Starting... &#x1F331;</div>
+    <div class="starting-text" id="starting-text">&#x1F331; Get Ready! &#x1F331;</div>
   </div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
 (function() {
   const socket = io();
-
-  // State
-  let currentRound = 0;
-  let timerInterval = null;
-  let timeLeft = 0;
-  let problems = [];
-  let playersList = [];
-
-  // Elements
+  let currentRound = 0, timerInterval = null, timeLeft = 0, problems = [], playersList = [];
   const $ = id => document.getElementById(id);
 
-  // ====== LOBBY ======
+  // ====== SOUND ENGINE (Web Audio API - calm tones) ======
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  let audioCtx = null;
+  function ensureAudio() { if (!audioCtx) audioCtx = new AudioCtx(); return audioCtx; }
 
+  function playTone(freq, duration, type, vol) {
+    try {
+      const ctx = ensureAudio();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type || 'sine';
+      osc.frequency.value = freq;
+      gain.gain.value = vol || 0.15;
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(); osc.stop(ctx.currentTime + duration);
+    } catch(e) {}
+  }
+
+  function sfxJoin() { playTone(523, 0.3, 'sine', 0.12); setTimeout(() => playTone(659, 0.3, 'sine', 0.12), 150); }
+  function sfxRoundStart() { playTone(440, 0.2, 'sine', 0.15); setTimeout(() => playTone(554, 0.2, 'sine', 0.15), 120); setTimeout(() => playTone(659, 0.4, 'sine', 0.15), 240); }
+  function sfxCorrect() { playTone(660, 0.15, 'sine', 0.18); setTimeout(() => playTone(880, 0.25, 'sine', 0.16), 100); }
+  function sfxWrong() { playTone(220, 0.3, 'triangle', 0.12); }
+  function sfxRoundEnd() { playTone(440, 0.3, 'sine', 0.12); setTimeout(() => playTone(349, 0.4, 'sine', 0.12), 200); }
+  function sfxWin() { [523,659,784,1047].forEach((f,i) => setTimeout(() => playTone(f, 0.35, 'sine', 0.14), i*180)); }
+  function sfxLose() { [392,349,330,262].forEach((f,i) => setTimeout(() => playTone(f, 0.4, 'sine', 0.1), i*250)); }
+  function sfxTick() { playTone(800, 0.05, 'sine', 0.08); }
+
+  // Init audio on first click
+  document.addEventListener('click', () => ensureAudio(), { once: true });
+
+  // ====== LOBBY ======
   socket.emit('create-room');
 
   socket.on('room-created', ({ code, qrDataUrl, joinUrl }) => {
     $('room-code').textContent = code;
     $('join-url').textContent = joinUrl;
-    if (qrDataUrl) {
-      $('qr-area').innerHTML = '<img src="' + qrDataUrl + '" alt="QR Code" width="180" height="180">';
-    }
+    if (qrDataUrl) $('qr-area').innerHTML = '<img src="' + qrDataUrl + '" alt="QR Code" width="200" height="200">';
   });
 
   socket.on('player-joined', ({ players }) => {
     playersList = players;
+    sfxJoin();
     $('player-count').textContent = players.length;
     const list = $('player-list');
     list.innerHTML = '';
     players.forEach(p => {
       const li = document.createElement('li');
       li.innerHTML = '<span class="role-dot" style="background:' + p.roleColor + '"></span>' +
-        '<span>' + p.roleIcon + ' ' + escHtml(p.name) + '</span>' +
+        '<span>' + p.roleIcon + ' ' + esc(p.name) + '</span>' +
         '<span class="role-label">' + p.roleName + '</span>';
       list.appendChild(li);
     });
@@ -573,19 +470,13 @@
     $('btn-start').disabled = players.length < 1;
   });
 
-  window.startGame = () => {
-    $('btn-start').disabled = true;
-    socket.emit('start-game');
-  };
+  window.startGame = () => { $('btn-start').disabled = true; socket.emit('start-game'); };
 
-  socket.on('game-error', ({ message }) => {
-    alert(message);
-    $('btn-start').disabled = playersList.length < 1;
-  });
+  socket.on('game-error', ({ message }) => { alert(message); $('btn-start').disabled = playersList.length < 1; });
 
   // ====== GAME STARTING ======
-
   socket.on('game-starting', () => {
+    sfxRoundStart();
     $('starting-overlay').classList.add('active');
     setTimeout(() => {
       $('starting-overlay').classList.remove('active');
@@ -595,185 +486,132 @@
   });
 
   // ====== ROUND START ======
-
   socket.on('round-start', (data) => {
     currentRound = data.round;
     problems = data.problems || [];
     timeLeft = data.duration;
-
+    sfxRoundStart();
     $('round-end-overlay').classList.remove('active');
     $('round-display').textContent = data.round + ' / ' + data.totalRounds;
     $('score-display').textContent = data.score;
     updateHealth(data.health);
     renderGarden(data.garden, problems);
     startTimer(data.duration);
-    addLog('Round ' + data.round + ' started! Solve the garden problems!', '');
+    addLog('Round ' + data.round + ' started!', '');
   });
 
   // ====== GARDEN UPDATE ======
-
   socket.on('garden-update', (data) => {
     problems = data.problems || problems;
     $('score-display').textContent = data.score;
     updateHealth(data.health);
     renderGarden(data.garden, problems);
-
     if (data.action) {
       const a = data.action;
       const label = String.fromCharCode(65 + a.row) + (a.col + 1);
       if (a.success) {
-        addLog(a.playerName + ' solved ' + label + '!', 'good');
+        sfxCorrect();
+        addLog(a.playerName + ' fixed ' + label + '!', 'good');
         triggerSparkle(a.row, a.col);
       } else {
-        addLog(a.playerName + ' tried ' + label + ' (wrong)', 'bad');
+        sfxWrong();
+        addLog(a.playerName + ' tried ' + label, 'bad');
       }
     }
   });
 
   // ====== ROUND END ======
-
   socket.on('round-end', (data) => {
-    stopTimer();
+    stopTimer(); sfxRoundEnd();
     $('score-display').textContent = data.score;
     updateHealth(data.health);
     if (data.garden) renderGarden(data.garden, []);
-
-    const pct = Math.round(data.total > 0 ? (data.solved / data.total) * 100 : 0);
-    let emoji = pct >= 80 ? '\u{1F33B}' : pct >= 50 ? '\u{1F33F}' : '\u{1F940}';
-    $('round-end-emoji').textContent = emoji;
-    $('round-end-title').textContent = 'Round ' + data.round + ' Complete!';
+    const pct = data.total > 0 ? Math.round((data.solved / data.total) * 100) : 0;
+    $('round-end-emoji').textContent = pct >= 80 ? '\u{1F33B}' : pct >= 50 ? '\u{1F33F}' : '\u{1F940}';
+    $('round-end-title').textContent = 'Round ' + data.round + ' Done!';
     $('round-end-stats').innerHTML =
-      'Problems solved: <strong>' + data.solved + ' / ' + data.total + '</strong><br>' +
-      'Garden Health: <strong>' + data.health + '%</strong><br>' +
-      'Team Score: <strong>' + data.score + '</strong>';
-
-    if (data.round < data.totalRounds && data.health > 0) {
-      $('round-end-countdown').textContent = 'Next round starting soon...';
-    } else {
-      $('round-end-countdown').textContent = '';
-    }
-
+      'Solved: <strong>' + data.solved + ' / ' + data.total + '</strong><br>' +
+      'Health: <strong>' + data.health + '%</strong><br>' +
+      'Score: <strong>' + data.score + '</strong>';
+    $('round-end-countdown').textContent = data.round < data.totalRounds && data.health > 0 ? 'Next round soon...' : '';
     $('round-end-overlay').classList.add('active');
   });
 
   // ====== GAME OVER ======
-
   socket.on('game-over', (data) => {
     stopTimer();
     $('round-end-overlay').classList.remove('active');
-
+    data.win ? sfxWin() : sfxLose();
     $('gameover-emoji').textContent = data.rating.emoji;
-    $('gameover-title').textContent = data.win ? 'You Win!' : 'Game Over!';
+    $('gameover-title').textContent = data.win ? 'You Win!' : 'Game Over';
     $('gameover-stars').textContent = '\u{2B50}'.repeat(data.rating.stars);
     $('gameover-rating').textContent = data.rating.name;
     $('gameover-stats').innerHTML =
-      'Final Score: <strong>' + data.score + '</strong><br>' +
-      'Garden Health: <strong>' + data.health + '%</strong><br>' +
-      data.message;
-
+      'Score: <strong>' + data.score + '</strong><br>' +
+      'Health: <strong>' + data.health + '%</strong>';
     $('gameover-overlay').classList.add('active');
-
     if (data.garden) renderGarden(data.garden, []);
   });
 
-  // ====== RENDER FUNCTIONS ======
-
+  // ====== RENDER ======
   function renderGarden(garden, probs) {
-    const grid = $('garden-grid');
-    grid.innerHTML = '';
-
+    const grid = $('garden-grid'); grid.innerHTML = '';
     const probMap = {};
-    (probs || []).forEach(p => {
-      if (!p.solved) probMap[p.row + ',' + p.col] = p;
-    });
+    (probs || []).forEach(p => { if (!p.solved) probMap[p.row + ',' + p.col] = p; });
 
     for (let r = 0; r < 4; r++) {
       for (let c = 0; c < 4; c++) {
         const plot = garden[r][c];
         const div = document.createElement('div');
-        div.className = 'plot';
+        div.className = 'plot' + (plot.plant ? ' has-plant' : ' empty-soil');
         div.id = 'plot-' + r + '-' + c;
+        if (probMap[r+','+c]) div.classList.add('needs-attention');
 
-        const key = r + ',' + c;
-        const prob = probMap[key];
-
-        if (plot.plant) {
-          div.classList.add('has-plant');
-        } else {
-          div.classList.add('empty-soil');
-        }
-
-        if (prob) div.classList.add('needs-attention');
-
-        // Plot label
-        div.innerHTML = '<span class="plot-label">' + String.fromCharCode(65 + r) + (c + 1) + '</span>';
-
-        // Shade overlay
-        if (plot.shaded) div.innerHTML += '<div class="shade-overlay"></div>';
-
-        // Plant emoji
+        let html = '<span class="plot-label">' + String.fromCharCode(65+r) + (c+1) + '</span>';
+        if (plot.shaded) html += '<div class="shade-overlay"></div>';
         if (plot.displayEmoji) {
           const cls = plot.plant && plot.plant.stage === 'wilting' ? 'plant-emoji wilting' : 'plant-emoji';
-          div.innerHTML += '<span class="' + cls + '">' + plot.displayEmoji + '</span>';
+          html += '<span class="' + cls + '">' + plot.displayEmoji + '</span>';
         }
-
-        // Animal
         if (plot.animal) {
           const ae = plot.animal === 'rabbit' ? '\u{1F430}' : plot.animal === 'bird' ? '\u{1F426}' : '\u{1F40C}';
-          div.innerHTML += '<span class="animal-badge">' + ae + '</span>';
+          html += '<span class="animal-badge">' + ae + '</span>';
         }
-
-        // Moisture bar
         const mLow = plot.moisture < 30;
-        div.innerHTML += '<div class="moisture-bar"><div class="moisture-fill' + (mLow ? ' low' : '') + '" style="width:' + plot.moisture + '%"></div></div>';
-
-        // Sun indicator
-        if (plot.sunlight > 75) {
-          div.innerHTML += '<span class="sun-indicator">\u{1F525}</span>';
-        }
-
+        html += '<div class="moisture-bar"><div class="moisture-fill' + (mLow ? ' low' : '') + '" style="width:' + plot.moisture + '%"></div></div>';
+        if (plot.sunlight > 75) html += '<span class="sun-indicator">\u{1F525}</span>';
+        div.innerHTML = html;
         grid.appendChild(div);
       }
     }
   }
 
   function renderPlayersMini() {
-    const el = $('players-mini');
-    el.innerHTML = '';
+    const el = $('players-mini'); el.innerHTML = '';
     playersList.forEach(p => {
-      el.innerHTML += '<div class="pm-item"><span class="pm-dot" style="background:' + p.roleColor + '"></span>' +
-        p.roleIcon + ' ' + escHtml(p.name) + '</div>';
+      el.innerHTML += '<div class="pm-item"><span class="pm-dot" style="background:' + p.roleColor + '"></span>' + p.roleIcon + ' ' + esc(p.name) + '</div>';
     });
   }
 
   function updateHealth(h) {
-    const fill = $('health-fill');
-    fill.style.width = h + '%';
-    fill.style.background = h > 60 ? '#66BB6A' : h > 30 ? '#FFA726' : '#EF5350';
+    $('health-fill').style.width = h + '%';
+    $('health-fill').style.background = h > 60 ? '#66BB6A' : h > 30 ? '#FFA726' : '#EF5350';
     $('health-label').textContent = h + '%';
   }
 
-  function startTimer(duration) {
-    stopTimer();
-    timeLeft = duration;
-    updateTimerDisplay();
+  function startTimer(dur) {
+    stopTimer(); timeLeft = dur; updateTimerDisplay();
     timerInterval = setInterval(() => {
-      timeLeft--;
-      if (timeLeft < 0) timeLeft = 0;
+      timeLeft--; if (timeLeft < 0) timeLeft = 0;
       updateTimerDisplay();
+      if (timeLeft <= 10 && timeLeft > 0) sfxTick();
     }, 1000);
   }
-
-  function stopTimer() {
-    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-  }
-
+  function stopTimer() { if (timerInterval) { clearInterval(timerInterval); timerInterval = null; } }
   function updateTimerDisplay() {
-    const m = Math.floor(timeLeft / 60);
-    const s = timeLeft % 60;
-    const el = $('timer-display');
-    el.textContent = m + ':' + String(s).padStart(2, '0');
-    el.className = 'timer-display' + (timeLeft <= 30 ? ' warning' : '');
+    const m = Math.floor(timeLeft/60), s = timeLeft%60;
+    $('timer-display').textContent = m + ':' + String(s).padStart(2,'0');
+    $('timer-display').className = 'timer-display' + (timeLeft <= 30 ? ' warning' : '');
   }
 
   function addLog(text, type) {
@@ -781,46 +619,29 @@
     const div = document.createElement('div');
     div.className = 'log-entry' + (type ? ' ' + type : '');
     div.textContent = text;
-    log.appendChild(div);
-    log.scrollTop = log.scrollHeight;
+    log.appendChild(div); log.scrollTop = log.scrollHeight;
   }
 
   function triggerSparkle(r, c) {
-    const plotEl = document.getElementById('plot-' + r + '-' + c);
-    if (!plotEl) return;
-    plotEl.classList.add('solved-flash');
-    setTimeout(() => plotEl.classList.remove('solved-flash'), 800);
-
-    // Add sparkle dots
-    const sparkle = document.createElement('div');
-    sparkle.className = 'sparkle';
+    const el = document.getElementById('plot-' + r + '-' + c);
+    if (!el) return;
+    el.classList.add('solved-flash');
+    setTimeout(() => el.classList.remove('solved-flash'), 800);
+    const sp = document.createElement('div'); sp.className = 'sparkle';
     for (let i = 0; i < 8; i++) {
-      const dot = document.createElement('div');
-      dot.className = 'sparkle-dot';
-      const angle = (i / 8) * Math.PI * 2;
-      const dist = 30 + Math.random() * 20;
-      dot.style.left = '50%';
-      dot.style.top = '50%';
-      dot.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
-      dot.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
-      sparkle.appendChild(dot);
+      const dot = document.createElement('div'); dot.className = 'sparkle-dot';
+      const angle = (i/8)*Math.PI*2, dist = 35+Math.random()*25;
+      dot.style.left = '50%'; dot.style.top = '50%';
+      dot.style.setProperty('--tx', Math.cos(angle)*dist+'px');
+      dot.style.setProperty('--ty', Math.sin(angle)*dist+'px');
+      sp.appendChild(dot);
     }
-    plotEl.appendChild(sparkle);
-    setTimeout(() => sparkle.remove(), 1000);
+    el.appendChild(sp); setTimeout(() => sp.remove(), 1000);
   }
 
-  function showScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-  }
+  function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+  function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
-  function escHtml(s) {
-    const d = document.createElement('div');
-    d.textContent = s;
-    return d.innerHTML;
-  }
-
-  // Time sync
   socket.on('time-sync', ({ timeLeft: t }) => { timeLeft = t; });
   setInterval(() => socket.emit('get-time'), 15000);
 })();
