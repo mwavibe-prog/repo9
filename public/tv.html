@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Garden Guardians - TV</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(160deg, #1a3a0a 0%, #2E4F1F 40%, #3a6b24 100%);
+    color: #fafafa;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ====== TOP BAR ====== */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 24px;
+    background: rgba(0,0,0,0.3);
+    border-bottom: 2px solid rgba(255,255,255,0.1);
+  }
+  .topbar-left { display: flex; align-items: center; gap: 14px; }
+  .topbar-left img {
+    height: 44px;
+    border-radius: 6px;
+    background: #fff;
+    padding: 3px;
+  }
+  .topbar-left .logo-fallback {
+    height: 44px; border-radius: 6px; background: #fff; padding: 4px 10px;
+    display: none; align-items: center; color: #1a237e; font-weight: 800; font-size: 11px; text-align: center; line-height: 1.1;
+  }
+  .topbar-title {
+    font-size: 1.6rem; font-weight: 900; letter-spacing: -0.5px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .topbar-right { display: flex; align-items: center; gap: 20px; font-size: 1rem; }
+
+  /* ====== SCREENS ====== */
+  .screen { display: none; width: 100%; height: calc(100vh - 66px); }
+  .screen.active { display: flex; }
+
+  /* ====== LOBBY ====== */
+  .lobby {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    padding: 20px;
+  }
+  .lobby-title { font-size: 2.2rem; font-weight: 900; text-align: center; }
+  .lobby-sub { font-size: 1.1rem; opacity: 0.8; text-align: center; }
+
+  .code-area {
+    background: rgba(0,0,0,0.35);
+    border: 2px solid rgba(255,255,255,0.15);
+    border-radius: 20px;
+    padding: 28px 40px;
+    text-align: center;
+  }
+  .code-label { font-size: 1rem; opacity: 0.7; margin-bottom: 8px; }
+  .code-display {
+    font-size: 4rem; font-weight: 900; letter-spacing: 12px;
+    color: #A5D6A7; text-shadow: 0 0 20px rgba(165,214,167,0.4);
+  }
+  .code-url { font-size: 0.85rem; opacity: 0.6; margin-top: 8px; word-break: break-all; }
+  .qr-area { margin-top: 12px; }
+  .qr-area img { border-radius: 10px; background: #fff; padding: 8px; }
+
+  .players-area {
+    background: rgba(0,0,0,0.2);
+    border-radius: 16px;
+    padding: 20px 28px;
+    min-width: 340px;
+    max-height: 260px;
+    overflow-y: auto;
+  }
+  .players-area h3 { font-size: 1.1rem; margin-bottom: 12px; text-align: center; opacity: 0.8; }
+  .player-list { list-style: none; }
+  .player-list li {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px; border-radius: 8px;
+    background: rgba(255,255,255,0.06); margin-bottom: 6px;
+    font-size: 1rem;
+  }
+  .player-list .role-dot {
+    width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
+  }
+  .player-list .role-label { font-size: 0.8rem; opacity: 0.7; margin-left: auto; }
+
+  .btn-start {
+    background: linear-gradient(135deg, #43A047, #2E7D32);
+    color: #fff; border: none; border-radius: 14px;
+    padding: 18px 52px; font-size: 1.4rem; font-weight: 800;
+    cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.3);
+    letter-spacing: 0.5px;
+  }
+  .btn-start:hover { transform: translateY(-3px); box-shadow: 0 10px 32px rgba(0,0,0,0.4); }
+  .btn-start:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .waiting-msg { opacity: 0.6; font-size: 1rem; text-align: center; }
+
+  /* ====== GAME SCREEN ====== */
+  .game {
+    flex-direction: row;
+    padding: 16px 20px;
+    gap: 20px;
+  }
+
+  /* Side panel */
+  .side-panel {
+    width: 260px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .info-card {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .info-card h4 { font-size: 0.85rem; opacity: 0.6; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+
+  .score-val { font-size: 2.2rem; font-weight: 900; color: #FFD54F; }
+  .round-val { font-size: 1.6rem; font-weight: 700; }
+
+  .health-bar-bg {
+    width: 100%; height: 22px; background: rgba(255,255,255,0.15);
+    border-radius: 11px; overflow: hidden; position: relative;
+  }
+  .health-bar-fill {
+    height: 100%; border-radius: 11px;
+    transition: width 0.6s ease, background-color 0.6s ease;
+  }
+  .health-label { font-size: 0.85rem; margin-top: 6px; text-align: center; }
+
+  .timer-display {
+    font-size: 2.8rem; font-weight: 900; text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .timer-display.warning { color: #FF8A65; animation: pulse-text 0.8s ease-in-out infinite; }
+  @keyframes pulse-text {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .activity-log {
+    flex: 1; overflow-y: auto; font-size: 0.8rem;
+    max-height: 200px; line-height: 1.6;
+  }
+  .activity-log .log-entry { padding: 3px 0; opacity: 0.8; }
+  .activity-log .log-entry.good { color: #A5D6A7; }
+  .activity-log .log-entry.bad { color: #EF9A9A; }
+
+  /* Garden area */
+  .garden-area {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .garden-frame {
+    background: linear-gradient(145deg, #33691E, #2E7D32);
+    border-radius: 24px;
+    padding: 20px;
+    border: 5px solid #5D4037;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.4), inset 0 2px 8px rgba(255,255,255,0.1);
+    position: relative;
+  }
+  .garden-label {
+    text-align: center;
+    font-size: 0.85rem;
+    opacity: 0.5;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .garden-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  .row-labels {
+    position: absolute;
+    left: -30px;
+    top: 55px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .col-labels {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+  .grid-label { font-size: 0.75rem; opacity: 0.4; font-weight: 600; }
+
+  .plot {
+    width: clamp(90px, 12vw, 130px);
+    height: clamp(90px, 12vw, 130px);
+    background: linear-gradient(180deg, #795548 0%, #5D4037 100%);
+    border-radius: 14px;
+    border: 3px solid #4E342E;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    overflow: hidden;
+  }
+  .plot::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 120%, rgba(139,69,19,0.5) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .plot.has-plant { background: linear-gradient(180deg, #6D4C41 0%, #4E342E 60%, #33691E 100%); }
+  .plot.empty-soil { background: linear-gradient(180deg, #8D6E63 0%, #6D4C41 100%); }
+
+  .plant-emoji {
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    z-index: 2;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    animation: gentle-sway 4s ease-in-out infinite;
+  }
+  @keyframes gentle-sway {
+    0%, 100% { transform: rotate(-2deg); }
+    50% { transform: rotate(2deg); }
+  }
+  .plant-emoji.wilting { filter: saturate(0.4) drop-shadow(0 2px 4px rgba(0,0,0,0.3)); animation: none; }
+
+  .animal-badge {
+    position: absolute;
+    top: -4px; right: -4px;
+    font-size: 1.6rem;
+    z-index: 3;
+    animation: animal-bounce 0.6s ease-in-out infinite alternate;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+  }
+  @keyframes animal-bounce {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-6px); }
+  }
+
+  .moisture-bar {
+    position: absolute;
+    bottom: 5px; left: 6px; right: 6px;
+    height: 5px;
+    background: rgba(0,0,0,0.25);
+    border-radius: 3px;
+    z-index: 2;
+  }
+  .moisture-fill {
+    height: 100%; border-radius: 3px;
+    background: #42A5F5;
+    transition: width 0.5s ease;
+  }
+  .moisture-fill.low { background: #EF5350; }
+
+  .sun-indicator {
+    position: absolute;
+    top: 4px; right: 6px;
+    font-size: 0.9rem;
+    z-index: 2;
+    opacity: 0.8;
+  }
+
+  .shade-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.2);
+    border-radius: 12px;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .plot-label {
+    position: absolute;
+    top: 3px; left: 6px;
+    font-size: 0.65rem;
+    opacity: 0.35;
+    font-weight: 600;
+    z-index: 2;
+  }
+
+  /* Problem indicator */
+  .plot.needs-attention {
+    border-color: #FF7043;
+    box-shadow: 0 0 16px rgba(255,112,67,0.5);
+    animation: plot-pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes plot-pulse {
+    0%, 100% { box-shadow: 0 0 8px rgba(255,112,67,0.3); }
+    50% { box-shadow: 0 0 20px rgba(255,112,67,0.6); }
+  }
+
+  .plot.solved-flash {
+    animation: solved-anim 0.8s ease;
+  }
+  @keyframes solved-anim {
+    0% { transform: scale(1); filter: brightness(1); }
+    30% { transform: scale(1.08); filter: brightness(1.5); }
+    100% { transform: scale(1); filter: brightness(1); }
+  }
+
+  /* Sparkle effect */
+  .sparkle {
+    position: absolute;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 10;
+  }
+  .sparkle-dot {
+    position: absolute;
+    width: 6px; height: 6px;
+    background: #FFD54F;
+    border-radius: 50%;
+    animation: sparkle-fly 0.8s ease-out forwards;
+  }
+  @keyframes sparkle-fly {
+    0% { opacity: 1; transform: translate(0,0) scale(1); }
+    100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); }
+  }
+
+  /* Action toast on TV */
+  .action-toast {
+    position: absolute;
+    bottom: 12px; left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.7);
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    z-index: 5;
+    animation: toast-fade 2s ease forwards;
+  }
+  @keyframes toast-fade {
+    0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    70% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* Players sidebar in game */
+  .players-mini { font-size: 0.8rem; line-height: 1.7; }
+  .players-mini .pm-item { display: flex; align-items: center; gap: 6px; }
+  .players-mini .pm-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ====== OVERLAYS ====== */
+  .overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+  .overlay.active { display: flex; }
+
+  .overlay-card {
+    background: linear-gradient(160deg, #2E4F1F, #1a3a0a);
+    border: 2px solid rgba(255,255,255,0.15);
+    border-radius: 24px;
+    padding: 40px 48px;
+    text-align: center;
+    max-width: 520px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .overlay-card h2 { font-size: 2rem; margin-bottom: 14px; }
+  .overlay-card .stats { font-size: 1.2rem; line-height: 2; margin-bottom: 20px; }
+  .overlay-card .stars { font-size: 2.5rem; margin-bottom: 10px; }
+  .overlay-card .rating-name { font-size: 1.4rem; font-weight: 700; color: #FFD54F; }
+  .overlay-card .big-emoji { font-size: 4rem; margin-bottom: 10px; }
+
+  .countdown-text {
+    font-size: 1rem; opacity: 0.6; margin-top: 12px;
+  }
+
+  /* ====== STARTING SCREEN ====== */
+  .starting-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 100;
+    align-items: center; justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .starting-overlay.active { display: flex; }
+  .starting-text {
+    font-size: 3rem; font-weight: 900;
+    animation: zoom-pulse 1s ease-in-out infinite;
+  }
+  @keyframes zoom-pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <img src="images/crest-logo.png" alt="Crest" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <div class="logo-fallback">CREST<br>SECONDARY</div>
+      <img src="images/weeswares-logo.png" alt="WeesWares" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <div class="logo-fallback">WEESWARES</div>
+      <span class="topbar-title">&#x1F33F; Garden Guardians</span>
+    </div>
+    <div class="topbar-right" id="topbar-info"></div>
+  </div>
+
+  <!-- LOBBY SCREEN -->
+  <div class="screen lobby active" id="lobby-screen">
+    <div class="lobby-title">&#x1F33B; Welcome to Garden Guardians! &#x1F33B;</div>
+    <div class="lobby-sub">Players: scan the QR code or enter the room code on your phone to join.</div>
+
+    <div style="display:flex; gap: 28px; flex-wrap: wrap; justify-content: center; align-items: flex-start;">
+      <div class="code-area">
+        <div class="code-label">ROOM CODE</div>
+        <div class="code-display" id="room-code">----</div>
+        <div class="code-url" id="join-url"></div>
+        <div class="qr-area" id="qr-area"></div>
+      </div>
+
+      <div class="players-area">
+        <h3>&#x1F465; Players Joined (<span id="player-count">0</span>/15)</h3>
+        <ul class="player-list" id="player-list"></ul>
+        <div class="waiting-msg" id="waiting-msg">Waiting for players to join...</div>
+      </div>
+    </div>
+
+    <button class="btn-start" id="btn-start" disabled onclick="startGame()">
+      Start Game
+    </button>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div class="screen game" id="game-screen">
+    <div class="side-panel">
+      <div class="info-card">
+        <h4>Round</h4>
+        <div class="round-val" id="round-display">1 / 5</div>
+      </div>
+      <div class="info-card">
+        <h4>Time Left</h4>
+        <div class="timer-display" id="timer-display">3:00</div>
+      </div>
+      <div class="info-card">
+        <h4>Team Score</h4>
+        <div class="score-val" id="score-display">0</div>
+      </div>
+      <div class="info-card">
+        <h4>Garden Health</h4>
+        <div class="health-bar-bg">
+          <div class="health-bar-fill" id="health-fill" style="width:100%; background:#66BB6A;"></div>
+        </div>
+        <div class="health-label" id="health-label">100%</div>
+      </div>
+      <div class="info-card" style="flex:1; overflow:hidden;">
+        <h4>Activity</h4>
+        <div class="activity-log" id="activity-log"></div>
+      </div>
+      <div class="info-card">
+        <h4>Players</h4>
+        <div class="players-mini" id="players-mini"></div>
+      </div>
+    </div>
+
+    <div class="garden-area">
+      <div class="garden-frame">
+        <div class="garden-label">&#x1F33F; THE GARDEN &#x1F33F;</div>
+        <div class="col-labels">
+          <span class="grid-label">1</span>
+          <span class="grid-label">2</span>
+          <span class="grid-label">3</span>
+          <span class="grid-label">4</span>
+        </div>
+        <div style="display:flex;">
+          <div style="display:flex; flex-direction:column; gap:10px; margin-right:8px; justify-content:center;">
+            <span class="grid-label" style="height:clamp(90px,12vw,130px); display:flex; align-items:center;">A</span>
+            <span class="grid-label" style="height:clamp(90px,12vw,130px); display:flex; align-items:center;">B</span>
+            <span class="grid-label" style="height:clamp(90px,12vw,130px); display:flex; align-items:center;">C</span>
+            <span class="grid-label" style="height:clamp(90px,12vw,130px); display:flex; align-items:center;">D</span>
+          </div>
+          <div class="garden-grid" id="garden-grid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROUND END OVERLAY -->
+  <div class="overlay" id="round-end-overlay">
+    <div class="overlay-card">
+      <div class="big-emoji" id="round-end-emoji">&#x1F33F;</div>
+      <h2 id="round-end-title">Round Complete!</h2>
+      <div class="stats" id="round-end-stats"></div>
+      <div class="countdown-text" id="round-end-countdown">Next round starting...</div>
+    </div>
+  </div>
+
+  <!-- GAME OVER OVERLAY -->
+  <div class="overlay" id="gameover-overlay">
+    <div class="overlay-card">
+      <div class="big-emoji" id="gameover-emoji">&#x1F338;</div>
+      <h2 id="gameover-title">Game Over!</h2>
+      <div class="stars" id="gameover-stars"></div>
+      <div class="rating-name" id="gameover-rating"></div>
+      <div class="stats" id="gameover-stats"></div>
+      <button class="btn-start" onclick="location.reload()" style="margin-top:16px; font-size:1.1rem; padding:14px 36px;">Play Again</button>
+    </div>
+  </div>
+
+  <!-- STARTING OVERLAY -->
+  <div class="starting-overlay" id="starting-overlay">
+    <div class="starting-text" id="starting-text">&#x1F331; Game Starting... &#x1F331;</div>
+  </div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+(function() {
+  const socket = io();
+
+  // State
+  let currentRound = 0;
+  let timerInterval = null;
+  let timeLeft = 0;
+  let problems = [];
+  let playersList = [];
+
+  // Elements
+  const $ = id => document.getElementById(id);
+
+  // ====== LOBBY ======
+
+  socket.emit('create-room');
+
+  socket.on('room-created', ({ code, qrDataUrl, joinUrl }) => {
+    $('room-code').textContent = code;
+    $('join-url').textContent = joinUrl;
+    if (qrDataUrl) {
+      $('qr-area').innerHTML = '<img src="' + qrDataUrl + '" alt="QR Code" width="180" height="180">';
+    }
+  });
+
+  socket.on('player-joined', ({ players }) => {
+    playersList = players;
+    $('player-count').textContent = players.length;
+    const list = $('player-list');
+    list.innerHTML = '';
+    players.forEach(p => {
+      const li = document.createElement('li');
+      li.innerHTML = '<span class="role-dot" style="background:' + p.roleColor + '"></span>' +
+        '<span>' + p.roleIcon + ' ' + escHtml(p.name) + '</span>' +
+        '<span class="role-label">' + p.roleName + '</span>';
+      list.appendChild(li);
+    });
+    $('waiting-msg').style.display = players.length > 0 ? 'none' : 'block';
+    $('btn-start').disabled = players.length < 1;
+  });
+
+  window.startGame = () => {
+    $('btn-start').disabled = true;
+    socket.emit('start-game');
+  };
+
+  socket.on('game-error', ({ message }) => {
+    alert(message);
+    $('btn-start').disabled = playersList.length < 1;
+  });
+
+  // ====== GAME STARTING ======
+
+  socket.on('game-starting', () => {
+    $('starting-overlay').classList.add('active');
+    setTimeout(() => {
+      $('starting-overlay').classList.remove('active');
+      showScreen('game-screen');
+      renderPlayersMini();
+    }, 2800);
+  });
+
+  // ====== ROUND START ======
+
+  socket.on('round-start', (data) => {
+    currentRound = data.round;
+    problems = data.problems || [];
+    timeLeft = data.duration;
+
+    $('round-end-overlay').classList.remove('active');
+    $('round-display').textContent = data.round + ' / ' + data.totalRounds;
+    $('score-display').textContent = data.score;
+    updateHealth(data.health);
+    renderGarden(data.garden, problems);
+    startTimer(data.duration);
+    addLog('Round ' + data.round + ' started! Solve the garden problems!', '');
+  });
+
+  // ====== GARDEN UPDATE ======
+
+  socket.on('garden-update', (data) => {
+    problems = data.problems || problems;
+    $('score-display').textContent = data.score;
+    updateHealth(data.health);
+    renderGarden(data.garden, problems);
+
+    if (data.action) {
+      const a = data.action;
+      const label = String.fromCharCode(65 + a.row) + (a.col + 1);
+      if (a.success) {
+        addLog(a.playerName + ' solved ' + label + '!', 'good');
+        triggerSparkle(a.row, a.col);
+      } else {
+        addLog(a.playerName + ' tried ' + label + ' (wrong)', 'bad');
+      }
+    }
+  });
+
+  // ====== ROUND END ======
+
+  socket.on('round-end', (data) => {
+    stopTimer();
+    $('score-display').textContent = data.score;
+    updateHealth(data.health);
+    if (data.garden) renderGarden(data.garden, []);
+
+    const pct = Math.round(data.total > 0 ? (data.solved / data.total) * 100 : 0);
+    let emoji = pct >= 80 ? '\u{1F33B}' : pct >= 50 ? '\u{1F33F}' : '\u{1F940}';
+    $('round-end-emoji').textContent = emoji;
+    $('round-end-title').textContent = 'Round ' + data.round + ' Complete!';
+    $('round-end-stats').innerHTML =
+      'Problems solved: <strong>' + data.solved + ' / ' + data.total + '</strong><br>' +
+      'Garden Health: <strong>' + data.health + '%</strong><br>' +
+      'Team Score: <strong>' + data.score + '</strong>';
+
+    if (data.round < data.totalRounds && data.health > 0) {
+      $('round-end-countdown').textContent = 'Next round starting soon...';
+    } else {
+      $('round-end-countdown').textContent = '';
+    }
+
+    $('round-end-overlay').classList.add('active');
+  });
+
+  // ====== GAME OVER ======
+
+  socket.on('game-over', (data) => {
+    stopTimer();
+    $('round-end-overlay').classList.remove('active');
+
+    $('gameover-emoji').textContent = data.rating.emoji;
+    $('gameover-title').textContent = data.win ? 'You Win!' : 'Game Over!';
+    $('gameover-stars').textContent = '\u{2B50}'.repeat(data.rating.stars);
+    $('gameover-rating').textContent = data.rating.name;
+    $('gameover-stats').innerHTML =
+      'Final Score: <strong>' + data.score + '</strong><br>' +
+      'Garden Health: <strong>' + data.health + '%</strong><br>' +
+      data.message;
+
+    $('gameover-overlay').classList.add('active');
+
+    if (data.garden) renderGarden(data.garden, []);
+  });
+
+  // ====== RENDER FUNCTIONS ======
+
+  function renderGarden(garden, probs) {
+    const grid = $('garden-grid');
+    grid.innerHTML = '';
+
+    const probMap = {};
+    (probs || []).forEach(p => {
+      if (!p.solved) probMap[p.row + ',' + p.col] = p;
+    });
+
+    for (let r = 0; r < 4; r++) {
+      for (let c = 0; c < 4; c++) {
+        const plot = garden[r][c];
+        const div = document.createElement('div');
+        div.className = 'plot';
+        div.id = 'plot-' + r + '-' + c;
+
+        const key = r + ',' + c;
+        const prob = probMap[key];
+
+        if (plot.plant) {
+          div.classList.add('has-plant');
+        } else {
+          div.classList.add('empty-soil');
+        }
+
+        if (prob) div.classList.add('needs-attention');
+
+        // Plot label
+        div.innerHTML = '<span class="plot-label">' + String.fromCharCode(65 + r) + (c + 1) + '</span>';
+
+        // Shade overlay
+        if (plot.shaded) div.innerHTML += '<div class="shade-overlay"></div>';
+
+        // Plant emoji
+        if (plot.displayEmoji) {
+          const cls = plot.plant && plot.plant.stage === 'wilting' ? 'plant-emoji wilting' : 'plant-emoji';
+          div.innerHTML += '<span class="' + cls + '">' + plot.displayEmoji + '</span>';
+        }
+
+        // Animal
+        if (plot.animal) {
+          const ae = plot.animal === 'rabbit' ? '\u{1F430}' : plot.animal === 'bird' ? '\u{1F426}' : '\u{1F40C}';
+          div.innerHTML += '<span class="animal-badge">' + ae + '</span>';
+        }
+
+        // Moisture bar
+        const mLow = plot.moisture < 30;
+        div.innerHTML += '<div class="moisture-bar"><div class="moisture-fill' + (mLow ? ' low' : '') + '" style="width:' + plot.moisture + '%"></div></div>';
+
+        // Sun indicator
+        if (plot.sunlight > 75) {
+          div.innerHTML += '<span class="sun-indicator">\u{1F525}</span>';
+        }
+
+        grid.appendChild(div);
+      }
+    }
+  }
+
+  function renderPlayersMini() {
+    const el = $('players-mini');
+    el.innerHTML = '';
+    playersList.forEach(p => {
+      el.innerHTML += '<div class="pm-item"><span class="pm-dot" style="background:' + p.roleColor + '"></span>' +
+        p.roleIcon + ' ' + escHtml(p.name) + '</div>';
+    });
+  }
+
+  function updateHealth(h) {
+    const fill = $('health-fill');
+    fill.style.width = h + '%';
+    fill.style.background = h > 60 ? '#66BB6A' : h > 30 ? '#FFA726' : '#EF5350';
+    $('health-label').textContent = h + '%';
+  }
+
+  function startTimer(duration) {
+    stopTimer();
+    timeLeft = duration;
+    updateTimerDisplay();
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      if (timeLeft < 0) timeLeft = 0;
+      updateTimerDisplay();
+    }, 1000);
+  }
+
+  function stopTimer() {
+    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  }
+
+  function updateTimerDisplay() {
+    const m = Math.floor(timeLeft / 60);
+    const s = timeLeft % 60;
+    const el = $('timer-display');
+    el.textContent = m + ':' + String(s).padStart(2, '0');
+    el.className = 'timer-display' + (timeLeft <= 30 ? ' warning' : '');
+  }
+
+  function addLog(text, type) {
+    const log = $('activity-log');
+    const div = document.createElement('div');
+    div.className = 'log-entry' + (type ? ' ' + type : '');
+    div.textContent = text;
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function triggerSparkle(r, c) {
+    const plotEl = document.getElementById('plot-' + r + '-' + c);
+    if (!plotEl) return;
+    plotEl.classList.add('solved-flash');
+    setTimeout(() => plotEl.classList.remove('solved-flash'), 800);
+
+    // Add sparkle dots
+    const sparkle = document.createElement('div');
+    sparkle.className = 'sparkle';
+    for (let i = 0; i < 8; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'sparkle-dot';
+      const angle = (i / 8) * Math.PI * 2;
+      const dist = 30 + Math.random() * 20;
+      dot.style.left = '50%';
+      dot.style.top = '50%';
+      dot.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+      dot.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
+      sparkle.appendChild(dot);
+    }
+    plotEl.appendChild(sparkle);
+    setTimeout(() => sparkle.remove(), 1000);
+  }
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function escHtml(s) {
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  // Time sync
+  socket.on('time-sync', ({ timeLeft: t }) => { timeLeft = t; });
+  setInterval(() => socket.emit('get-time'), 15000);
+})();
+</script>
+</body>
+</html>

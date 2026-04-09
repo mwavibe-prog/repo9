@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Garden Guardians - Player</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --role-color: #4CAF50;
+    --role-color-light: rgba(76,175,80,0.15);
+  }
+
+  body {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: #1a1a2e;
+    color: #fafafa;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ====== JOIN SCREEN ====== */
+  .screen { display: none; min-height: 100vh; min-height: 100dvh; }
+  .screen.active { display: flex; }
+
+  .join-screen {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    gap: 20px;
+    background: linear-gradient(160deg, #1a3a0a 0%, #2E4F1F 50%, #3a6b24 100%);
+  }
+
+  .join-logos {
+    display: flex; align-items: center; gap: 16px; margin-bottom: 4px;
+  }
+  .join-logos img {
+    height: 48px; border-radius: 8px; background: #fff; padding: 4px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  }
+  .join-logos .logo-fallback {
+    height: 48px; border-radius: 8px; background: #fff; padding: 4px 10px;
+    display: none; align-items: center; color: #1a237e; font-weight: 800; font-size: 10px;
+    text-align: center; line-height: 1.1;
+  }
+
+  .join-title {
+    font-size: 1.8rem; font-weight: 900; text-align: center;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+
+  .join-form {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 18px;
+    padding: 28px 24px;
+    width: 100%;
+    max-width: 360px;
+  }
+  .join-form label {
+    display: block; font-size: 0.9rem; font-weight: 600;
+    margin-bottom: 6px; opacity: 0.8;
+  }
+  .join-form input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid rgba(255,255,255,0.15);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .join-form input:focus { border-color: rgba(255,255,255,0.4); }
+  .join-form input::placeholder { color: rgba(255,255,255,0.35); }
+  .join-form input.code-input {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 900;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+  }
+
+  .btn-join {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #43A047, #2E7D32);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  }
+  .btn-join:active { transform: scale(0.97); }
+  .btn-join:disabled { opacity: 0.5; }
+
+  .join-error {
+    color: #EF9A9A;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: 10px;
+    min-height: 20px;
+  }
+
+  .join-instructions {
+    background: rgba(0,0,0,0.2);
+    border-radius: 12px;
+    padding: 16px 20px;
+    max-width: 360px;
+    width: 100%;
+    font-size: 0.85rem;
+    line-height: 1.7;
+    opacity: 0.75;
+  }
+  .join-instructions strong { opacity: 1; }
+
+  /* ====== WAITING SCREEN ====== */
+  .waiting-screen {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    gap: 20px;
+    background: linear-gradient(160deg, #1a3a0a, #2E4F1F);
+  }
+  .role-card {
+    background: rgba(0,0,0,0.3);
+    border: 3px solid var(--role-color);
+    border-radius: 20px;
+    padding: 32px;
+    text-align: center;
+    width: 100%;
+    max-width: 320px;
+  }
+  .role-icon { font-size: 3.5rem; margin-bottom: 10px; }
+  .role-name { font-size: 1.6rem; font-weight: 800; color: var(--role-color); margin-bottom: 6px; }
+  .role-desc { font-size: 0.95rem; opacity: 0.8; line-height: 1.5; }
+  .waiting-text { font-size: 1rem; opacity: 0.6; animation: dots 1.5s steps(3) infinite; }
+  @keyframes dots {
+    0% { content: '.'; }
+    33% { content: '..'; }
+    66% { content: '...'; }
+  }
+  .player-name-display { font-size: 1.2rem; font-weight: 700; }
+
+  /* ====== GAME SCREEN ====== */
+  .game-screen {
+    flex-direction: column;
+    background: #121212;
+  }
+
+  .game-header {
+    background: var(--role-color);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .game-header-left {
+    display: flex; align-items: center; gap: 8px;
+    font-weight: 700; font-size: 1rem;
+  }
+  .game-header-right {
+    display: flex; align-items: center; gap: 14px;
+    font-size: 0.85rem;
+  }
+  .header-timer {
+    font-weight: 800; font-size: 1.1rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .header-timer.warning { animation: pulse-text 0.8s ease-in-out infinite; }
+  @keyframes pulse-text {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .game-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* Stats bar */
+  .stats-bar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .stat-pill {
+    background: rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    flex: 1;
+    text-align: center;
+    min-width: 80px;
+  }
+  .stat-pill .stat-val { font-weight: 800; font-size: 1.1rem; }
+
+  /* Clues section */
+  .clues-section h3 {
+    font-size: 1rem; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .clue-card {
+    background: rgba(255,255,255,0.06);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    transition: all 0.3s;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .clue-card .clue-status {
+    font-size: 1.4rem;
+    flex-shrink: 0;
+    line-height: 1;
+    margin-top: 2px;
+  }
+  .clue-card.solved {
+    border-color: #66BB6A;
+    background: rgba(102,187,106,0.1);
+    opacity: 0.6;
+  }
+  .clue-card.solved .clue-status::after { content: '\u2705'; }
+  .clue-card:not(.solved) .clue-status::after { content: '\u{1F534}'; }
+
+  /* Phone garden grid */
+  .garden-section h3 {
+    font-size: 1rem; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .phone-garden {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .phone-plot {
+    aspect-ratio: 1;
+    background: rgba(255,255,255,0.06);
+    border: 2px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    min-height: 65px;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  .phone-plot:active:not(.disabled) {
+    transform: scale(0.93);
+  }
+  .phone-plot .plot-emoji {
+    font-size: 1.6rem;
+    pointer-events: none;
+  }
+  .phone-plot .plot-label {
+    font-size: 0.6rem;
+    opacity: 0.35;
+    position: absolute;
+    top: 3px; left: 5px;
+    pointer-events: none;
+  }
+  .phone-plot .plot-indicator {
+    position: absolute;
+    bottom: 3px;
+    font-size: 0.55rem;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  /* Highlighted plot (has a problem for this role) */
+  .phone-plot.target {
+    border-color: var(--role-color);
+    background: var(--role-color-light);
+    animation: target-glow 1.5s ease-in-out infinite;
+  }
+  @keyframes target-glow {
+    0%, 100% { box-shadow: 0 0 4px rgba(255,255,255,0.1); }
+    50% { box-shadow: 0 0 14px var(--role-color); }
+  }
+
+  .phone-plot.solved-plot {
+    border-color: #66BB6A;
+    background: rgba(102,187,106,0.12);
+    animation: none;
+  }
+  .phone-plot.solved-plot::after {
+    content: '\u2714';
+    position: absolute;
+    top: 4px; right: 5px;
+    font-size: 0.8rem;
+    color: #66BB6A;
+    pointer-events: none;
+  }
+
+  .phone-plot.disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  .phone-plot.wrong-flash {
+    animation: wrong-shake 0.4s ease;
+  }
+  @keyframes wrong-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+
+  .phone-plot.correct-flash {
+    animation: correct-pop 0.5s ease;
+  }
+  @keyframes correct-pop {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.15); background: rgba(102,187,106,0.3); }
+    100% { transform: scale(1); }
+  }
+
+  /* Action hint */
+  .action-hint {
+    background: var(--role-color);
+    border-radius: 12px;
+    padding: 14px 18px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+
+  /* Feedback toast */
+  .feedback-toast {
+    position: fixed;
+    top: 70px; left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    z-index: 200;
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    text-align: center;
+    max-width: 90%;
+  }
+  .feedback-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .feedback-toast.good { background: #2E7D32; color: #fff; }
+  .feedback-toast.bad { background: #C62828; color: #fff; }
+
+  /* ====== ROUND END SCREEN ====== */
+  .round-end-screen {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    gap: 16px;
+    background: linear-gradient(160deg, #1a3a0a, #2E4F1F);
+    text-align: center;
+  }
+  .re-emoji { font-size: 3.5rem; }
+  .re-title { font-size: 1.6rem; font-weight: 900; }
+  .re-stats { font-size: 1.1rem; line-height: 2; }
+  .re-message { font-size: 0.95rem; opacity: 0.7; }
+
+  /* ====== GAME OVER SCREEN ====== */
+  .gameover-screen {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    gap: 14px;
+    background: linear-gradient(160deg, #1a3a0a, #2E4F1F);
+    text-align: center;
+  }
+  .go-emoji { font-size: 4rem; }
+  .go-title { font-size: 2rem; font-weight: 900; }
+  .go-stars { font-size: 2rem; }
+  .go-rating { font-size: 1.3rem; font-weight: 700; color: #FFD54F; }
+  .go-stats { font-size: 1.1rem; line-height: 2; }
+  .go-message { font-size: 1rem; margin-top: 6px; }
+
+  .btn-again {
+    margin-top: 16px;
+    padding: 14px 36px;
+    background: linear-gradient(135deg, #43A047, #2E7D32);
+    color: #fff; border: none; border-radius: 14px;
+    font-size: 1.1rem; font-weight: 700;
+    cursor: pointer;
+  }
+  .btn-again:active { transform: scale(0.97); }
+</style>
+</head>
+<body>
+
+  <!-- JOIN SCREEN -->
+  <div class="screen join-screen active" id="join-screen">
+    <div class="join-logos">
+      <img src="images/crest-logo.png" alt="Crest" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <div class="logo-fallback">CREST<br>SECONDARY</div>
+      <img src="images/weeswares-logo.png" alt="WeesWares" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <div class="logo-fallback">WEESWARES</div>
+    </div>
+
+    <div class="join-title">&#x1F33F; Garden Guardians</div>
+
+    <div class="join-form">
+      <label for="name-input">Your Name</label>
+      <input type="text" id="name-input" placeholder="Enter your name" maxlength="20" autocomplete="off">
+
+      <label for="code-input">Room Code</label>
+      <input type="text" id="code-input" class="code-input" placeholder="- - - -" maxlength="4" autocomplete="off">
+
+      <button class="btn-join" id="btn-join" onclick="joinGame()">Join Garden</button>
+      <div class="join-error" id="join-error"></div>
+    </div>
+
+    <div class="join-instructions">
+      <strong>How to play:</strong><br>
+      1. Enter your name and the room code from the TV.<br>
+      2. You will get a special role in the garden.<br>
+      3. <strong>Don't show your phone</strong> to other players!<br>
+      4. <strong>Talk to your team</strong> to solve garden problems together.<br>
+      5. Tap the right plots to help the garden grow!
+    </div>
+  </div>
+
+  <!-- WAITING SCREEN -->
+  <div class="screen waiting-screen" id="waiting-screen">
+    <div class="player-name-display" id="player-name-display"></div>
+    <div class="role-card">
+      <div class="role-icon" id="role-icon"></div>
+      <div class="role-name" id="role-name"></div>
+      <div class="role-desc" id="role-desc"></div>
+    </div>
+    <div class="waiting-text">Waiting for host to start the game...</div>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div class="screen game-screen" id="game-screen">
+    <div class="game-header">
+      <div class="game-header-left">
+        <span id="gh-icon"></span>
+        <span id="gh-role"></span>
+      </div>
+      <div class="game-header-right">
+        <span>R<span id="gh-round">1</span>/5</span>
+        <span class="header-timer" id="gh-timer">3:00</span>
+      </div>
+    </div>
+
+    <div class="game-body">
+      <div class="stats-bar">
+        <div class="stat-pill">
+          <div>&#x1F3AF; Score</div>
+          <div class="stat-val" id="stat-score">0</div>
+        </div>
+        <div class="stat-pill">
+          <div>&#x1F33F; Health</div>
+          <div class="stat-val" id="stat-health">100%</div>
+        </div>
+        <div class="stat-pill">
+          <div>&#x2705; Solved</div>
+          <div class="stat-val" id="stat-solved">0/0</div>
+        </div>
+      </div>
+
+      <div class="action-hint" id="action-hint">
+        Tap a highlighted plot to help the garden!
+      </div>
+
+      <div class="clues-section">
+        <h3>&#x1F4DD; Your Clues</h3>
+        <div id="clues-list"></div>
+      </div>
+
+      <div class="garden-section">
+        <h3>&#x1F33B; Garden &mdash; Tap a plot to act!</h3>
+        <div class="phone-garden" id="phone-garden"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROUND END SCREEN -->
+  <div class="screen round-end-screen" id="round-end-screen">
+    <div class="re-emoji" id="re-emoji">&#x1F33F;</div>
+    <div class="re-title" id="re-title">Round Complete!</div>
+    <div class="re-stats" id="re-stats"></div>
+    <div class="re-message">Get ready for the next round...</div>
+  </div>
+
+  <!-- GAME OVER SCREEN -->
+  <div class="screen gameover-screen" id="gameover-screen">
+    <div class="go-emoji" id="go-emoji">&#x1F338;</div>
+    <div class="go-title" id="go-title">Game Over!</div>
+    <div class="go-stars" id="go-stars"></div>
+    <div class="go-rating" id="go-rating"></div>
+    <div class="go-stats" id="go-stats"></div>
+    <div class="go-message" id="go-message"></div>
+    <button class="btn-again" onclick="location.reload()">Play Again</button>
+  </div>
+
+  <!-- FEEDBACK TOAST -->
+  <div class="feedback-toast" id="feedback-toast"></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+(function() {
+  const socket = io();
+
+  // State
+  let myRole = '';
+  let myRoleName = '';
+  let clues = [];
+  let garden = null;
+  let timerInterval = null;
+  let timeLeft = 0;
+  let canAct = false;
+  let cooldown = false;
+
+  const $ = id => document.getElementById(id);
+
+  // Auto-fill room code from URL
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('room')) {
+    $('code-input').value = params.get('room');
+  }
+
+  // ====== JOIN ======
+
+  window.joinGame = () => {
+    const name = $('name-input').value.trim();
+    const code = $('code-input').value.trim().toUpperCase();
+
+    if (!name) { showJoinError('Please enter your name.'); return; }
+    if (code.length < 4) { showJoinError('Please enter the 4-character room code.'); return; }
+
+    $('btn-join').disabled = true;
+    $('join-error').textContent = '';
+    socket.emit('join-room', { code, name });
+  };
+
+  // Enter key on inputs
+  $('code-input').addEventListener('keydown', e => { if (e.key === 'Enter') joinGame(); });
+  $('name-input').addEventListener('keydown', e => { if (e.key === 'Enter') $('code-input').focus(); });
+
+  // Auto uppercase code
+  $('code-input').addEventListener('input', function() {
+    this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  });
+
+  socket.on('join-error', ({ message }) => {
+    showJoinError(message);
+    $('btn-join').disabled = false;
+  });
+
+  function showJoinError(msg) { $('join-error').textContent = msg; }
+
+  // ====== JOINED ======
+
+  socket.on('joined', (data) => {
+    myRole = data.role;
+    myRoleName = data.roleName;
+
+    document.documentElement.style.setProperty('--role-color', data.roleColor);
+    document.documentElement.style.setProperty('--role-color-light', data.roleColor + '22');
+
+    $('player-name-display').textContent = 'Welcome, ' + data.playerName + '!';
+    $('role-icon').textContent = data.roleIcon;
+    $('role-name').textContent = data.roleName;
+    $('role-desc').textContent = data.roleDesc;
+
+    showScreen('waiting-screen');
+  });
+
+  // ====== GAME STARTING ======
+
+  socket.on('game-starting', () => {
+    // Stay on waiting screen, update text
+    const wt = document.querySelector('.waiting-text');
+    if (wt) wt.textContent = 'Game starting! Get ready...';
+  });
+
+  // ====== ROUND START ======
+
+  socket.on('round-start', (data) => {
+    clues = data.clues || [];
+    garden = data.garden;
+    timeLeft = data.duration;
+    canAct = true;
+
+    $('gh-icon').textContent = getRoleIcon(myRole);
+    $('gh-role').textContent = myRoleName;
+    $('gh-round').textContent = data.round;
+    $('stat-score').textContent = data.score;
+    $('stat-health').textContent = data.health + '%';
+    updateSolvedCount();
+
+    setActionHint();
+    renderClues();
+    renderPhoneGarden();
+    startTimer(data.duration);
+
+    showScreen('game-screen');
+  });
+
+  // ====== CLUES UPDATE ======
+
+  socket.on('clues-update', (data) => {
+    clues = data.clues || clues;
+    $('stat-score').textContent = data.score;
+    $('stat-health').textContent = data.health + '%';
+    updateSolvedCount();
+    renderClues();
+    renderPhoneGarden();
+  });
+
+  // ====== ACTION FEEDBACK ======
+
+  socket.on('action-feedback', (data) => {
+    if (data.success) {
+      showToast(data.msg, 'good');
+    } else {
+      showToast(data.msg, 'bad');
+    }
+  });
+
+  // ====== ROUND END ======
+
+  socket.on('round-end', (data) => {
+    canAct = false;
+    stopTimer();
+
+    const pct = data.total > 0 ? Math.round((data.solved / data.total) * 100) : 0;
+    let emoji = pct >= 80 ? '\u{1F33B}' : pct >= 50 ? '\u{1F33F}' : '\u{1F940}';
+
+    $('re-emoji').textContent = emoji;
+    $('re-title').textContent = 'Round ' + data.round + ' Complete!';
+    $('re-stats').innerHTML =
+      'Problems solved: <strong>' + data.solved + ' / ' + data.total + '</strong><br>' +
+      'Garden Health: <strong>' + data.health + '%</strong><br>' +
+      'Team Score: <strong>' + data.score + '</strong>';
+
+    showScreen('round-end-screen');
+  });
+
+  // ====== GAME OVER ======
+
+  socket.on('game-over', (data) => {
+    canAct = false;
+    stopTimer();
+
+    $('go-emoji').textContent = data.rating.emoji;
+    $('go-title').textContent = data.win ? 'You Win!' : 'Game Over!';
+    $('go-stars').textContent = '\u{2B50}'.repeat(data.rating.stars);
+    $('go-rating').textContent = data.rating.name;
+    $('go-stats').innerHTML =
+      'Final Score: <strong>' + data.score + '</strong><br>' +
+      'Garden Health: <strong>' + data.health + '%</strong>';
+    $('go-message').textContent = data.message;
+
+    showScreen('gameover-screen');
+  });
+
+  // ====== ERROR ======
+
+  socket.on('game-error', ({ message }) => {
+    alert(message);
+  });
+
+  // ====== RENDER FUNCTIONS ======
+
+  function renderClues() {
+    const list = $('clues-list');
+    list.innerHTML = '';
+
+    if (clues.length === 0) {
+      list.innerHTML = '<div style="opacity:0.5; padding:10px;">No clues for this round yet.</div>';
+      return;
+    }
+
+    clues.forEach(c => {
+      const div = document.createElement('div');
+      div.className = 'clue-card' + (c.solved ? ' solved' : '');
+      div.innerHTML = '<span class="clue-status"></span><span>' + escHtml(c.clue) + '</span>';
+      list.appendChild(div);
+    });
+  }
+
+  function renderPhoneGarden() {
+    if (!garden) return;
+    const grid = $('phone-garden');
+    grid.innerHTML = '';
+
+    // Build set of target plots (unsolved problems for my role)
+    const targets = new Set();
+    const solvedSet = new Set();
+    clues.forEach(c => {
+      const key = c.row + ',' + c.col;
+      if (c.solved) solvedSet.add(key);
+      else targets.add(key);
+    });
+
+    for (let r = 0; r < 4; r++) {
+      for (let c = 0; c < 4; c++) {
+        const plot = garden[r][c];
+        const div = document.createElement('div');
+        div.className = 'phone-plot';
+        const key = r + ',' + c;
+
+        if (targets.has(key)) div.classList.add('target');
+        else if (solvedSet.has(key)) div.classList.add('solved-plot');
+
+        // Label
+        div.innerHTML = '<span class="plot-label">' + String.fromCharCode(65 + r) + (c + 1) + '</span>';
+
+        // Emoji
+        let emoji = '';
+        if (plot.plant) {
+          emoji = plot.displayEmoji || '';
+        }
+        if (plot.animal) {
+          const ae = plot.animal === 'rabbit' ? '\u{1F430}' : plot.animal === 'bird' ? '\u{1F426}' : '\u{1F40C}';
+          emoji = (emoji ? emoji : '') + ae;
+        }
+        div.innerHTML += '<span class="plot-emoji">' + emoji + '</span>';
+
+        // Role-specific indicator
+        if (myRole === 'water') {
+          const lvl = plot.moisture < 30 ? '\u{1F4A7}\u{2757}' : '\u{1F4A7}';
+          div.innerHTML += '<span class="plot-indicator">' + lvl + '</span>';
+        } else if (myRole === 'sun') {
+          const lvl = plot.sunlight > 75 ? '\u{2600}\u{FE0F}\u{2757}' : '\u{2600}\u{FE0F}';
+          div.innerHTML += '<span class="plot-indicator">' + lvl + '</span>';
+        } else if (myRole === 'seed') {
+          if (!plot.plant) div.innerHTML += '<span class="plot-indicator">\u{1F331}\u{2753}</span>';
+        } else if (myRole === 'animal') {
+          if (plot.animal) div.innerHTML += '<span class="plot-indicator">\u{26A0}\u{FE0F}</span>';
+        }
+
+        // Tap handler
+        div.addEventListener('click', () => handlePlotTap(r, c, div));
+
+        grid.appendChild(div);
+      }
+    }
+  }
+
+  function handlePlotTap(row, col, el) {
+    if (!canAct || cooldown) return;
+
+    // Brief cooldown to prevent double-tap
+    cooldown = true;
+    setTimeout(() => cooldown = false, 600);
+
+    socket.emit('player-action', { row, col });
+
+    // Optimistic visual feedback
+    const key = row + ',' + col;
+    const isTarget = clues.some(c => !c.solved && c.row === row && c.col === col);
+
+    if (isTarget) {
+      el.classList.add('correct-flash');
+      setTimeout(() => el.classList.remove('correct-flash'), 500);
+    } else {
+      el.classList.add('wrong-flash');
+      setTimeout(() => el.classList.remove('wrong-flash'), 400);
+    }
+  }
+
+  function setActionHint() {
+    const hints = {
+      water: '\u{1F4A7} Tap plots that need water! Look for dry soil clues.',
+      sun: '\u{2600}\u{FE0F} Tap scorched plots to add shade! Check sun clues.',
+      seed: '\u{1F331} Tap empty plots to plant new flowers! Find fertile soil.',
+      animal: '\u{1F6E1}\u{FE0F} Tap plots with animals to shoo them away!'
+    };
+    $('action-hint').textContent = hints[myRole] || 'Tap plots to help the garden!';
+  }
+
+  function updateSolvedCount() {
+    const solved = clues.filter(c => c.solved).length;
+    $('stat-solved').textContent = solved + '/' + clues.length;
+  }
+
+  function startTimer(duration) {
+    stopTimer();
+    timeLeft = duration;
+    updateTimerDisplay();
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      if (timeLeft < 0) timeLeft = 0;
+      updateTimerDisplay();
+    }, 1000);
+  }
+
+  function stopTimer() {
+    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  }
+
+  function updateTimerDisplay() {
+    const m = Math.floor(timeLeft / 60);
+    const s = timeLeft % 60;
+    const el = $('gh-timer');
+    el.textContent = m + ':' + String(s).padStart(2, '0');
+    el.className = 'header-timer' + (timeLeft <= 30 ? ' warning' : '');
+  }
+
+  function showToast(msg, type) {
+    const toast = $('feedback-toast');
+    toast.textContent = msg;
+    toast.className = 'feedback-toast ' + type + ' show';
+    setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function getRoleIcon(role) {
+    const icons = { water: '\u{1F4A7}', sun: '\u{2600}\u{FE0F}', seed: '\u{1F331}', animal: '\u{1F6E1}\u{FE0F}' };
+    return icons[role] || '';
+  }
+
+  function escHtml(s) {
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  // Time sync
+  socket.on('time-sync', ({ timeLeft: t }) => { timeLeft = t; });
+  setInterval(() => { if (canAct) socket.emit('get-time'); }, 15000);
+})();
+</script>
+</body>
+</html>
