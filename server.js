@@ -14,7 +14,7 @@ app.use(express.static('public'));
 const PORT = 3000;
 const GRID_SIZE = 4;
 const ROUND_DURATION = 60;
-const TOTAL_ROUNDS = 5;
+const TOTAL_ROUNDS = 3;
 const PROBLEMS_PER_ROUND = 40; // max tasks including distractors and coins
 
 const ROLES = ['water', 'sun', 'seed', 'animal'];
@@ -615,7 +615,7 @@ function endGame(game) {
     coins: game.coins || 0, win,
     garden: serializeGarden(game.garden),
     leaderboard: board,
-    message: win ? 'Great teamwork! The garden is beautiful!' : 'The garden needs more love. Try again!'
+    message: 'You are awesome!'
   });
 
   // Send each player their personal result
@@ -631,7 +631,7 @@ function endGame(game) {
       myCoins: player.coins,
       encouragement: getEncouragingMessage(player, rank, game.players.size),
       leaderboard: board,
-      message: win ? 'Great teamwork!' : 'Try again next time!'
+      message: 'You are awesome!'
     });
   }
 }

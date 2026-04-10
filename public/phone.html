@@ -355,7 +355,7 @@
       </div>
       <div class="task-header-right">
         <span class="coin-count" id="t-coins">&#x1FA99; 0</span>
-        <span>R<span id="t-round">1</span>/5</span>
+        <span>R<span id="t-round">1</span>/3</span>
         <span class="task-timer" id="t-timer">1:00</span>
       </div>
     </div>
@@ -719,7 +719,7 @@
 
     const myRank = data.myRank || '?';
     $('go-icon').textContent = '\u{1F389}';
-    $('go-head').textContent = data.win ? 'You Win!' : 'Game Over!';
+    $('go-head').textContent = 'You are awesome!';
     $('go-stars').textContent = '\u{2B50}'.repeat(data.rating.stars);
     $('go-rating').textContent = data.rating.name;
     $('go-encourage').textContent = data.encouragement || 'Well played!';

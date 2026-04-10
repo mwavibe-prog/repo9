@@ -464,7 +464,7 @@
   <!-- GAME OVER CELEBRATION -->
   <div class="celebrate" id="gameover-screen">
     <canvas class="fireworks-canvas" id="fw-go"></canvas>
-    <h1 id="go-title2">&#x1F389; Game Over! &#x1F389;</h1>
+    <h1 id="go-title2" style="font-size:4rem;">&#x1F389; You are awesome! &#x1F389;</h1>
     <div class="stars" id="gameover-stars" style="font-size:3rem; z-index:2;"></div>
     <div class="rating-name" id="gameover-rating" style="font-size:2rem; z-index:2;"></div>
     <div class="cel-board">
@@ -472,7 +472,7 @@
       <div id="gameover-lb"></div>
     </div>
     <div class="cel-stats" id="go-stats2"></div>
-    <button class="btn-start" onclick="location.reload()" style="margin-top:12px; font-size:1.4rem; padding:16px 40px; z-index:2;">Play Again</button>
+    <button class="btn-start" onclick="location.reload()" style="margin-top:12px; font-size:1.8rem; padding:20px 52px; z-index:2;">&#x1F504; Restart Game</button>
   </div>
 
   <!-- STARTING -->
@@ -661,7 +661,7 @@
     $('lb-overlay').classList.remove('active');
     sfxWin();
 
-    $('go-title2').textContent = data.win ? '\u{1F389} You Win! \u{1F389}' : '\u{1F389} Game Over! \u{1F389}';
+    $('go-title2').textContent = '\u{1F389} You are awesome! \u{1F389}';
     $('gameover-stars').textContent = '\u{2B50}'.repeat(data.rating.stars);
     $('gameover-rating').textContent = data.rating.name;
     $('go-stats2').innerHTML =
