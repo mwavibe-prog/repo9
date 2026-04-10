@@ -20,7 +20,7 @@ const PROBLEMS_PER_ROUND = 40; // max tasks including distractors and coins
 const ROLES = ['water', 'sun', 'seed', 'animal'];
 const ROLE_INFO = {
   water:  { name: 'Water Keeper',    icon: '\u{1F4A7}', color: '#2196F3', desc: 'Water dry plants. Pick the right amount!' },
-  sun:    { name: 'Sun Guide',       icon: '\u{2600}\u{FE0F}', color: '#FF9800', desc: 'Add shade to hot plants. Pick the right amount!' },
+  sun:    { name: 'Sun Guide',       icon: '\u{2600}\u{FE0F}', color: '#FF9800', desc: 'Give sun to dark plants. More sun = more suns!' },
   seed:   { name: 'Seed Planter',    icon: '\u{1F331}', color: '#4CAF50', desc: 'Plant seeds in empty soil. Pick the right amount!' },
   animal: { name: 'Animal Guardian', icon: '\u{1F6E1}\u{FE0F}', color: '#795548', desc: 'Shoo animals away. Pick the right amount!' }
 };
@@ -213,11 +213,11 @@ function makeDistractorClue(role, round) {
       { text: 'Soil is nice and damp', hint: '\u{1F44D}' }
     ],
     sun: [
-      { text: 'The shade is just right', hint: '\u{2705}' },
-      { text: 'Perfect sun here!', hint: '\u{1F44C}' },
-      { text: 'No shade needed', hint: '\u{274C}' },
+      { text: 'Plenty of sun already!', hint: '\u{2705}' },
+      { text: 'Perfect sunlight here!', hint: '\u{1F44C}' },
+      { text: 'No extra sun needed', hint: '\u{274C}' },
       { text: 'Light level is fine', hint: '\u{2705}' },
-      { text: 'Happy in the sun!', hint: '\u{1F44D}' }
+      { text: 'Bright and happy!', hint: '\u{1F44D}' }
     ],
     seed: [
       { text: 'Already growing here!', hint: '\u{2705}' },
@@ -248,7 +248,7 @@ function findAvailablePlot(garden, filter) {
 function applyProblemToGarden(plot, role, level) {
   switch (role) {
     case 'water': plot.moisture = [30, 18, 5][level - 1]; break;
-    case 'sun': plot.sunlight = [72, 86, 100][level - 1]; break;
+    case 'sun': plot.sunlight = [30, 15, 5][level - 1]; break; // too dark, needs more sun
     case 'animal':
       plot.animal = pick(ANIMAL_TYPES);
       break;
@@ -261,7 +261,7 @@ function makeClue(role, level, round) {
     // EASY: direct words + visual hint
     const texts = {
       water:  ['A bit dry', 'Quite dry', 'Very dry!'],
-      sun:    ['A bit hot', 'Quite hot', 'Very hot!'],
+      sun:    ['A bit dark', 'Quite dark', 'Very dark!'],
       seed:   ['Small spot', 'Some space', 'Big space!'],
       animal: ['Far away', 'Getting close', 'Very close!']
     };
@@ -270,7 +270,7 @@ function makeClue(role, level, round) {
     // MEDIUM: descriptive, visual hint removed
     const texts = {
       water: ['Top soil is a little dry', 'Soil is dry halfway down', 'Soil is cracking!'],
-      sun:   ['Leaves feel warm', 'Leaves are getting hot', 'Leaves are burning!'],
+      sun:   ['Leaves look a little pale', 'Leaves are drooping without sun', 'No sunlight at all!'],
       seed:  ['A tiny gap here', 'A nice open spot', 'A big empty area!'],
       animal:['Something watching from far', 'An animal walking over', 'An animal is right here!']
     };
@@ -279,7 +279,7 @@ function makeClue(role, level, round) {
     // ROUND 5: a bit more puzzle-like
     const texts = {
       water: ['One small crack in the soil', 'A few cracks in the soil', 'The ground is full of cracks!'],
-      sun:   ['A small shadow will help', 'A bigger shade is needed', 'Full shade needed now!'],
+      sun:   ['Just a ray of light needed', 'Needs more sunshine', 'Needs full bright sun!'],
       seed:  ['One little hole to fill', 'A couple of holes to fill', 'Many holes to fill!'],
       animal:['I hear a small rustle', 'I can see it coming', 'It is eating the plants!']
     };
@@ -303,7 +303,7 @@ function processAction(game, socketId, chosenLevel) {
     // Gold coin — chosenLevel 0 means "tapped the coin"
     result = 'coin'; points = 20;
     msg = pick(['Gold!', 'Coin!', 'Bonus!', 'Cha-ching!']);
-    game.score += points;
+    game.score += points; player.score += points; player.coins++;
     game.coins = (game.coins || 0) + 1;
     prob.solved = true; prob.result = 'coin';
     player.problemIdx++;
@@ -315,7 +315,7 @@ function processAction(game, socketId, chosenLevel) {
       // Player correctly skipped — well done!
       result = 'skipped'; points = 10;
       msg = pick(['Smart!', 'Good eye!', 'Correct skip!', 'Sharp!']);
-      game.score += points;
+      game.score += points; player.score += points;
     } else {
       // Player acted on a distractor — penalty
       result = 'tricked'; points = 0;
@@ -331,7 +331,6 @@ function processAction(game, socketId, chosenLevel) {
   const diff = Math.abs(chosenLevel - prob.level);
 
   if (chosenLevel === 0) {
-    // Player skipped a real problem — penalty
     result = 'wrong'; points = 0;
     msg = pick(['It needed help!', 'Don\'t skip this!', 'Oops!']);
     game.health = Math.max(0, game.health - 2);
@@ -339,6 +338,7 @@ function processAction(game, socketId, chosenLevel) {
     result = 'perfect'; points = 15;
     msg = pick(['Perfect!', 'Spot on!', 'Just right!', 'Yes!']);
     game.health = Math.min(100, game.health + 2);
+    player.perfect++;
   } else if (diff === 1) {
     result = 'close'; points = 5;
     msg = pick(['Almost!', 'Close!', 'Nearly right!']);
@@ -348,7 +348,7 @@ function processAction(game, socketId, chosenLevel) {
     game.health = Math.max(0, game.health - 2);
   }
 
-  game.score += points;
+  game.score += points; player.score += points;
   prob.solved = true;
   prob.result = result;
 
@@ -370,8 +370,8 @@ function applyActionToGarden(plot, role, chosen, correct) {
       if (plot.plant && plot.plant.stage === 'wilting' && effectiveness >= 0.6) plot.plant.stage = 'growing';
       break;
     case 'sun':
-      plot.sunlight = Math.max(35, plot.sunlight - Math.round(35 * effectiveness));
-      plot.shaded = effectiveness >= 0.6;
+      plot.sunlight = Math.min(70, plot.sunlight + Math.round(35 * effectiveness));
+      if (plot.plant && plot.plant.stage === 'wilting' && effectiveness >= 0.6) plot.plant.stage = 'growing';
       break;
     case 'animal':
       if (effectiveness >= 0.6) plot.animal = null;
@@ -416,10 +416,19 @@ function startRound(game) {
     sendProblemToPlayer(game, sid);
   }
 
-  // Timer
+  // Timer + leaderboard every 20 seconds
   game.roundTimer = setInterval(() => {
     game.roundTimeLeft--;
-    if (game.roundTimeLeft <= 0) endRound(game);
+    if (game.roundTimeLeft <= 0) {
+      endRound(game);
+    } else if (game.roundTimeLeft % 20 === 0) {
+      // Broadcast leaderboard every 20 seconds
+      const board = getLeaderboard(game);
+      io.to(game.tvSocketId).emit('leaderboard', { board, timeLeft: game.roundTimeLeft });
+      for (const [sid] of game.players) {
+        io.to(sid).emit('leaderboard', { board, timeLeft: game.roundTimeLeft });
+      }
+    }
   }, 1000);
 }
 
@@ -454,6 +463,61 @@ function sendProblemToPlayer(game, sid) {
     buttons: ACTION_BUTTONS[player.role],
     labels: ACTION_LABELS
   });
+}
+
+function getLeaderboard(game) {
+  const board = Array.from(game.players.values()).map(p => ({
+    name: p.name,
+    role: p.role,
+    roleIcon: ROLE_INFO[p.role].icon,
+    roleColor: ROLE_INFO[p.role].color,
+    score: p.score,
+    coins: p.coins,
+    perfect: p.perfect,
+    done: p.problems ? p.problemIdx : 0,
+    total: p.problems ? p.problems.length : 0
+  }));
+  board.sort((a, b) => b.score - a.score);
+  board.forEach((p, i) => { p.rank = i + 1; });
+  return board;
+}
+
+function getEncouragingMessage(player, rank, total) {
+  const pct = player.problems ? Math.round((player.perfect / Math.max(1, player.problemIdx)) * 100) : 0;
+
+  if (rank === 1) return pick([
+    'Amazing! You are the garden champion! \u{1F451}',
+    'Number one! The garden loves you! \u{1F31F}',
+    'Top player! You are a garden hero! \u{1F3C6}'
+  ]);
+  if (rank === 2) return pick([
+    'Great job! You are almost at the top! \u{1F4AA}',
+    'So close to first! Keep going! \u{1F31F}',
+    'Second place! That is wonderful! \u{1F389}'
+  ]);
+  if (rank === 3) return pick([
+    'Well done! Top three! \u{1F44F}',
+    'Third place is great! \u{1F331}',
+    'You made the top three! Nice work! \u{2728}'
+  ]);
+  if (pct >= 70) return pick([
+    'So many perfect answers! You are great! \u{1F33B}',
+    'Your skills are blooming! Well played! \u{1F338}',
+    'The garden thanks you! Great accuracy! \u{1F33F}'
+  ]);
+  if (player.coins >= 3) return pick([
+    'Great coin collector! You found so many! \u{1FA99}',
+    'Your eyes are sharp! So many coins! \u{1F4B0}',
+    'Treasure hunter! You are amazing! \u{2728}'
+  ]);
+  return pick([
+    'Great effort! Every action helps the garden! \u{1F33F}',
+    'You did your best and that is wonderful! \u{1F31F}',
+    'Thank you for helping! The garden is happier! \u{1F338}',
+    'Well played! Every little bit counts! \u{1F44F}',
+    'You are a true garden friend! \u{1F33B}',
+    'Keep it up! You are learning fast! \u{1F4AA}'
+  ]);
 }
 
 function getAssignments(game) {
@@ -496,14 +560,33 @@ function endRound(game) {
 
   if (totalSolved === totalProblems && totalProblems > 0) game.score += 20;
 
-  const result = {
+  const board = getLeaderboard(game);
+
+  // Send TV the round-end with final leaderboard
+  io.to(game.tvSocketId).emit('round-end', {
     round: game.round, totalRounds: TOTAL_ROUNDS,
     solved: totalSolved, total: totalProblems,
     score: game.score, health: game.health,
-    garden: serializeGarden(game.garden)
-  };
+    garden: serializeGarden(game.garden),
+    leaderboard: board
+  });
 
-  io.to(game.code).emit('round-end', result);
+  // Send each player their personal encouraging message
+  for (const [sid, player] of game.players) {
+    const rank = board.findIndex(b => b.name === player.name) + 1;
+    io.to(sid).emit('round-end', {
+      round: game.round, totalRounds: TOTAL_ROUNDS,
+      solved: totalSolved, total: totalProblems,
+      score: game.score, health: game.health,
+      myScore: player.score,
+      myRank: rank,
+      totalPlayers: game.players.size,
+      myPerfect: player.perfect,
+      myCoins: player.coins,
+      encouragement: getEncouragingMessage(player, rank, game.players.size),
+      leaderboard: board
+    });
+  }
 
   if (game.round >= TOTAL_ROUNDS || game.health <= 0) {
     setTimeout(() => endGame(game), 6000);
@@ -523,13 +606,34 @@ function endGame(game) {
   else if (game.score >= 80)  rating = { name: 'Struggling Sprouts', emoji: '\u{1F331}', stars: 2 };
   else                        rating = { name: 'Dry Desert',         emoji: '\u{1F3DC}\u{FE0F}', stars: 1 };
 
-  io.to(game.code).emit('game-over', {
+  const board = getLeaderboard(game);
+  const win = game.health > 50;
+
+  // Send TV final results with leaderboard
+  io.to(game.tvSocketId).emit('game-over', {
     score: game.score, health: game.health, rating,
-    coins: game.coins || 0,
-    win: game.health > 50,
+    coins: game.coins || 0, win,
     garden: serializeGarden(game.garden),
-    message: game.health > 50 ? 'Great teamwork! The garden is beautiful!' : 'The garden needs more love. Try again!'
+    leaderboard: board,
+    message: win ? 'Great teamwork! The garden is beautiful!' : 'The garden needs more love. Try again!'
   });
+
+  // Send each player their personal result
+  for (const [sid, player] of game.players) {
+    const rank = board.findIndex(b => b.name === player.name) + 1;
+    io.to(sid).emit('game-over', {
+      score: game.score, health: game.health, rating,
+      coins: game.coins || 0, win,
+      myScore: player.score,
+      myRank: rank,
+      totalPlayers: game.players.size,
+      myPerfect: player.perfect,
+      myCoins: player.coins,
+      encouragement: getEncouragingMessage(player, rank, game.players.size),
+      leaderboard: board,
+      message: win ? 'Great teamwork!' : 'Try again next time!'
+    });
+  }
 }
 
 // ======================== SOCKET HANDLERS ========================
@@ -566,7 +670,7 @@ io.on('connection', (socket) => {
     const role = ROLES[roleIdx];
     const info = ROLE_INFO[role];
 
-    const player = { id: socket.id, name: name.trim() || 'Player', role, score: 0, problems: [], problemIdx: 0 };
+    const player = { id: socket.id, name: name.trim() || 'Player', role, score: 0, coins: 0, perfect: 0, problems: [], problemIdx: 0 };
     game.players.set(socket.id, player);
     socket.join(rc);
     socket.roomCode = rc;

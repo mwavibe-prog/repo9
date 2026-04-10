@@ -400,24 +400,36 @@
     </div>
   </div>
 
+  <!-- LEADERBOARD OVERLAY (pops up every 20s) -->
+  <div class="overlay" id="lb-overlay">
+    <div class="overlay-card" style="max-width:600px;">
+      <h2>&#x1F3C6; Leaderboard</h2>
+      <div id="lb-list" style="text-align:left; font-size:1.3rem; line-height:2.2;"></div>
+    </div>
+  </div>
+
   <!-- ROUND END OVERLAY -->
   <div class="overlay" id="round-end-overlay">
-    <div class="overlay-card">
+    <div class="overlay-card" style="max-width:650px;">
       <div class="big-emoji" id="round-end-emoji">&#x1F33F;</div>
       <h2 id="round-end-title">Round Done!</h2>
       <div class="stats" id="round-end-stats"></div>
+      <h3 style="margin:16px 0 8px;">&#x1F3C6; Leaderboard</h3>
+      <div id="round-lb" style="text-align:left; font-size:1.2rem; line-height:2;"></div>
       <div class="countdown-text" id="round-end-countdown">Next round soon...</div>
     </div>
   </div>
 
   <!-- GAME OVER OVERLAY -->
   <div class="overlay" id="gameover-overlay">
-    <div class="overlay-card">
+    <div class="overlay-card" style="max-width:650px;">
       <div class="big-emoji" id="gameover-emoji">&#x1F338;</div>
       <h2 id="gameover-title">Game Over!</h2>
       <div class="stars" id="gameover-stars"></div>
       <div class="rating-name" id="gameover-rating"></div>
       <div class="stats" id="gameover-stats"></div>
+      <h3 style="margin:16px 0 8px;">&#x1F3C6; Final Leaderboard</h3>
+      <div id="gameover-lb" style="text-align:left; font-size:1.2rem; line-height:2;"></div>
       <button class="btn-start" onclick="location.reload()" style="margin-top:16px; font-size:1.4rem; padding:16px 40px;">Play Again</button>
     </div>
   </div>
@@ -557,9 +569,34 @@
     }
   });
 
+  // ====== LEADERBOARD (every 20 seconds) ======
+  socket.on('leaderboard', (data) => {
+    renderLB($('lb-list'), data.board);
+    $('lb-overlay').classList.add('active');
+    // Auto-hide after 4 seconds
+    setTimeout(() => $('lb-overlay').classList.remove('active'), 4000);
+  });
+
+  function renderLB(el, board) {
+    if (!board || !board.length) { el.innerHTML = ''; return; }
+    const medals = ['\u{1F947}', '\u{1F948}', '\u{1F949}'];
+    el.innerHTML = board.map((p, i) => {
+      const medal = i < 3 ? medals[i] : '<span style="opacity:0.4">#' + (i+1) + '</span>';
+      return '<div style="display:flex;align-items:center;gap:10px;padding:4px 0;' +
+        (i === 0 ? 'font-size:1.4em;font-weight:900;' : '') + '">' +
+        '<span>' + medal + '</span>' +
+        '<span style="color:' + p.roleColor + '">' + p.roleIcon + '</span>' +
+        '<span style="flex:1">' + esc(p.name) + '</span>' +
+        '<span style="font-weight:800">' + p.score + '</span>' +
+        '<span style="opacity:0.5;font-size:0.8em;">\u{1FA99}' + p.coins + '</span>' +
+        '</div>';
+    }).join('');
+  }
+
   // ====== ROUND END ======
   socket.on('round-end', (data) => {
     stopTimer(); sfxRoundEnd();
+    $('lb-overlay').classList.remove('active');
     $('score-display').textContent = data.score;
     updateHealth(data.health);
     if (data.garden) renderGarden(data.garden, []);
@@ -571,6 +608,7 @@
       'Health: <strong>' + data.health + '%</strong><br>' +
       'Score: <strong>' + data.score + '</strong>';
     $('round-end-countdown').textContent = data.round < data.totalRounds && data.health > 0 ? 'Next round soon...' : '';
+    if (data.leaderboard) renderLB($('round-lb'), data.leaderboard);
     $('round-end-overlay').classList.add('active');
   });
 
@@ -578,6 +616,7 @@
   socket.on('game-over', (data) => {
     stopTimer();
     $('round-end-overlay').classList.remove('active');
+    $('lb-overlay').classList.remove('active');
     data.win ? sfxWin() : sfxLose();
     $('gameover-emoji').textContent = data.rating.emoji;
     $('gameover-title').textContent = data.win ? 'You Win!' : 'Game Over';
@@ -587,6 +626,7 @@
       'Score: <strong>' + data.score + '</strong><br>' +
       '\u{1FA99} Coins: <strong>' + (data.coins || 0) + '</strong><br>' +
       'Health: <strong>' + data.health + '%</strong>';
+    if (data.leaderboard) renderLB($('gameover-lb'), data.leaderboard);
     $('gameover-overlay').classList.add('active');
     if (data.garden) renderGarden(data.garden, []);
   });

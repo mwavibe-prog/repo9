@@ -242,6 +242,37 @@
     font-size: 1.4rem; font-weight: 800; cursor: pointer;
   }
 
+  /* Leaderboard popup on phone */
+  .lb-popup {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.88); z-index: 150;
+    align-items: center; justify-content: center;
+    flex-direction: column; padding: 24px;
+  }
+  .lb-popup.show { display: flex; }
+  .lb-popup h3 { font-size: 1.6rem; font-weight: 900; margin-bottom: 12px; }
+  .lb-popup .lb-rows { width: 100%; max-width: 360px; font-size: 1.15rem; line-height: 2.2; }
+  .lb-row { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
+  .lb-row.me { background: rgba(255,255,255,0.1); border-radius: 8px; padding: 4px 8px; font-weight: 800; }
+  .lb-row .lb-rank { width: 32px; text-align: center; }
+  .lb-row .lb-name { flex: 1; }
+  .lb-row .lb-pts { font-weight: 800; }
+
+  /* Encouraging message */
+  .encourage {
+    background: rgba(255,213,79,0.12);
+    border: 2px solid rgba(255,213,79,0.3);
+    border-radius: 16px;
+    padding: 16px 20px;
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1.6;
+    max-width: 380px;
+    width: 100%;
+    color: #FFD54F;
+  }
+
   /* Toast */
   .toast {
     position: fixed; top: 72px; left: 50%; transform: translateX(-50%);
@@ -336,10 +367,17 @@
     <div class="note">Watch the TV!<br>Waiting for round to end...</div>
   </div>
 
+  <!-- LEADERBOARD POPUP (during game) -->
+  <div class="lb-popup" id="lb-popup">
+    <h3>&#x1F3C6; Leaderboard</h3>
+    <div class="lb-rows" id="lb-rows"></div>
+  </div>
+
   <!-- ROUND END -->
   <div class="screen endscreen" id="scr-rend">
     <div class="e-icon" id="re-icon">&#x1F33F;</div>
     <div class="e-head" id="re-head">Round Done!</div>
+    <div class="encourage" id="re-encourage"></div>
     <div class="e-body" id="re-body"></div>
     <div class="e-msg">Next round coming...</div>
   </div>
@@ -350,6 +388,7 @@
     <div class="e-head" id="go-head">Game Over!</div>
     <div class="e-stars" id="go-stars"></div>
     <div class="e-rating" id="go-rating"></div>
+    <div class="encourage" id="go-encourage"></div>
     <div class="e-body" id="go-body"></div>
     <div class="e-msg" id="go-msg"></div>
     <button class="btn-again" onclick="location.reload()">Play Again</button>
@@ -600,16 +639,43 @@
     show('scr-done');
   });
 
+  // ====== LEADERBOARD (every 20s) ======
+  socket.on('leaderboard', data => {
+    renderPhoneLB(data.board);
+    $('lb-popup').classList.add('show');
+    setTimeout(() => $('lb-popup').classList.remove('show'), 3500);
+  });
+
+  function renderPhoneLB(board) {
+    const el = $('lb-rows');
+    const medals = ['\u{1F947}', '\u{1F948}', '\u{1F949}'];
+    el.innerHTML = board.map((p, i) => {
+      const isMe = p.name === ($('w-name').textContent || '').replace('Hello, ', '').replace('!', '');
+      return '<div class="lb-row' + (isMe ? ' me' : '') + '">' +
+        '<span class="lb-rank">' + (i < 3 ? medals[i] : '#'+(i+1)) + '</span>' +
+        '<span style="color:' + p.roleColor + '">' + p.roleIcon + '</span>' +
+        '<span class="lb-name">' + esc(p.name) + '</span>' +
+        '<span class="lb-pts">' + p.score + '</span>' +
+        '</div>';
+    }).join('');
+  }
+
   // ====== ROUND END ======
   socket.on('round-end', data => {
     stopTimer();
     $('result-overlay').classList.remove('active');
-    const pct = data.total > 0 ? Math.round((data.solved/data.total)*100) : 0;
-    $('re-icon').textContent = pct >= 70 ? '\u{1F33B}' : pct >= 40 ? '\u{1F33F}' : '\u{1F940}';
+    $('lb-popup').classList.remove('show');
+
+    // Personal stats
+    const myRank = data.myRank || '?';
+    const totalP = data.totalPlayers || '?';
+    $('re-icon').textContent = myRank <= 3 ? '\u{1F3C6}' : '\u{1F33B}';
     $('re-head').textContent = 'Round ' + data.round + ' Done!';
-    $('re-body').innerHTML = 'Solved: <strong>' + data.solved + '/' + data.total + '</strong><br>' +
-      'Health: <strong>' + data.health + '%</strong><br>' +
-      'Score: <strong>' + data.score + '</strong>';
+    $('re-encourage').textContent = data.encouragement || 'Great effort!';
+    $('re-body').innerHTML =
+      'Your rank: <strong>#' + myRank + '</strong> of ' + totalP + '<br>' +
+      'Your score: <strong>' + (data.myScore || 0) + '</strong><br>' +
+      '\u{2728} Perfect: <strong>' + (data.myPerfect || 0) + '</strong> &nbsp; \u{1FA99} Coins: <strong>' + (data.myCoins || 0) + '</strong>';
     show('scr-rend');
   });
 
@@ -617,12 +683,19 @@
   socket.on('game-over', data => {
     stopTimer();
     $('result-overlay').classList.remove('active');
+    $('lb-popup').classList.remove('show');
     data.win ? sfxWin() : sfxLose();
+
+    const myRank = data.myRank || '?';
     $('go-icon').textContent = data.rating.emoji;
     $('go-head').textContent = data.win ? 'You Win!' : 'Game Over';
     $('go-stars').textContent = '\u{2B50}'.repeat(data.rating.stars);
     $('go-rating').textContent = data.rating.name;
-    $('go-body').innerHTML = 'Score: <strong>' + data.score + '</strong><br>Health: <strong>' + data.health + '%</strong>';
+    $('go-encourage').textContent = data.encouragement || 'Well played!';
+    $('go-body').innerHTML =
+      'Your rank: <strong>#' + myRank + '</strong><br>' +
+      'Your score: <strong>' + (data.myScore || 0) + '</strong><br>' +
+      '\u{2728} Perfect: <strong>' + (data.myPerfect || 0) + '</strong> &nbsp; \u{1FA99} Coins: <strong>' + (data.myCoins || 0) + '</strong>';
     $('go-msg').textContent = data.message;
     show('scr-over');
   });
@@ -645,6 +718,8 @@
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     $(id).classList.add('active');
   }
+
+  function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
   socket.on('time-sync', ({timeLeft:t}) => { timeLeft = t; });
   setInterval(() => socket.emit('get-time'), 15000);
