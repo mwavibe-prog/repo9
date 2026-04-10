@@ -11,7 +11,7 @@ app.use(express.static('public'));
 
 // ======================== CONSTANTS ========================
 
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 const GRID_SIZE = 4;
 const ROUND_DURATION = 60;
 const TOTAL_ROUNDS = 5;
