@@ -13,8 +13,9 @@ app.use(express.static('public'));
 
 const PORT = 3000;
 const GRID_SIZE = 4;
-const ROUND_DURATION = 180;
+const ROUND_DURATION = 60;
 const TOTAL_ROUNDS = 5;
+const PROBLEMS_PER_ROUND = 40; // max tasks including distractors and coins
 
 const ROLES = ['water', 'sun', 'seed', 'animal'];
 const ROLE_INFO = {
@@ -123,41 +124,117 @@ function serializeGarden(garden) {
 // ======================== PROBLEM & CLUE GENERATION ========================
 
 function makeProblemsForPlayer(game, player, usedByRole) {
-  const count = Math.min(1 + game.round, 4); // round1=2, round2=3, round3=4, round4=4, round5=4
   const problems = [];
   const role = player.role;
   const used = usedByRole[role];
 
-  for (let i = 0; i < count; i++) {
+  // Generate a mix: ~22 real, ~10 distractors, ~8 gold coins = 40 total
+  const realCount = 22;
+  const distractorCount = 10;
+  const coinCount = 8;
+
+  // 1. Real problems
+  for (let i = 0; i < realCount; i++) {
     let plot;
     if (role === 'seed') {
       plot = findAvailablePlot(game.garden, p => !p.plant && !used.has(p.row + ',' + p.col));
-      if (!plot) plot = findAvailablePlot(game.garden, p => !p.plant); // allow reuse
+      if (!plot) plot = findAvailablePlot(game.garden, p => !p.plant);
     } else {
       plot = findAvailablePlot(game.garden, p => p.plant && !used.has(p.row + ',' + p.col));
       if (!plot) plot = findAvailablePlot(game.garden, p => p.plant);
     }
+    if (!plot) { plot = findAvailablePlot(game.garden, () => true); }
     if (!plot) break;
 
     used.add(plot.row + ',' + plot.col);
     const level = randInt(1, 3);
     const clue = makeClue(role, level, game.round);
-
-    // Apply the problem visually to the garden
     applyProblemToGarden(plot, role, level);
 
     problems.push({
+      type: 'real',
       plotRow: plot.row, plotCol: plot.col,
       plotLabel: ROW_LABELS[plot.row] + (plot.col + 1),
       plotEmoji: getPlotEmoji(plot),
       level,
       clueText: clue.text,
       clueHint: clue.hint,
-      solved: false,
-      result: null
+      solved: false, result: null
     });
   }
+
+  // 2. Distractors (look like real tasks but the plot is fine — any action is wrong)
+  for (let i = 0; i < distractorCount; i++) {
+    const plot = findAvailablePlot(game.garden, () => true);
+    if (!plot) break;
+    const dClue = makeDistractorClue(role, game.round);
+    problems.push({
+      type: 'distractor',
+      plotRow: plot.row, plotCol: plot.col,
+      plotLabel: ROW_LABELS[plot.row] + (plot.col + 1),
+      plotEmoji: getPlotEmoji(plot),
+      level: 0, // 0 = no correct answer, skip is correct
+      clueText: dClue.text,
+      clueHint: dClue.hint,
+      solved: false, result: null
+    });
+  }
+
+  // 3. Gold coin bonus tasks
+  for (let i = 0; i < coinCount; i++) {
+    problems.push({
+      type: 'coin',
+      plotRow: -1, plotCol: -1,
+      plotLabel: '',
+      plotEmoji: '\u{1FA99}',
+      level: 0,
+      clueText: '',
+      clueHint: '',
+      solved: false, result: null
+    });
+  }
+
+  // Shuffle all problems together
+  for (let i = problems.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [problems[i], problems[j]] = [problems[j], problems[i]];
+  }
+
   return problems;
+}
+
+function makeDistractorClue(role, round) {
+  const distractors = {
+    water: [
+      { text: 'This soil looks fine!', hint: '\u{2705}' },
+      { text: 'Moist enough already', hint: '\u{1F44C}' },
+      { text: 'No water needed here', hint: '\u{274C}' },
+      { text: 'Already watered today', hint: '\u{2705}' },
+      { text: 'Soil is nice and damp', hint: '\u{1F44D}' }
+    ],
+    sun: [
+      { text: 'The shade is just right', hint: '\u{2705}' },
+      { text: 'Perfect sun here!', hint: '\u{1F44C}' },
+      { text: 'No shade needed', hint: '\u{274C}' },
+      { text: 'Light level is fine', hint: '\u{2705}' },
+      { text: 'Happy in the sun!', hint: '\u{1F44D}' }
+    ],
+    seed: [
+      { text: 'Already growing here!', hint: '\u{2705}' },
+      { text: 'No room for seeds', hint: '\u{274C}' },
+      { text: 'This spot is taken', hint: '\u{1F44C}' },
+      { text: 'Fully planted already', hint: '\u{2705}' },
+      { text: 'Too crowded to plant', hint: '\u{1F44D}' }
+    ],
+    animal: [
+      { text: 'No animals here!', hint: '\u{2705}' },
+      { text: 'All clear, no pests', hint: '\u{1F44C}' },
+      { text: 'This area is safe', hint: '\u{274C}' },
+      { text: 'Nothing to shoo away', hint: '\u{2705}' },
+      { text: 'Peaceful and quiet', hint: '\u{1F44D}' }
+    ]
+  };
+  return pick(distractors[role] || distractors.water);
 }
 
 function findAvailablePlot(garden, filter) {
@@ -220,20 +297,55 @@ function processAction(game, socketId, chosenLevel) {
   const prob = player.problems[player.problemIdx];
   if (prob.solved) return null;
 
-  const diff = Math.abs(chosenLevel - prob.level);
   let result, msg, points;
 
-  if (diff === 0) {
+  if (prob.type === 'coin') {
+    // Gold coin — chosenLevel 0 means "tapped the coin"
+    result = 'coin'; points = 20;
+    msg = pick(['Gold!', 'Coin!', 'Bonus!', 'Cha-ching!']);
+    game.score += points;
+    game.coins = (game.coins || 0) + 1;
+    prob.solved = true; prob.result = 'coin';
+    player.problemIdx++;
+    return { result, msg, correctLevel: 0, chosenLevel: 0, points, coins: game.coins };
+  }
+
+  if (prob.type === 'distractor') {
+    if (chosenLevel === 0) {
+      // Player correctly skipped — well done!
+      result = 'skipped'; points = 10;
+      msg = pick(['Smart!', 'Good eye!', 'Correct skip!', 'Sharp!']);
+      game.score += points;
+    } else {
+      // Player acted on a distractor — penalty
+      result = 'tricked'; points = 0;
+      msg = pick(['Tricked!', 'It was fine!', 'No need!', 'Careful!']);
+      game.health = Math.max(0, game.health - 2);
+    }
+    prob.solved = true; prob.result = result;
+    player.problemIdx++;
+    return { result, msg, correctLevel: 0, chosenLevel, points };
+  }
+
+  // Real problem
+  const diff = Math.abs(chosenLevel - prob.level);
+
+  if (chosenLevel === 0) {
+    // Player skipped a real problem — penalty
+    result = 'wrong'; points = 0;
+    msg = pick(['It needed help!', 'Don\'t skip this!', 'Oops!']);
+    game.health = Math.max(0, game.health - 2);
+  } else if (diff === 0) {
     result = 'perfect'; points = 15;
     msg = pick(['Perfect!', 'Spot on!', 'Just right!', 'Yes!']);
-    game.health = Math.min(100, game.health + 3);
+    game.health = Math.min(100, game.health + 2);
   } else if (diff === 1) {
     result = 'close'; points = 5;
     msg = pick(['Almost!', 'Close!', 'Nearly right!']);
   } else {
     result = 'wrong'; points = 0;
     msg = pick(['Not quite!', 'Try next time!', 'Oops!']);
-    game.health = Math.max(0, game.health - 3);
+    game.health = Math.max(0, game.health - 2);
   }
 
   game.score += points;
@@ -241,11 +353,12 @@ function processAction(game, socketId, chosenLevel) {
   prob.result = result;
 
   // Apply action to garden
-  const plot = game.garden[prob.plotRow][prob.plotCol];
-  applyActionToGarden(plot, player.role, chosenLevel, prob.level);
+  if (chosenLevel > 0 && prob.plotRow >= 0) {
+    const plot = game.garden[prob.plotRow][prob.plotCol];
+    applyActionToGarden(plot, player.role, chosenLevel, prob.level);
+  }
 
   player.problemIdx++;
-
   return { result, msg, correctLevel: prob.level, chosenLevel, points };
 }
 
@@ -315,10 +428,11 @@ function sendProblemToPlayer(game, sid) {
   if (!player) return;
 
   if (player.problemIdx >= player.problems.length) {
-    // All done for this round
-    const solved = player.problems.filter(p => p.result === 'perfect').length;
+    const perfect = player.problems.filter(p => p.result === 'perfect').length;
+    const coins = player.problems.filter(p => p.result === 'coin').length;
+    const skipped = player.problems.filter(p => p.result === 'skipped').length;
     io.to(sid).emit('all-done', {
-      solved, total: player.problems.length,
+      perfect, coins, skipped, total: player.problems.length,
       score: game.score, health: game.health
     });
     return;
@@ -326,6 +440,7 @@ function sendProblemToPlayer(game, sid) {
 
   const prob = player.problems[player.problemIdx];
   io.to(sid).emit('problem', {
+    problemType: prob.type, // 'real', 'distractor', or 'coin'
     plotLabel: prob.plotLabel,
     plotEmoji: prob.plotEmoji,
     plotRow: prob.plotRow, plotCol: prob.plotCol,
@@ -335,6 +450,7 @@ function sendProblemToPlayer(game, sid) {
     totalProblems: player.problems.length,
     round: game.round, totalRounds: TOTAL_ROUNDS,
     score: game.score, health: game.health,
+    coins: game.coins || 0,
     buttons: ACTION_BUTTONS[player.role],
     labels: ACTION_LABELS
   });
@@ -409,6 +525,7 @@ function endGame(game) {
 
   io.to(game.code).emit('game-over', {
     score: game.score, health: game.health, rating,
+    coins: game.coins || 0,
     win: game.health > 50,
     garden: serializeGarden(game.garden),
     message: game.health > 50 ? 'Great teamwork! The garden is beautiful!' : 'The garden needs more love. Try again!'
@@ -503,8 +620,8 @@ io.on('connection', (socket) => {
       }
     });
 
-    // Send next problem after a delay
-    setTimeout(() => sendProblemToPlayer(game, socket.id), 2500);
+    // Send next problem quickly — fast-paced!
+    setTimeout(() => sendProblemToPlayer(game, socket.id), 800);
   });
 
   socket.on('get-time', () => {

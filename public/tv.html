@@ -352,11 +352,15 @@
       </div>
       <div class="info-card">
         <div class="label">Time</div>
-        <div class="timer-display" id="timer-display">3:00</div>
+        <div class="timer-display" id="timer-display">1:00</div>
       </div>
       <div class="info-card">
         <div class="label">Score</div>
         <div class="score-val" id="score-display">0</div>
+      </div>
+      <div class="info-card">
+        <div class="label">&#x1FA99; Coins</div>
+        <div class="score-val" id="coins-display" style="color:#FFD54F;">0</div>
       </div>
       <div class="info-card">
         <div class="label">Health</div>
@@ -525,17 +529,30 @@
     renderGarden(data.garden, assignments);
     if (data.action) {
       const a = data.action;
-      const label = String.fromCharCode(65 + a.plotRow) + (a.plotCol + 1);
-      if (a.result === 'perfect') {
+      if (a.result === 'coin') {
         sfxCorrect();
-        addLog(a.playerName + ' ' + a.roleIcon + ' fixed ' + label + '!', 'good');
-        triggerSparkle(a.plotRow, a.plotCol);
-      } else if (a.result === 'close') {
+        const cd = $('coins-display');
+        if (cd) cd.textContent = (parseInt(cd.textContent)||0) + 1;
+        addLog(a.playerName + ' \u{1FA99} got a coin!', 'good');
+      } else if (a.result === 'skipped') {
         sfxCorrect();
-        addLog(a.playerName + ' almost got ' + label, 'good');
-      } else {
+        addLog(a.playerName + ' \u{1F9E0} smart skip!', 'good');
+      } else if (a.result === 'tricked') {
         sfxWrong();
-        addLog(a.playerName + ' tried ' + label, 'bad');
+        addLog(a.playerName + ' got tricked!', 'bad');
+      } else {
+        const label = String.fromCharCode(65 + a.plotRow) + (a.plotCol + 1);
+        if (a.result === 'perfect') {
+          sfxCorrect();
+          addLog(a.playerName + ' ' + a.roleIcon + ' fixed ' + label + '!', 'good');
+          triggerSparkle(a.plotRow, a.plotCol);
+        } else if (a.result === 'close') {
+          sfxCorrect();
+          addLog(a.playerName + ' almost got ' + label, 'good');
+        } else {
+          sfxWrong();
+          addLog(a.playerName + ' tried ' + label, 'bad');
+        }
       }
     }
   });
@@ -568,6 +585,7 @@
     $('gameover-rating').textContent = data.rating.name;
     $('gameover-stats').innerHTML =
       'Score: <strong>' + data.score + '</strong><br>' +
+      '\u{1FA99} Coins: <strong>' + (data.coins || 0) + '</strong><br>' +
       'Health: <strong>' + data.health + '%</strong>';
     $('gameover-overlay').classList.add('active');
     if (data.garden) renderGarden(data.garden, []);

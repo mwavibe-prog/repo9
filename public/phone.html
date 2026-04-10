@@ -153,6 +153,50 @@
   @keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.1); } 100% { transform: scale(1); } }
   @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
 
+  /* Skip button (for distractors) */
+  .skip-btn {
+    width: 100%; max-width: 400px; padding: 14px;
+    background: rgba(255,255,255,0.06);
+    border: 3px dashed rgba(255,255,255,0.2);
+    border-radius: 14px;
+    color: rgba(255,255,255,0.5); font-size: 1.1rem; font-weight: 700;
+    cursor: pointer; text-align: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .skip-btn:active { transform: scale(0.97); background: rgba(255,255,255,0.1); }
+
+  /* Gold coin screen */
+  .coin-display {
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #FFD54F, #F9A825, #E65100);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 5rem;
+    box-shadow: 0 0 40px rgba(255,213,79,0.5), 0 8px 32px rgba(0,0,0,0.4);
+    cursor: pointer;
+    animation: coin-float 1s ease-in-out infinite, coin-glow 1.5s ease-in-out infinite;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  @keyframes coin-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+  @keyframes coin-glow {
+    0%, 100% { box-shadow: 0 0 30px rgba(255,213,79,0.4), 0 8px 32px rgba(0,0,0,0.4); }
+    50% { box-shadow: 0 0 60px rgba(255,213,79,0.7), 0 8px 32px rgba(0,0,0,0.4); }
+  }
+  .coin-display.grabbed { animation: coin-grab 0.4s ease forwards; }
+  @keyframes coin-grab {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3) rotate(20deg); opacity: 0.8; }
+    100% { transform: scale(0) rotate(40deg); opacity: 0; }
+  }
+  .coin-label { font-size: 1.6rem; font-weight: 900; color: #FFD54F; }
+
+  /* Coins counter in header */
+  .coin-count { display: flex; align-items: center; gap: 4px; font-weight: 800; color: #FFD54F; }
+
   /* ====== RESULT OVERLAY ====== */
   .result-overlay {
     display: none; position: fixed; inset: 0;
@@ -257,8 +301,9 @@
         <span id="t-role"></span>
       </div>
       <div class="task-header-right">
+        <span class="coin-count" id="t-coins">&#x1FA99; 0</span>
         <span>R<span id="t-round">1</span>/5</span>
-        <span class="task-timer" id="t-timer">3:00</span>
+        <span class="task-timer" id="t-timer">1:00</span>
       </div>
     </div>
     <div class="task-body">
@@ -337,6 +382,9 @@
   function sfxClose() { tone(523,0.15,'sine',0.15); setTimeout(()=>tone(659,0.2,'sine',0.12),120); }
   function sfxWrong() { tone(220,0.3,'triangle',0.1); }
   function sfxStart() { tone(523,0.12,'sine',0.14); setTimeout(()=>tone(659,0.12,'sine',0.14),100); setTimeout(()=>tone(784,0.25,'sine',0.14),200); }
+  function sfxCoin() { tone(1047,0.08,'sine',0.2); setTimeout(()=>tone(1319,0.08,'sine',0.18),60); setTimeout(()=>tone(1568,0.15,'sine',0.16),120); }
+  function sfxSkip() { tone(440,0.1,'triangle',0.1); setTimeout(()=>tone(554,0.15,'triangle',0.08),80); }
+  function sfxTricked() { tone(300,0.15,'sawtooth',0.06); setTimeout(()=>tone(200,0.2,'sawtooth',0.05),100); }
   function sfxAllDone() { [523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,0.25,'sine',0.12),i*130)); }
   function sfxWin() { [523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,0.3,'sine',0.14),i*160)); }
   function sfxLose() { [392,349,330,262].forEach((f,i)=>setTimeout(()=>tone(f,0.35,'sine',0.08),i*220)); }
@@ -384,42 +432,99 @@
   socket.on('problem', data => {
     canAct = true;
     $('result-overlay').classList.remove('active');
-    sfxStart();
 
     $('t-icon').textContent = { water:'\u{1F4A7}', sun:'\u{2600}\u{FE0F}', seed:'\u{1F331}', animal:'\u{1F6E1}\u{FE0F}' }[myRole] || '';
     $('t-role').textContent = myRoleName;
     $('t-round').textContent = data.round;
-    $('t-plot-label').textContent = 'Plot ' + data.plotLabel;
-    $('t-plant-emoji').textContent = data.plotEmoji || '\u{1F7EB}';
-    $('t-clue').textContent = data.clueText;
-    $('t-hint').textContent = data.clueHint || '';
-    $('t-hint').style.display = data.clueHint ? 'block' : 'none';
-    $('t-progress').textContent = 'Task ' + data.problemNum + ' of ' + data.totalProblems;
+    $('t-coins').innerHTML = '\u{1FA99} ' + (data.coins || 0);
+    $('t-progress').textContent = data.problemNum + ' / ' + data.totalProblems;
 
-    // Remove old animal badge
+    // Remove old extras
     const oldBadge = document.querySelector('.animal-badge');
     if (oldBadge) oldBadge.remove();
+    const oldCoin = document.querySelector('.coin-display');
+    if (oldCoin) oldCoin.remove();
 
-    // Show animal if relevant (from garden data in problem)
-    // We'll add it if role is animal guardian
-    if (myRole === 'animal') {
-      const badge = document.createElement('span');
-      badge.className = 'animal-badge';
-      badge.textContent = '\u{1F430}'; // generic
-      $('t-plot').appendChild(badge);
-    }
+    const body = document.querySelector('.task-body');
 
-    // Render 3 action buttons
-    const row = $('t-buttons');
-    row.innerHTML = '';
-    for (let i = 0; i < 3; i++) {
-      const btn = document.createElement('div');
-      btn.className = 'action-btn';
-      btn.innerHTML = '<span class="btn-icon">' + (data.buttons ? data.buttons[i] : myButtons[i]) + '</span>' +
-        '<span class="btn-label">' + (data.labels ? data.labels[i] : myLabels[i]) + '</span>';
-      const level = i + 1;
-      btn.addEventListener('click', () => pickAction(level, btn));
-      row.appendChild(btn);
+    if (data.problemType === 'coin') {
+      // ===== GOLD COIN TASK =====
+      sfxTap();
+      $('t-plot-label').textContent = 'Bonus Coin!';
+      $('t-plant-emoji').textContent = '';
+      $('t-clue').textContent = 'Tap the coin to collect it!';
+      $('t-hint').textContent = '\u{1FA99}';
+      $('t-hint').style.display = 'block';
+      $('t-plot').style.display = 'none';
+
+      // Show coin in button area
+      const row = $('t-buttons');
+      row.innerHTML = '';
+      const coin = document.createElement('div');
+      coin.className = 'coin-display';
+      coin.textContent = '\u{1FA99}';
+      coin.addEventListener('click', () => {
+        if (!canAct) return;
+        canAct = false;
+        sfxCoin();
+        coin.classList.add('grabbed');
+        socket.emit('player-action', { level: 0 });
+      });
+      row.style.justifyContent = 'center';
+      row.appendChild(coin);
+
+      // Hide skip
+      let skipEl = document.getElementById('skip-btn');
+      if (skipEl) skipEl.style.display = 'none';
+
+    } else {
+      // ===== REAL or DISTRACTOR TASK =====
+      sfxTap();
+      $('t-plot').style.display = 'flex';
+      $('t-plot-label').textContent = 'Plot ' + data.plotLabel;
+      $('t-plant-emoji').textContent = data.plotEmoji || '\u{1F7EB}';
+      $('t-clue').textContent = data.clueText;
+      $('t-hint').textContent = data.clueHint || '';
+      $('t-hint').style.display = data.clueHint ? 'block' : 'none';
+
+      if (myRole === 'animal' && data.problemType === 'real') {
+        const badge = document.createElement('span');
+        badge.className = 'animal-badge';
+        badge.textContent = '\u{1F430}';
+        $('t-plot').appendChild(badge);
+      }
+
+      // Render 3 action buttons
+      const row = $('t-buttons');
+      row.innerHTML = '';
+      row.style.justifyContent = '';
+      for (let i = 0; i < 3; i++) {
+        const btn = document.createElement('div');
+        btn.className = 'action-btn';
+        btn.innerHTML = '<span class="btn-icon">' + (data.buttons ? data.buttons[i] : myButtons[i]) + '</span>' +
+          '<span class="btn-label">' + (data.labels ? data.labels[i] : myLabels[i]) + '</span>';
+        const level = i + 1;
+        btn.addEventListener('click', () => pickAction(level, btn));
+        row.appendChild(btn);
+      }
+
+      // Show skip button (for distractors — but player doesn't know which are distractors!)
+      let skipEl = document.getElementById('skip-btn');
+      if (!skipEl) {
+        skipEl = document.createElement('div');
+        skipEl.id = 'skip-btn';
+        skipEl.className = 'skip-btn';
+        skipEl.textContent = '\u{274C} Skip \u2014 This plot is fine!';
+        skipEl.addEventListener('click', () => {
+          if (!canAct) return;
+          canAct = false;
+          sfxTap();
+          socket.emit('player-action', { level: 0 });
+        });
+        // Insert after buttons
+        $('t-buttons').parentNode.insertBefore(skipEl, $('t-buttons').nextSibling);
+      }
+      skipEl.style.display = 'block';
     }
 
     if (!timerInt) startTimer(data.duration || timeLeft);
@@ -439,42 +544,59 @@
 
   // ====== ACTION RESULT ======
   socket.on('action-result', data => {
-    stopTimer();
     const ov = $('result-overlay');
 
-    if (data.result === 'perfect') {
+    if (data.result === 'coin') {
+      sfxCoin();
+      $('r-emoji').textContent = '\u{1FA99}';
+      $('r-msg').textContent = data.msg;
+      $('r-detail').textContent = '';
+      $('r-points').textContent = '+' + data.points + ' points';
+    } else if (data.result === 'skipped') {
+      sfxSkip();
+      $('r-emoji').textContent = '\u{1F9E0}';
+      $('r-msg').textContent = data.msg;
+      $('r-detail').textContent = 'That plot was fine!';
+      $('r-points').textContent = '+' + data.points + ' points';
+    } else if (data.result === 'tricked') {
+      sfxTricked();
+      $('r-emoji').textContent = '\u{1F648}';
+      $('r-msg').textContent = data.msg;
+      $('r-detail').textContent = 'That plot was fine!';
+      $('r-points').textContent = '0 points';
+    } else if (data.result === 'perfect') {
       sfxPerfect();
       $('r-emoji').textContent = '\u{2728}';
       $('r-msg').textContent = data.msg;
-      $('r-detail').textContent = 'Just the right amount!';
-      $('r-points').textContent = '+' + data.points + ' points';
+      $('r-detail').textContent = '';
+      $('r-points').textContent = '+' + data.points;
     } else if (data.result === 'close') {
       sfxClose();
       $('r-emoji').textContent = '\u{1F44D}';
       $('r-msg').textContent = data.msg;
-      const needed = data.correctLevel;
-      $('r-detail').textContent = 'Needed: ' + (myButtons[needed-1] || needed);
-      $('r-points').textContent = '+' + data.points + ' points';
+      $('r-detail').textContent = 'Needed: ' + (myButtons[(data.correctLevel||1)-1] || '');
+      $('r-points').textContent = '+' + data.points;
     } else {
       sfxWrong();
       $('r-emoji').textContent = '\u{1F914}';
       $('r-msg').textContent = data.msg;
-      const needed = data.correctLevel;
-      $('r-detail').textContent = 'Answer was: ' + (myButtons[needed-1] || needed);
-      $('r-points').textContent = '0 points';
+      $('r-detail').textContent = data.correctLevel > 0 ? 'Answer: ' + (myButtons[(data.correctLevel||1)-1] || '') : '';
+      $('r-points').textContent = '0';
     }
 
     ov.classList.add('active');
-    // Result overlay stays until next problem arrives (server sends after 2.5s)
+    // Result overlay stays briefly until next problem arrives (server sends after 0.8s)
   });
 
   // ====== ALL DONE ======
   socket.on('all-done', data => {
     sfxAllDone();
     $('result-overlay').classList.remove('active');
-    $('d-body').innerHTML = 'Perfect: <strong>' + data.solved + '/' + data.total + '</strong><br>' +
-      'Score: <strong>' + data.score + '</strong><br>' +
-      'Health: <strong>' + data.health + '%</strong>';
+    $('d-body').innerHTML =
+      '\u{2728} Perfect: <strong>' + data.perfect + '</strong><br>' +
+      '\u{1FA99} Coins: <strong>' + data.coins + '</strong><br>' +
+      '\u{1F9E0} Smart skips: <strong>' + data.skipped + '</strong><br>' +
+      'Score: <strong>' + data.score + '</strong>';
     show('scr-done');
   });
 
