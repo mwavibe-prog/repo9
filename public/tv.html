@@ -340,22 +340,9 @@
   .celebrate .cel-next { font-size: 1.1rem; opacity: 0.5; z-index: 2; }
   .celebrate .btn-start { z-index: 2; }
 
-  /* Confetti particles */
-  .confetti-container { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 1; }
-  .confetti-piece {
-    position: absolute;
-    top: -20px;
-    opacity: 0;
-    animation: confetti-fall linear forwards, confetti-sway ease-in-out infinite;
-  }
-  @keyframes confetti-fall {
-    0% { transform: translateY(-20px); opacity: 1; }
-    85% { opacity: 1; }
-    100% { transform: translateY(105vh); opacity: 0; }
-  }
-  @keyframes confetti-sway {
-    0%, 100% { margin-left: -15px; }
-    50% { margin-left: 15px; }
+  /* Fireworks canvas */
+  .fireworks-canvas {
+    position: absolute; inset: 0; z-index: 1; pointer-events: none;
   }
 </style>
 </head>
@@ -463,7 +450,7 @@
 
   <!-- CELEBRATION SCREEN (round end) -->
   <div class="celebrate" id="celebrate-screen">
-    <div class="confetti-container" id="confetti-rend"></div>
+    <canvas class="fireworks-canvas" id="fw-rend"></canvas>
     <h1 id="cel-title">&#x1F389; Time's Up! &#x1F389;</h1>
     <h2 id="cel-subtitle">Round 1 Complete</h2>
     <div class="cel-board">
@@ -476,7 +463,7 @@
 
   <!-- GAME OVER CELEBRATION -->
   <div class="celebrate" id="gameover-screen">
-    <div class="confetti-container" id="confetti-go"></div>
+    <canvas class="fireworks-canvas" id="fw-go"></canvas>
     <h1 id="go-title2">&#x1F389; Game Over! &#x1F389;</h1>
     <div class="stars" id="gameover-stars" style="font-size:3rem; z-index:2;"></div>
     <div class="rating-name" id="gameover-rating" style="font-size:2rem; z-index:2;"></div>
@@ -661,7 +648,7 @@
       'Team Score: <strong>' + data.score + '</strong> &nbsp; Health: <strong>' + data.health + '%</strong>';
     $('cel-next').textContent = data.round < data.totalRounds && data.health > 0 ? 'Next round starting soon...' : '';
     if (data.leaderboard) renderCelLB($('cel-lb'), data.leaderboard);
-    spawnConfetti('confetti-rend');
+    launchFireworks('fw-rend');
     $('celebrate-screen').classList.add('active');
     // Auto-hide before next round
     setTimeout(() => $('celebrate-screen').classList.remove('active'), 6500);
@@ -682,7 +669,7 @@
       '\u{1FA99} Coins: <strong>' + (data.coins||0) + '</strong> &nbsp; ' +
       'Health: <strong>' + data.health + '%</strong>';
     if (data.leaderboard) renderCelLB($('gameover-lb'), data.leaderboard);
-    spawnConfetti('confetti-go');
+    launchFireworks('fw-go');
     $('gameover-screen').classList.add('active');
     if (data.garden) renderGarden(data.garden, []);
   });
@@ -701,48 +688,117 @@
     }).join('');
   }
 
-  function spawnConfetti(containerId) {
-    const container = $(containerId);
-    container.innerHTML = '';
-    const colors = ['#FFD54F','#EF5350','#42A5F5','#66BB6A','#FF9800','#AB47BC','#26C6DA','#FF7043','#EC407A','#FFF176'];
-    for (let i = 0; i < 100; i++) {
-      const p = document.createElement('div');
-      p.className = 'confetti-piece';
-      const col = colors[Math.floor(Math.random()*colors.length)];
-      const fallTime = 2.5 + Math.random() * 3;
-      const swayTime = 1 + Math.random() * 2;
-      const delay = Math.random() * 3;
-      const size = 8 + Math.random() * 10;
-      p.style.cssText =
-        'left:' + (Math.random()*100) + '%;' +
-        'background:' + col + ';' +
-        'width:' + size + 'px;' +
-        'height:' + (size * (0.4 + Math.random()*0.6)) + 'px;' +
-        'border-radius:' + (Math.random()>0.5 ? '50%' : '2px') + ';' +
-        'animation: confetti-fall ' + fallTime + 's ' + delay + 's linear forwards, ' +
-                   'confetti-sway ' + swayTime + 's ' + delay + 's ease-in-out infinite;';
-      container.appendChild(p);
+  // ====== FIREWORKS ENGINE ======
+  let fwAnimId = null;
+  function launchFireworks(canvasId) {
+    if (fwAnimId) { cancelAnimationFrame(fwAnimId); fwAnimId = null; }
+    const canvas = $(canvasId);
+    const parent = canvas.parentElement;
+    canvas.width = parent.offsetWidth;
+    canvas.height = parent.offsetHeight;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const colors = ['#FFD54F','#EF5350','#42A5F5','#66BB6A','#FF9800','#AB47BC','#26C6DA','#FF7043','#EC407A','#FFF176','#E040FB','#76FF03'];
+    const rockets = [], sparks = [];
+    let started = Date.now();
+
+    function addRocket() {
+      rockets.push({
+        x: W * (0.15 + Math.random() * 0.7),
+        y: H,
+        targetY: H * (0.1 + Math.random() * 0.35),
+        speed: 4 + Math.random() * 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        trail: []
+      });
     }
-    // Respawn a second wave
-    setTimeout(() => {
-      for (let i = 0; i < 60; i++) {
-        const p = document.createElement('div');
-        p.className = 'confetti-piece';
-        const col = colors[Math.floor(Math.random()*colors.length)];
-        const fallTime = 2 + Math.random() * 3;
-        const swayTime = 1 + Math.random() * 2;
-        const size = 8 + Math.random() * 10;
-        p.style.cssText =
-          'left:' + (Math.random()*100) + '%;' +
-          'background:' + col + ';' +
-          'width:' + size + 'px;' +
-          'height:' + (size * (0.4 + Math.random()*0.6)) + 'px;' +
-          'border-radius:' + (Math.random()>0.5 ? '50%' : '2px') + ';' +
-          'animation: confetti-fall ' + fallTime + 's linear forwards, ' +
-                     'confetti-sway ' + swayTime + 's ease-in-out infinite;';
-        container.appendChild(p);
+
+    function explode(x, y, color) {
+      const count = 40 + Math.floor(Math.random() * 30);
+      for (let i = 0; i < count; i++) {
+        const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.3;
+        const speed = 1.5 + Math.random() * 3.5;
+        sparks.push({
+          x, y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          life: 1,
+          decay: 0.012 + Math.random() * 0.015,
+          color,
+          size: 2 + Math.random() * 2
+        });
       }
-    }, 2000);
+      // Play firework sound
+      try {
+        const c = ensureAudio();
+        const o = c.createOscillator(), g = c.createGain();
+        o.type = 'sine';
+        o.frequency.value = 200 + Math.random() * 400;
+        g.gain.value = 0.06;
+        g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.4);
+        o.connect(g); g.connect(c.destination);
+        o.start(); o.stop(c.currentTime + 0.4);
+      } catch(e){}
+    }
+
+    let nextRocket = 0;
+    function frame() {
+      const elapsed = (Date.now() - started) / 1000;
+      if (elapsed > 7) { ctx.clearRect(0,0,W,H); fwAnimId = null; return; }
+
+      ctx.fillStyle = 'rgba(0,0,0,0.15)';
+      ctx.fillRect(0, 0, W, H);
+
+      // Launch rockets periodically
+      if (elapsed > nextRocket) {
+        addRocket();
+        if (Math.random() > 0.5) addRocket(); // sometimes double
+        nextRocket = elapsed + 0.3 + Math.random() * 0.6;
+      }
+
+      // Update rockets
+      for (let i = rockets.length - 1; i >= 0; i--) {
+        const r = rockets[i];
+        r.trail.push({ x: r.x, y: r.y });
+        if (r.trail.length > 8) r.trail.shift();
+        r.y -= r.speed;
+        // Draw trail
+        for (let t = 0; t < r.trail.length; t++) {
+          const alpha = t / r.trail.length * 0.6;
+          ctx.fillStyle = r.color;
+          ctx.globalAlpha = alpha;
+          ctx.fillRect(r.trail[t].x - 1, r.trail[t].y, 2, 3);
+        }
+        ctx.globalAlpha = 1;
+        // Explode
+        if (r.y <= r.targetY) {
+          explode(r.x, r.y, r.color);
+          rockets.splice(i, 1);
+        }
+      }
+
+      // Update sparks
+      for (let i = sparks.length - 1; i >= 0; i--) {
+        const s = sparks[i];
+        s.x += s.vx;
+        s.y += s.vy;
+        s.vy += 0.04; // gravity
+        s.vx *= 0.985;
+        s.vy *= 0.985;
+        s.life -= s.decay;
+        if (s.life <= 0) { sparks.splice(i, 1); continue; }
+        ctx.globalAlpha = s.life;
+        ctx.fillStyle = s.color;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.size * s.life, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+
+      fwAnimId = requestAnimationFrame(frame);
+    }
+    ctx.clearRect(0, 0, W, H);
+    frame();
   }
 
   // ====== RENDER ======
