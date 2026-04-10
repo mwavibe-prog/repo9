@@ -11,7 +11,7 @@ app.use(express.static('public'));
 
 // ======================== CONSTANTS ========================
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const GRID_SIZE = 4;
 const ROUND_DURATION = 60;
 const TOTAL_ROUNDS = 5;
@@ -643,7 +643,7 @@ io.on('connection', (socket) => {
   socket.on('create-room', async () => {
     const code = generateRoomCode();
     const ip = getLocalIP();
-    const joinUrl = `http://${ip}:${PORT}/phone.html?room=${code}`;
+    const joinUrl = `https://repo9-production.up.railway.app/phone.html?room=${code}`;
     let qrDataUrl = '';
     try { qrDataUrl = await QRCode.toDataURL(joinUrl, { width: 280, margin: 1, color: { dark: '#2E4F1F', light: '#FFFFFF' } }); } catch (e) {}
 

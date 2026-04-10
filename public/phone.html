@@ -241,11 +241,17 @@
   .confetti-box { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
   .confetti-p {
     position: absolute; top: -16px;
-    animation: cfall linear forwards;
+    opacity: 0;
+    animation: cfall linear forwards, csway ease-in-out infinite;
   }
   @keyframes cfall {
-    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-    100% { transform: translateY(110vh) rotate(720deg); opacity: 0.7; }
+    0% { transform: translateY(-20px); opacity: 1; }
+    85% { opacity: 1; }
+    100% { transform: translateY(105vh); opacity: 0; }
+  }
+  @keyframes csway {
+    0%, 100% { margin-left: -12px; }
+    50% { margin-left: 12px; }
   }
   .endscreen .e-icon, .endscreen .e-head, .endscreen .e-stars,
   .endscreen .e-rating, .endscreen .e-body, .endscreen .encourage,
@@ -760,19 +766,44 @@
   function phoneConfetti(id) {
     const c = $(id); c.innerHTML = '';
     const colors = ['#FFD54F','#EF5350','#42A5F5','#66BB6A','#FF9800','#AB47BC','#26C6DA','#FF7043','#EC407A','#FFF176'];
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 60; i++) {
       const p = document.createElement('div');
       p.className = 'confetti-p';
       const col = colors[Math.floor(Math.random()*colors.length)];
-      p.style.left = Math.random()*100+'%';
-      p.style.background = col;
-      p.style.width = (6+Math.random()*8)+'px';
-      p.style.height = (6+Math.random()*8)+'px';
-      p.style.borderRadius = Math.random()>0.5 ? '50%' : '2px';
-      p.style.animationDuration = (2+Math.random()*3)+'s';
-      p.style.animationDelay = Math.random()*1.5+'s';
+      const fallTime = 2.5 + Math.random() * 3;
+      const swayTime = 1 + Math.random() * 2;
+      const delay = Math.random() * 2.5;
+      const size = 6 + Math.random() * 8;
+      p.style.cssText =
+        'left:' + (Math.random()*100) + '%;' +
+        'background:' + col + ';' +
+        'width:' + size + 'px;' +
+        'height:' + (size * (0.4 + Math.random()*0.6)) + 'px;' +
+        'border-radius:' + (Math.random()>0.5 ? '50%' : '2px') + ';' +
+        'animation: cfall ' + fallTime + 's ' + delay + 's linear forwards, ' +
+                   'csway ' + swayTime + 's ' + delay + 's ease-in-out infinite;';
       c.appendChild(p);
     }
+    // Second wave
+    setTimeout(() => {
+      for (let i = 0; i < 40; i++) {
+        const p = document.createElement('div');
+        p.className = 'confetti-p';
+        const col = colors[Math.floor(Math.random()*colors.length)];
+        const fallTime = 2 + Math.random() * 3;
+        const swayTime = 1 + Math.random() * 2;
+        const size = 6 + Math.random() * 8;
+        p.style.cssText =
+          'left:' + (Math.random()*100) + '%;' +
+          'background:' + col + ';' +
+          'width:' + size + 'px;' +
+          'height:' + (size * (0.4 + Math.random()*0.6)) + 'px;' +
+          'border-radius:' + (Math.random()>0.5 ? '50%' : '2px') + ';' +
+          'animation: cfall ' + fallTime + 's linear forwards, ' +
+                     'csway ' + swayTime + 's ease-in-out infinite;';
+        c.appendChild(p);
+      }
+    }, 1500);
   }
 
   socket.on('game-error', ({message}) => alert(message));

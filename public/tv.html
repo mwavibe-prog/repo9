@@ -344,13 +344,18 @@
   .confetti-container { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 1; }
   .confetti-piece {
     position: absolute;
-    width: 12px; height: 12px;
     top: -20px;
-    animation: confetti-fall linear forwards;
+    opacity: 0;
+    animation: confetti-fall linear forwards, confetti-sway ease-in-out infinite;
   }
   @keyframes confetti-fall {
-    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-    100% { transform: translateY(110vh) rotate(720deg); opacity: 0.7; }
+    0% { transform: translateY(-20px); opacity: 1; }
+    85% { opacity: 1; }
+    100% { transform: translateY(105vh); opacity: 0; }
+  }
+  @keyframes confetti-sway {
+    0%, 100% { margin-left: -15px; }
+    50% { margin-left: 15px; }
   }
 </style>
 </head>
@@ -700,21 +705,44 @@
     const container = $(containerId);
     container.innerHTML = '';
     const colors = ['#FFD54F','#EF5350','#42A5F5','#66BB6A','#FF9800','#AB47BC','#26C6DA','#FF7043','#EC407A','#FFF176'];
-    const shapes = ['square','circle'];
-    for (let i = 0; i < 80; i++) {
-      const piece = document.createElement('div');
-      piece.className = 'confetti-piece';
-      const color = colors[Math.floor(Math.random()*colors.length)];
-      const shape = shapes[Math.floor(Math.random()*shapes.length)];
-      piece.style.left = Math.random()*100 + '%';
-      piece.style.background = color;
-      piece.style.borderRadius = shape === 'circle' ? '50%' : '2px';
-      piece.style.width = (8 + Math.random()*10) + 'px';
-      piece.style.height = (8 + Math.random()*10) + 'px';
-      piece.style.animationDuration = (2 + Math.random()*3) + 's';
-      piece.style.animationDelay = Math.random()*2 + 's';
-      container.appendChild(piece);
+    for (let i = 0; i < 100; i++) {
+      const p = document.createElement('div');
+      p.className = 'confetti-piece';
+      const col = colors[Math.floor(Math.random()*colors.length)];
+      const fallTime = 2.5 + Math.random() * 3;
+      const swayTime = 1 + Math.random() * 2;
+      const delay = Math.random() * 3;
+      const size = 8 + Math.random() * 10;
+      p.style.cssText =
+        'left:' + (Math.random()*100) + '%;' +
+        'background:' + col + ';' +
+        'width:' + size + 'px;' +
+        'height:' + (size * (0.4 + Math.random()*0.6)) + 'px;' +
+        'border-radius:' + (Math.random()>0.5 ? '50%' : '2px') + ';' +
+        'animation: confetti-fall ' + fallTime + 's ' + delay + 's linear forwards, ' +
+                   'confetti-sway ' + swayTime + 's ' + delay + 's ease-in-out infinite;';
+      container.appendChild(p);
     }
+    // Respawn a second wave
+    setTimeout(() => {
+      for (let i = 0; i < 60; i++) {
+        const p = document.createElement('div');
+        p.className = 'confetti-piece';
+        const col = colors[Math.floor(Math.random()*colors.length)];
+        const fallTime = 2 + Math.random() * 3;
+        const swayTime = 1 + Math.random() * 2;
+        const size = 8 + Math.random() * 10;
+        p.style.cssText =
+          'left:' + (Math.random()*100) + '%;' +
+          'background:' + col + ';' +
+          'width:' + size + 'px;' +
+          'height:' + (size * (0.4 + Math.random()*0.6)) + 'px;' +
+          'border-radius:' + (Math.random()>0.5 ? '50%' : '2px') + ';' +
+          'animation: confetti-fall ' + fallTime + 's linear forwards, ' +
+                     'confetti-sway ' + swayTime + 's ease-in-out infinite;';
+        container.appendChild(p);
+      }
+    }, 2000);
   }
 
   // ====== RENDER ======
