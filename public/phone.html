@@ -237,9 +237,10 @@
   .endscreen .e-msg { font-size: 1.1rem; z-index: 2; }
   .endscreen { position: relative; overflow: hidden; }
 
-  /* Fireworks canvas */
-  .fw-canvas { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
-  .endscreen > *:not(.fw-canvas) { z-index: 2; position: relative; }
+  /* Smiley bounce on celebration screens */
+  .endscreen .smiley { font-size: 5rem; animation: smiley-bob 1s ease-in-out infinite alternate; }
+  @keyframes smiley-bob { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
+  .endscreen > * { z-index: 2; position: relative; }
 
   /* Phone leaderboard in celebration */
   .cel-board-phone {
@@ -355,7 +356,7 @@
       </div>
       <div class="task-header-right">
         <span class="coin-count" id="t-coins">&#x1FA99; 0</span>
-        <span>R<span id="t-round">1</span>/3</span>
+        <span>R<span id="t-round">1</span>/2</span>
         <span class="task-timer" id="t-timer">1:00</span>
       </div>
     </div>
@@ -397,8 +398,7 @@
 
   <!-- ROUND END (with confetti) -->
   <div class="screen endscreen" id="scr-rend">
-    <canvas class="fw-canvas" id="fw-re"></canvas>
-    <div class="e-icon" id="re-icon">&#x1F389;</div>
+    <div class="smiley">&#x1F60A;</div>
     <div class="e-head" id="re-head">Time's Up!</div>
     <div class="encourage" id="re-encourage"></div>
     <div class="e-body" id="re-body"></div>
@@ -411,9 +411,8 @@
 
   <!-- GAME OVER (with confetti) -->
   <div class="screen endscreen" id="scr-over">
-    <canvas class="fw-canvas" id="fw-go"></canvas>
-    <div class="e-icon" id="go-icon">&#x1F389;</div>
-    <div class="e-head" id="go-head">Game Over!</div>
+    <div class="smiley" style="font-size:6rem;">&#x1F60A;</div>
+    <div class="e-head" id="go-head">You are awesome!</div>
     <div class="e-stars" id="go-stars"></div>
     <div class="e-rating" id="go-rating"></div>
     <div class="encourage" id="go-encourage"></div>
@@ -707,7 +706,7 @@
       'Your score: <strong>' + (data.myScore || 0) + '</strong><br>' +
       '\u{2728} Perfect: <strong>' + (data.myPerfect || 0) + '</strong> &nbsp; \u{1FA99} Coins: <strong>' + (data.myCoins || 0) + '</strong>';
     if (data.leaderboard) renderPhoneCelLB($('re-lb'), data.leaderboard);
-    launchFireworks('fw-re');
+    sfxWin();
     show('scr-rend');
   });
 
@@ -728,7 +727,7 @@
       'Your score: <strong>' + (data.myScore || 0) + '</strong><br>' +
       '\u{2728} Perfect: <strong>' + (data.myPerfect || 0) + '</strong> &nbsp; \u{1FA99} Coins: <strong>' + (data.myCoins || 0) + '</strong>';
     if (data.leaderboard) renderPhoneCelLB($('go-lb'), data.leaderboard);
-    launchFireworks('fw-go');
+    sfxWin();
     show('scr-over');
   });
 
@@ -745,77 +744,6 @@
         '<span style="font-weight:800">' + p.score + '</span>' +
         '</div>';
     }).join('');
-  }
-
-  // ====== FIREWORKS ENGINE ======
-  let fwId = null;
-  function launchFireworks(canvasId) {
-    if (fwId) { cancelAnimationFrame(fwId); fwId = null; }
-    const cv = $(canvasId);
-    const par = cv.parentElement;
-    cv.width = par.offsetWidth; cv.height = par.offsetHeight;
-    const ctx = cv.getContext('2d');
-    const W = cv.width, H = cv.height;
-    const colors = ['#FFD54F','#EF5350','#42A5F5','#66BB6A','#FF9800','#AB47BC','#26C6DA','#FF7043','#EC407A','#FFF176','#E040FB','#76FF03'];
-    const rockets = [], sparks = [];
-    const t0 = Date.now();
-
-    function addRocket() {
-      rockets.push({
-        x: W*(0.15+Math.random()*0.7), y: H,
-        ty: H*(0.1+Math.random()*0.35),
-        sp: 3+Math.random()*2.5,
-        col: colors[Math.floor(Math.random()*colors.length)],
-        tr: []
-      });
-    }
-    function boom(x,y,col) {
-      const n = 30+Math.floor(Math.random()*20);
-      for (let i=0;i<n;i++) {
-        const a = (Math.PI*2*i)/n + (Math.random()-0.5)*0.3;
-        const sp = 1+Math.random()*3;
-        sparks.push({ x,y, vx:Math.cos(a)*sp, vy:Math.sin(a)*sp, life:1, dec:0.013+Math.random()*0.016, col, sz:1.5+Math.random()*1.5 });
-      }
-      sfxPerfect();
-    }
-
-    let nxt = 0;
-    function frame() {
-      const el = (Date.now()-t0)/1000;
-      if (el > 7) { ctx.clearRect(0,0,W,H); fwId = null; return; }
-      ctx.fillStyle = 'rgba(0,0,0,0.18)';
-      ctx.fillRect(0,0,W,H);
-
-      if (el > nxt) { addRocket(); nxt = el + 0.4+Math.random()*0.7; }
-
-      for (let i=rockets.length-1;i>=0;i--) {
-        const r = rockets[i];
-        r.tr.push({x:r.x,y:r.y}); if(r.tr.length>6) r.tr.shift();
-        r.y -= r.sp;
-        for (let t=0;t<r.tr.length;t++) {
-          ctx.globalAlpha = t/r.tr.length*0.5;
-          ctx.fillStyle = r.col;
-          ctx.fillRect(r.tr[t].x-1, r.tr[t].y, 2, 2);
-        }
-        ctx.globalAlpha = 1;
-        if (r.y <= r.ty) { boom(r.x,r.y,r.col); rockets.splice(i,1); }
-      }
-
-      for (let i=sparks.length-1;i>=0;i--) {
-        const s = sparks[i];
-        s.x+=s.vx; s.y+=s.vy; s.vy+=0.04; s.vx*=0.985; s.vy*=0.985; s.life-=s.dec;
-        if (s.life<=0) { sparks.splice(i,1); continue; }
-        ctx.globalAlpha = s.life;
-        ctx.fillStyle = s.col;
-        ctx.beginPath();
-        ctx.arc(s.x,s.y, s.sz*s.life, 0, Math.PI*2);
-        ctx.fill();
-      }
-      ctx.globalAlpha = 1;
-      fwId = requestAnimationFrame(frame);
-    }
-    ctx.clearRect(0,0,W,H);
-    frame();
   }
 
   socket.on('game-error', ({message}) => alert(message));

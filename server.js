@@ -14,7 +14,7 @@ app.use(express.static('public'));
 const PORT = 3000;
 const GRID_SIZE = 4;
 const ROUND_DURATION = 60;
-const TOTAL_ROUNDS = 3;
+const TOTAL_ROUNDS = 2;
 const PROBLEMS_PER_ROUND = 40; // max tasks including distractors and coins
 
 const ROLES = ['water', 'sun', 'seed', 'animal'];
