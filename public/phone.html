@@ -6,90 +6,56 @@
 <title>Garden Guardians</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  :root {
-    --role: #4CAF50;
-    --role-light: rgba(76,175,80,0.15);
-    --bg: #1a2e12;
-  }
-
+  :root { --role: #4CAF50; --bg: #1a2e12; }
   body {
     font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    background: var(--bg);
-    color: #fafafa;
+    background: var(--bg); color: #fafafa;
     min-height: 100vh; min-height: 100dvh;
     overflow-x: hidden;
     -webkit-tap-highlight-color: transparent;
-    font-size: 18px;
+    font-size: 20px;
   }
-
-  /* ====== SCREENS ====== */
   .screen { display: none; min-height: 100vh; min-height: 100dvh; }
   .screen.active { display: flex; }
 
   /* ====== JOIN ====== */
   .join {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 28px 20px;
-    gap: 18px;
+    flex-direction: column; align-items: center;
+    justify-content: center; padding: 28px 20px; gap: 16px;
     background: linear-gradient(160deg, #1a3a0a, #2E4F1F, #3a6b24);
   }
-  .join-logos {
-    display: flex; align-items: center; gap: 14px;
-  }
-  .join-logos img {
-    height: 50px; border-radius: 8px; background: #fff; padding: 4px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-  }
-  .join-logos .logo-fb {
-    height: 50px; border-radius: 8px; background: #fff; padding: 4px 12px;
-    display: none; align-items: center; color: #1a237e; font-weight: 800; font-size: 11px;
-    text-align: center; line-height: 1.1;
-  }
-  .join-title { font-size: 1.8rem; font-weight: 900; text-align: center; }
-
+  .join-logos { display: flex; align-items: center; gap: 14px; }
+  .join-logos img { height: 50px; border-radius: 8px; background: #fff; padding: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+  .join-logos .lfb { height: 50px; border-radius: 8px; background: #fff; padding: 4px 12px; display: none; align-items: center; color: #1a237e; font-weight: 800; font-size: 11px; text-align: center; line-height: 1.1; }
+  .join h1 { font-size: 1.8rem; font-weight: 900; text-align: center; }
   .join-box {
-    background: rgba(0,0,0,0.3);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 20px;
-    padding: 24px 20px;
-    width: 100%; max-width: 380px;
+    background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px; padding: 24px 20px; width: 100%; max-width: 400px;
   }
-  .join-box label {
-    display: block; font-size: 1.1rem; font-weight: 700;
-    margin-bottom: 8px;
-  }
+  .join-box label { display: block; font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
   .join-box input {
     width: 100%; padding: 16px 18px;
-    border: 3px solid rgba(255,255,255,0.15);
-    border-radius: 14px;
-    background: rgba(255,255,255,0.08);
-    color: #fff; font-size: 1.2rem;
-    margin-bottom: 18px; outline: none;
+    border: 3px solid rgba(255,255,255,0.15); border-radius: 14px;
+    background: rgba(255,255,255,0.08); color: #fff; font-size: 1.3rem;
+    margin-bottom: 16px; outline: none;
   }
   .join-box input:focus { border-color: rgba(255,255,255,0.4); }
   .join-box input::placeholder { color: rgba(255,255,255,0.3); }
-  .join-box .code-input {
-    text-align: center; font-size: 2.2rem; font-weight: 900;
-    letter-spacing: 10px; text-transform: uppercase;
-  }
-  .btn-join {
+  .join-box .code-input { text-align: center; font-size: 2.4rem; font-weight: 900; letter-spacing: 12px; text-transform: uppercase; }
+  .btn-big {
     width: 100%; padding: 18px;
     background: linear-gradient(135deg, #43A047, #2E7D32);
     color: #fff; border: none; border-radius: 16px;
-    font-size: 1.4rem; font-weight: 800; cursor: pointer;
+    font-size: 1.5rem; font-weight: 800; cursor: pointer;
     box-shadow: 0 4px 16px rgba(0,0,0,0.3);
   }
-  .btn-join:active { transform: scale(0.97); }
-  .btn-join:disabled { opacity: 0.5; }
-  .join-error { color: #EF9A9A; font-size: 1rem; text-align: center; margin-top: 10px; min-height: 24px; }
-
+  .btn-big:active { transform: scale(0.97); }
+  .btn-big:disabled { opacity: 0.5; }
+  .join-err { color: #EF9A9A; font-size: 1rem; text-align: center; margin-top: 10px; min-height: 24px; }
   .join-help {
     background: rgba(0,0,0,0.2); border-radius: 14px;
-    padding: 16px 18px; max-width: 380px; width: 100%;
-    font-size: 1rem; line-height: 1.8; opacity: 0.7;
+    padding: 14px 18px; max-width: 400px; width: 100%;
+    font-size: 1.05rem; line-height: 1.8; opacity: 0.65;
   }
 
   /* ====== WAITING ====== */
@@ -99,185 +65,151 @@
     background: linear-gradient(160deg, #1a3a0a, #2E4F1F);
   }
   .role-card {
-    background: rgba(0,0,0,0.3);
-    border: 4px solid var(--role);
-    border-radius: 24px; padding: 36px;
-    text-align: center; width: 100%; max-width: 340px;
+    background: rgba(0,0,0,0.3); border: 4px solid var(--role);
+    border-radius: 24px; padding: 36px; text-align: center;
+    width: 100%; max-width: 360px;
   }
-  .role-icon-big { font-size: 5rem; margin-bottom: 12px; display: block; }
-  .role-title { font-size: 2rem; font-weight: 900; color: var(--role); margin-bottom: 8px; }
-  .role-desc { font-size: 1.2rem; opacity: 0.8; line-height: 1.6; }
-  .waiting-text { font-size: 1.2rem; opacity: 0.5; }
-  .your-name { font-size: 1.4rem; font-weight: 700; }
+  .role-card .icon { font-size: 5rem; display: block; margin-bottom: 12px; }
+  .role-card .name { font-size: 2rem; font-weight: 900; color: var(--role); margin-bottom: 8px; }
+  .role-card .desc { font-size: 1.2rem; opacity: 0.8; line-height: 1.6; }
+  .wait-name { font-size: 1.4rem; font-weight: 700; }
+  .wait-msg { font-size: 1.2rem; opacity: 0.5; }
 
-  /* ====== GAME ====== */
-  .game { flex-direction: column; background: #111; }
-
-  .game-top {
-    background: var(--role);
-    padding: 14px 18px;
+  /* ====== TASK (main game screen) ====== */
+  .task {
+    flex-direction: column; background: #111;
+  }
+  .task-header {
+    background: var(--role); padding: 14px 18px;
     display: flex; align-items: center; justify-content: space-between;
-    flex-shrink: 0;
   }
-  .game-top-left { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.2rem; }
-  .game-top-right { display: flex; align-items: center; gap: 16px; }
-  .game-timer { font-weight: 900; font-size: 1.4rem; font-variant-numeric: tabular-nums; }
-  .game-timer.warn { animation: pulse-text 0.8s ease-in-out infinite; }
-  @keyframes pulse-text { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+  .task-header-left { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.2rem; }
+  .task-header-right { display: flex; align-items: center; gap: 14px; font-size: 1rem; }
+  .task-timer { font-weight: 900; font-size: 1.4rem; font-variant-numeric: tabular-nums; }
+  .task-timer.warn { animation: blink 0.8s ease-in-out infinite; }
+  @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
 
-  .game-body {
-    flex: 1; overflow-y: auto; padding: 14px;
-    display: flex; flex-direction: column; gap: 14px;
-  }
-
-  /* Stats */
-  .stats-row { display: flex; gap: 8px; }
-  .stat-box {
-    flex: 1; background: rgba(255,255,255,0.07);
-    border-radius: 12px; padding: 10px; text-align: center;
-  }
-  .stat-label { font-size: 0.85rem; opacity: 0.5; }
-  .stat-num { font-size: 1.5rem; font-weight: 900; }
-
-  /* Action banner */
-  .action-banner {
-    background: var(--role); border-radius: 14px;
-    padding: 16px 20px; text-align: center;
-    font-weight: 800; font-size: 1.3rem; line-height: 1.4;
+  .task-body {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 20px; gap: 16px;
   }
 
-  /* Clues */
-  .section-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; }
+  /* Plot display */
+  .plot-display {
+    background: linear-gradient(180deg, #5D4037, #4E342E, #33691E);
+    border-radius: 24px; border: 5px solid #3E2723;
+    width: 180px; height: 180px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .plot-display .plant { font-size: 5rem; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4)); }
+  .plot-display .animal-badge {
+    position: absolute; top: -8px; right: -8px;
+    font-size: 2.5rem; animation: bounce 0.6s ease-in-out infinite alternate;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+  }
+  @keyframes bounce { 0% { transform: translateY(0); } 100% { transform: translateY(-8px); } }
+  .plot-label-big { font-size: 1.3rem; font-weight: 800; opacity: 0.7; }
 
-  .clue {
-    background: rgba(255,255,255,0.06);
-    border: 3px solid rgba(255,255,255,0.1);
-    border-radius: 14px;
-    padding: 16px 18px;
-    margin-bottom: 8px;
-    font-size: 1.3rem; font-weight: 600;
-    line-height: 1.5;
-    display: flex; align-items: center; gap: 12px;
-    transition: all 0.3s;
+  /* Clue */
+  .clue-box {
+    background: rgba(255,255,255,0.08);
+    border: 3px solid rgba(255,255,255,0.12);
+    border-radius: 18px; padding: 18px 24px;
+    text-align: center; max-width: 360px; width: 100%;
   }
-  .clue-dot {
-    width: 18px; height: 18px; border-radius: 50%;
-    flex-shrink: 0;
-    background: #EF5350;
-    box-shadow: 0 0 8px rgba(239,83,80,0.5);
-    animation: dot-pulse 1.5s ease-in-out infinite;
-  }
-  @keyframes dot-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
-  .clue.done { border-color: #66BB6A; background: rgba(102,187,106,0.1); opacity: 0.5; }
-  .clue.done .clue-dot { background: #66BB6A; box-shadow: none; animation: none; }
+  .clue-text { font-size: 1.5rem; font-weight: 700; line-height: 1.4; }
+  .clue-hint { font-size: 2rem; margin-top: 8px; display: block; }
 
-  /* Phone Garden */
-  .phone-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
+  .progress-text { font-size: 1.1rem; opacity: 0.4; }
+
+  /* 3 big action buttons */
+  .action-row {
+    display: flex; gap: 12px; width: 100%; max-width: 400px;
   }
-  .phone-cell {
-    aspect-ratio: 1;
-    background: rgba(255,255,255,0.05);
-    border: 3px solid rgba(255,255,255,0.1);
-    border-radius: 14px;
+  .action-btn {
+    flex: 1;
+    background: rgba(255,255,255,0.08);
+    border: 4px solid rgba(255,255,255,0.15);
+    border-radius: 20px;
+    padding: 20px 8px;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    cursor: pointer; position: relative;
-    min-height: 72px;
+    gap: 8px;
+    cursor: pointer; transition: all 0.15s;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
-    transition: all 0.15s;
+    min-height: 120px;
   }
-  .phone-cell:active:not(.off) { transform: scale(0.92); }
-  .phone-cell .cell-emoji { font-size: 2rem; pointer-events: none; }
-  .phone-cell .cell-label {
-    position: absolute; top: 2px; left: 5px;
-    font-size: 0.7rem; opacity: 0.35; font-weight: 700;
-    pointer-events: none;
-  }
-  .phone-cell .cell-hint {
-    position: absolute; bottom: 2px;
-    font-size: 0.65rem; opacity: 0.5;
-    pointer-events: none;
-  }
+  .action-btn:active { transform: scale(0.93); }
+  .action-btn .btn-icon { font-size: 1.8rem; pointer-events: none; }
+  .action-btn .btn-label { font-size: 1rem; font-weight: 700; opacity: 0.7; pointer-events: none; }
+  .action-btn:hover { border-color: var(--role); background: rgba(255,255,255,0.12); }
 
-  /* Target cell - glowing border */
-  .phone-cell.target {
-    border-color: var(--role);
-    background: var(--role-light);
-    animation: glow 1.2s ease-in-out infinite;
-    box-shadow: 0 0 12px var(--role);
-  }
-  @keyframes glow {
-    0%, 100% { box-shadow: 0 0 8px var(--role); }
-    50% { box-shadow: 0 0 22px var(--role); }
-  }
+  .action-btn.pop { animation: pop 0.4s ease; border-color: #66BB6A; background: rgba(102,187,106,0.15); }
+  .action-btn.shake { animation: shake 0.35s ease; border-color: #EF5350; background: rgba(239,83,80,0.1); }
+  @keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.1); } 100% { transform: scale(1); } }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
 
-  .phone-cell.done-cell {
-    border-color: #66BB6A;
-    background: rgba(102,187,106,0.1);
-    animation: none; box-shadow: none;
+  /* ====== RESULT OVERLAY ====== */
+  .result-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85); z-index: 100;
+    align-items: center; justify-content: center;
+    flex-direction: column; gap: 14px;
   }
-  .phone-cell.done-cell::after {
-    content: '\u2714'; position: absolute; top: 3px; right: 5px;
-    font-size: 1rem; color: #66BB6A; pointer-events: none;
-  }
+  .result-overlay.active { display: flex; }
+  .result-emoji { font-size: 5rem; }
+  .result-msg { font-size: 2rem; font-weight: 900; text-align: center; }
+  .result-detail { font-size: 1.3rem; opacity: 0.7; text-align: center; }
+  .result-points { font-size: 1.6rem; font-weight: 800; color: #FFD54F; }
 
-  .phone-cell.shake { animation: shake 0.35s ease; }
-  @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
-
-  .phone-cell.pop { animation: pop 0.45s ease; }
-  @keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.18); } 100% { transform: scale(1); } }
-
-  /* Toast */
-  .toast {
-    position: fixed; top: 72px; left: 50%;
-    transform: translateX(-50%);
-    padding: 14px 28px; border-radius: 14px;
-    font-weight: 800; font-size: 1.3rem;
-    z-index: 200; opacity: 0;
-    transition: all 0.3s ease;
-    pointer-events: none; text-align: center;
-    max-width: 90%;
-  }
-  .toast.show { opacity: 1; }
-  .toast.ok { background: #2E7D32; color: #fff; }
-  .toast.no { background: #C62828; color: #fff; }
-
-  /* ====== ROUND END ====== */
-  .round-end {
+  /* ====== ALL DONE ====== */
+  .alldone {
     flex-direction: column; align-items: center;
-    justify-content: center; padding: 36px; gap: 18px;
+    justify-content: center; padding: 32px; gap: 18px;
     background: linear-gradient(160deg, #1a3a0a, #2E4F1F);
     text-align: center;
   }
-  .re-icon { font-size: 5rem; }
-  .re-head { font-size: 2rem; font-weight: 900; }
-  .re-body { font-size: 1.4rem; line-height: 2.2; }
-  .re-note { font-size: 1.1rem; opacity: 0.5; }
+  .alldone .icon { font-size: 5rem; }
+  .alldone .head { font-size: 2rem; font-weight: 900; }
+  .alldone .body { font-size: 1.4rem; line-height: 2; }
+  .alldone .note { font-size: 1.1rem; opacity: 0.5; }
 
-  /* ====== GAME OVER ====== */
-  .game-over {
+  /* ====== ROUND END / GAME OVER ====== */
+  .endscreen {
     flex-direction: column; align-items: center;
-    justify-content: center; padding: 36px; gap: 14px;
+    justify-content: center; padding: 32px; gap: 14px;
     background: linear-gradient(160deg, #1a3a0a, #2E4F1F);
     text-align: center;
   }
-  .go-icon { font-size: 5rem; }
-  .go-head { font-size: 2.2rem; font-weight: 900; }
-  .go-stars { font-size: 2.4rem; }
-  .go-rating { font-size: 1.6rem; font-weight: 700; color: #FFD54F; }
-  .go-body { font-size: 1.4rem; line-height: 2.2; }
-  .go-msg { font-size: 1.1rem; margin-top: 6px; }
+  .endscreen .e-icon { font-size: 5rem; }
+  .endscreen .e-head { font-size: 2.2rem; font-weight: 900; }
+  .endscreen .e-stars { font-size: 2.4rem; }
+  .endscreen .e-rating { font-size: 1.6rem; font-weight: 700; color: #FFD54F; }
+  .endscreen .e-body { font-size: 1.4rem; line-height: 2.2; }
+  .endscreen .e-msg { font-size: 1.1rem; }
   .btn-again {
     margin-top: 18px; padding: 16px 40px;
     background: linear-gradient(135deg, #43A047, #2E7D32);
     color: #fff; border: none; border-radius: 16px;
     font-size: 1.4rem; font-weight: 800; cursor: pointer;
   }
-  .btn-again:active { transform: scale(0.97); }
+
+  /* Toast */
+  .toast {
+    position: fixed; top: 72px; left: 50%; transform: translateX(-50%);
+    padding: 14px 28px; border-radius: 14px;
+    font-weight: 800; font-size: 1.3rem; z-index: 200;
+    opacity: 0; transition: all 0.3s ease; pointer-events: none;
+    text-align: center; max-width: 90%;
+  }
+  .toast.show { opacity: 1; }
+  .toast.ok { background: #2E7D32; color: #fff; }
+  .toast.no { background: #C62828; color: #fff; }
+  .toast.close { background: #E65100; color: #fff; }
 </style>
 </head>
 <body>
@@ -285,260 +217,284 @@
   <!-- JOIN -->
   <div class="screen join active" id="scr-join">
     <div class="join-logos">
-      <img src="images/crest-logo.png" alt="Crest" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-      <div class="logo-fb">CREST<br>SECONDARY</div>
-      <img src="images/weeswares-logo.png" alt="WeesWares" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-      <div class="logo-fb">WEESWARES</div>
+      <img src="images/crest-logo.png" alt="Crest" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+      <div class="lfb">CREST<br>SECONDARY</div>
+      <img src="images/weeswares-logo.png" alt="WeesWares" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+      <div class="lfb">WEESWARES</div>
     </div>
-    <div class="join-title">&#x1F33F; Garden Guardians</div>
-
+    <h1>&#x1F33F; Garden Guardians</h1>
     <div class="join-box">
       <label>Your Name</label>
       <input type="text" id="inp-name" placeholder="Type your name" maxlength="20" autocomplete="off">
       <label>Room Code (from TV)</label>
       <input type="text" id="inp-code" class="code-input" placeholder="- - - -" maxlength="4" autocomplete="off">
-      <button class="btn-join" id="btn-join" onclick="doJoin()">Join Game</button>
-      <div class="join-error" id="join-err"></div>
+      <button class="btn-big" id="btn-join" onclick="doJoin()">Join Game</button>
+      <div class="join-err" id="join-err"></div>
     </div>
-
     <div class="join-help">
-      <strong>How to play:</strong><br>
-      1. Type your name and room code.<br>
-      2. You get a job in the garden.<br>
-      3. <strong>Don't show</strong> your phone!<br>
-      4. <strong>Talk</strong> to your team.<br>
-      5. Tap the right box to help!
+      1. Type your name and code from TV.<br>
+      2. You get a garden job.<br>
+      3. Pick the <strong>right amount</strong> to help!
     </div>
   </div>
 
   <!-- WAITING -->
   <div class="screen waiting" id="scr-wait">
-    <div class="your-name" id="disp-name"></div>
+    <div class="wait-name" id="w-name"></div>
     <div class="role-card">
-      <span class="role-icon-big" id="disp-icon"></span>
-      <div class="role-title" id="disp-role"></div>
-      <div class="role-desc" id="disp-desc"></div>
+      <span class="icon" id="w-icon"></span>
+      <div class="name" id="w-role"></div>
+      <div class="desc" id="w-desc"></div>
     </div>
-    <div class="waiting-text">Waiting for game to start...</div>
+    <div class="wait-msg">Waiting for game to start...</div>
   </div>
 
-  <!-- GAME -->
-  <div class="screen game" id="scr-game">
-    <div class="game-top">
-      <div class="game-top-left">
-        <span id="gt-icon"></span>
-        <span id="gt-role"></span>
+  <!-- TASK -->
+  <div class="screen task" id="scr-task">
+    <div class="task-header">
+      <div class="task-header-left">
+        <span id="t-icon"></span>
+        <span id="t-role"></span>
       </div>
-      <div class="game-top-right">
-        <span>R<span id="gt-round">1</span>/5</span>
-        <span class="game-timer" id="gt-timer">3:00</span>
-      </div>
-    </div>
-
-    <div class="game-body">
-      <div class="stats-row">
-        <div class="stat-box">
-          <div class="stat-label">Score</div>
-          <div class="stat-num" id="st-score">0</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Health</div>
-          <div class="stat-num" id="st-health">100%</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Done</div>
-          <div class="stat-num" id="st-done">0/0</div>
-        </div>
-      </div>
-
-      <div class="action-banner" id="action-banner">
-        Tap a glowing box to help!
-      </div>
-
-      <div>
-        <div class="section-title">&#x1F4CB; Your Tasks</div>
-        <div id="clue-list"></div>
-      </div>
-
-      <div>
-        <div class="section-title">&#x1F33B; Garden &mdash; Tap to act!</div>
-        <div class="phone-grid" id="phone-grid"></div>
+      <div class="task-header-right">
+        <span>R<span id="t-round">1</span>/5</span>
+        <span class="task-timer" id="t-timer">3:00</span>
       </div>
     </div>
+    <div class="task-body">
+      <div class="plot-label-big" id="t-plot-label">Plot A2</div>
+      <div class="plot-display" id="t-plot">
+        <span class="plant" id="t-plant-emoji"></span>
+      </div>
+      <div class="clue-box">
+        <div class="clue-text" id="t-clue"></div>
+        <span class="clue-hint" id="t-hint"></span>
+      </div>
+      <div class="progress-text" id="t-progress">Task 1 of 3</div>
+      <div class="action-row" id="t-buttons"></div>
+    </div>
+  </div>
+
+  <!-- RESULT OVERLAY -->
+  <div class="result-overlay" id="result-overlay">
+    <div class="result-emoji" id="r-emoji"></div>
+    <div class="result-msg" id="r-msg"></div>
+    <div class="result-detail" id="r-detail"></div>
+    <div class="result-points" id="r-points"></div>
+  </div>
+
+  <!-- ALL DONE -->
+  <div class="screen alldone" id="scr-done">
+    <div class="icon">&#x1F389;</div>
+    <div class="head">All Done!</div>
+    <div class="body" id="d-body"></div>
+    <div class="note">Watch the TV!<br>Waiting for round to end...</div>
   </div>
 
   <!-- ROUND END -->
-  <div class="screen round-end" id="scr-rend">
-    <div class="re-icon" id="re-icon">&#x1F33F;</div>
-    <div class="re-head" id="re-head">Round Done!</div>
-    <div class="re-body" id="re-body"></div>
-    <div class="re-note">Next round coming...</div>
+  <div class="screen endscreen" id="scr-rend">
+    <div class="e-icon" id="re-icon">&#x1F33F;</div>
+    <div class="e-head" id="re-head">Round Done!</div>
+    <div class="e-body" id="re-body"></div>
+    <div class="e-msg">Next round coming...</div>
   </div>
 
   <!-- GAME OVER -->
-  <div class="screen game-over" id="scr-over">
-    <div class="go-icon" id="go-icon">&#x1F338;</div>
-    <div class="go-head" id="go-head">Game Over!</div>
-    <div class="go-stars" id="go-stars"></div>
-    <div class="go-rating" id="go-rating"></div>
-    <div class="go-body" id="go-body"></div>
-    <div class="go-msg" id="go-msg"></div>
+  <div class="screen endscreen" id="scr-over">
+    <div class="e-icon" id="go-icon">&#x1F338;</div>
+    <div class="e-head" id="go-head">Game Over!</div>
+    <div class="e-stars" id="go-stars"></div>
+    <div class="e-rating" id="go-rating"></div>
+    <div class="e-body" id="go-body"></div>
+    <div class="e-msg" id="go-msg"></div>
     <button class="btn-again" onclick="location.reload()">Play Again</button>
   </div>
 
-  <!-- TOAST -->
   <div class="toast" id="toast"></div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
 (function() {
   const socket = io();
-  let myRole = '', myRoleName = '', clues = [], garden = null;
-  let timerInt = null, timeLeft = 0, canAct = false, cooldown = false;
+  let myRole = '', myRoleName = '', myButtons = [], myLabels = [];
+  let timerInt = null, timeLeft = 0, canAct = false;
   const $ = id => document.getElementById(id);
 
-  // ====== SOUND (Web Audio API - gentle, calming) ======
+  // ====== SOUND (Web Audio - gentle tones) ======
   const AC = window.AudioContext || window.webkitAudioContext;
   let ctx = null;
   function audio() { if (!ctx) ctx = new AC(); return ctx; }
-
-  function tone(freq, dur, type, vol) {
+  function tone(f, d, t, v) {
     try {
-      const c = audio();
-      const o = c.createOscillator(), g = c.createGain();
-      o.type = type || 'sine'; o.frequency.value = freq;
-      g.gain.value = vol || 0.15;
-      g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + dur);
-      o.connect(g); g.connect(c.destination);
-      o.start(); o.stop(c.currentTime + dur);
-    } catch(e) {}
+      const c = audio(), o = c.createOscillator(), g = c.createGain();
+      o.type = t||'sine'; o.frequency.value = f;
+      g.gain.value = v||0.15; g.gain.exponentialRampToValueAtTime(0.001, c.currentTime+d);
+      o.connect(g); g.connect(c.destination); o.start(); o.stop(c.currentTime+d);
+    } catch(e){}
   }
+  function sfxTap() { tone(500, 0.04, 'sine', 0.08); }
+  function sfxPerfect() { tone(660,0.12,'sine',0.2); setTimeout(()=>tone(880,0.2,'sine',0.18),100); setTimeout(()=>tone(1047,0.3,'sine',0.15),200); }
+  function sfxClose() { tone(523,0.15,'sine',0.15); setTimeout(()=>tone(659,0.2,'sine',0.12),120); }
+  function sfxWrong() { tone(220,0.3,'triangle',0.1); }
+  function sfxStart() { tone(523,0.12,'sine',0.14); setTimeout(()=>tone(659,0.12,'sine',0.14),100); setTimeout(()=>tone(784,0.25,'sine',0.14),200); }
+  function sfxAllDone() { [523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,0.25,'sine',0.12),i*130)); }
+  function sfxWin() { [523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,0.3,'sine',0.14),i*160)); }
+  function sfxLose() { [392,349,330,262].forEach((f,i)=>setTimeout(()=>tone(f,0.35,'sine',0.08),i*220)); }
 
-  // Gentle chime for correct action
-  function sfxGood() {
-    tone(660, 0.15, 'sine', 0.2);
-    setTimeout(() => tone(880, 0.25, 'sine', 0.18), 100);
-  }
-  // Soft low tone for wrong
-  function sfxBad() { tone(220, 0.25, 'triangle', 0.1); }
-  // Water drop sound
-  function sfxWater() { tone(1200, 0.08, 'sine', 0.12); setTimeout(() => tone(800, 0.15, 'sine', 0.1), 80); }
-  // Sun shade sound
-  function sfxSun() { tone(550, 0.2, 'sine', 0.1); setTimeout(() => tone(440, 0.2, 'sine', 0.08), 150); }
-  // Plant seed sound
-  function sfxSeed() { tone(400, 0.1, 'sine', 0.12); setTimeout(() => tone(500, 0.1, 'sine', 0.12), 80); setTimeout(() => tone(600, 0.15, 'sine', 0.12), 160); }
-  // Shoo animal sound
-  function sfxShoo() { tone(700, 0.08, 'square', 0.06); setTimeout(() => tone(900, 0.08, 'square', 0.05), 60); setTimeout(() => tone(1100, 0.1, 'square', 0.04), 120); }
-  // Role-specific correct sound
-  function sfxAction() {
-    const m = { water: sfxWater, sun: sfxSun, seed: sfxSeed, animal: sfxShoo };
-    (m[myRole] || sfxGood)();
-  }
-  // Round start chime
-  function sfxStart() { tone(523, 0.15, 'sine', 0.14); setTimeout(() => tone(659, 0.15, 'sine', 0.14), 120); setTimeout(() => tone(784, 0.3, 'sine', 0.14), 240); }
-  // Win melody
-  function sfxWin() { [523,659,784,1047].forEach((f,i) => setTimeout(() => tone(f, 0.3, 'sine', 0.14), i*160)); }
-  // Lose
-  function sfxLose() { [392,349,330,262].forEach((f,i) => setTimeout(() => tone(f, 0.35, 'sine', 0.08), i*220)); }
-  // Tap feedback
-  function sfxTap() { tone(600, 0.04, 'sine', 0.08); }
+  document.addEventListener('touchstart', ()=>audio(), {once:true});
+  document.addEventListener('click', ()=>audio(), {once:true});
 
-  // Init audio on touch
-  document.addEventListener('touchstart', () => audio(), { once: true });
-  document.addEventListener('click', () => audio(), { once: true });
-
-  // Auto-fill room code from URL
-  const params = new URLSearchParams(window.location.search);
+  // Auto-fill room code
+  const params = new URLSearchParams(location.search);
   if (params.get('room')) $('inp-code').value = params.get('room');
 
   // ====== JOIN ======
   window.doJoin = () => {
     const name = $('inp-name').value.trim();
     const code = $('inp-code').value.trim().toUpperCase();
-    if (!name) { $('join-err').textContent = 'Please type your name.'; return; }
-    if (code.length < 4) { $('join-err').textContent = 'Type the 4-letter code from TV.'; return; }
-    $('btn-join').disabled = true;
-    $('join-err').textContent = '';
+    if (!name) { $('join-err').textContent = 'Type your name.'; return; }
+    if (code.length < 4) { $('join-err').textContent = 'Type the 4-letter code.'; return; }
+    $('btn-join').disabled = true; $('join-err').textContent = '';
     socket.emit('join-room', { code, name });
   };
-
-  $('inp-code').addEventListener('keydown', e => { if (e.key === 'Enter') doJoin(); });
-  $('inp-name').addEventListener('keydown', e => { if (e.key === 'Enter') $('inp-code').focus(); });
-  $('inp-code').addEventListener('input', function() { this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); });
-
-  socket.on('join-error', ({ message }) => { $('join-err').textContent = message; $('btn-join').disabled = false; });
+  $('inp-code').addEventListener('keydown', e => { if (e.key==='Enter') doJoin(); });
+  $('inp-name').addEventListener('keydown', e => { if (e.key==='Enter') $('inp-code').focus(); });
+  $('inp-code').addEventListener('input', function() { this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g,''); });
+  socket.on('join-error', ({message}) => { $('join-err').textContent = message; $('btn-join').disabled = false; });
 
   // ====== JOINED ======
-  socket.on('joined', (data) => {
+  socket.on('joined', data => {
     myRole = data.role; myRoleName = data.roleName;
+    myButtons = data.buttons; myLabels = data.labels;
     document.documentElement.style.setProperty('--role', data.roleColor);
-    document.documentElement.style.setProperty('--role-light', data.roleColor + '22');
-    $('disp-name').textContent = 'Hello, ' + data.playerName + '!';
-    $('disp-icon').textContent = data.roleIcon;
-    $('disp-role').textContent = data.roleName;
-    $('disp-desc').textContent = data.roleDesc;
+    $('w-name').textContent = 'Hello, ' + data.playerName + '!';
+    $('w-icon').textContent = data.roleIcon;
+    $('w-role').textContent = data.roleName;
+    $('w-desc').textContent = data.roleDesc;
     show('scr-wait');
   });
 
   // ====== GAME STARTING ======
   socket.on('game-starting', () => {
     sfxStart();
-    const wt = document.querySelector('.waiting-text');
-    if (wt) wt.textContent = 'Starting! Get ready...';
+    document.querySelector('.wait-msg').textContent = 'Starting! Get ready...';
   });
 
-  // ====== ROUND START ======
-  socket.on('round-start', (data) => {
-    clues = data.clues || []; garden = data.garden;
-    timeLeft = data.duration; canAct = true;
+  // ====== PROBLEM (new task arrives) ======
+  socket.on('problem', data => {
+    canAct = true;
+    $('result-overlay').classList.remove('active');
     sfxStart();
-    $('gt-icon').textContent = roleIcon(myRole);
-    $('gt-role').textContent = myRoleName;
-    $('gt-round').textContent = data.round;
-    $('st-score').textContent = data.score;
-    $('st-health').textContent = data.health + '%';
-    updateDone();
-    setBanner();
-    drawClues(); drawGrid();
-    startTimer(data.duration);
-    show('scr-game');
-  });
 
-  // ====== CLUES UPDATE ======
-  socket.on('clues-update', (data) => {
-    clues = data.clues || clues;
-    $('st-score').textContent = data.score;
-    $('st-health').textContent = data.health + '%';
-    updateDone(); drawClues(); drawGrid();
-  });
+    $('t-icon').textContent = { water:'\u{1F4A7}', sun:'\u{2600}\u{FE0F}', seed:'\u{1F331}', animal:'\u{1F6E1}\u{FE0F}' }[myRole] || '';
+    $('t-role').textContent = myRoleName;
+    $('t-round').textContent = data.round;
+    $('t-plot-label').textContent = 'Plot ' + data.plotLabel;
+    $('t-plant-emoji').textContent = data.plotEmoji || '\u{1F7EB}';
+    $('t-clue').textContent = data.clueText;
+    $('t-hint').textContent = data.clueHint || '';
+    $('t-hint').style.display = data.clueHint ? 'block' : 'none';
+    $('t-progress').textContent = 'Task ' + data.problemNum + ' of ' + data.totalProblems;
 
-  // ====== ACTION FEEDBACK ======
-  socket.on('action-feedback', (data) => {
-    if (data.success) {
-      sfxAction(); sfxGood();
-      showToast(data.msg, 'ok');
-    } else {
-      sfxBad();
-      showToast(data.msg, 'no');
+    // Remove old animal badge
+    const oldBadge = document.querySelector('.animal-badge');
+    if (oldBadge) oldBadge.remove();
+
+    // Show animal if relevant (from garden data in problem)
+    // We'll add it if role is animal guardian
+    if (myRole === 'animal') {
+      const badge = document.createElement('span');
+      badge.className = 'animal-badge';
+      badge.textContent = '\u{1F430}'; // generic
+      $('t-plot').appendChild(badge);
     }
+
+    // Render 3 action buttons
+    const row = $('t-buttons');
+    row.innerHTML = '';
+    for (let i = 0; i < 3; i++) {
+      const btn = document.createElement('div');
+      btn.className = 'action-btn';
+      btn.innerHTML = '<span class="btn-icon">' + (data.buttons ? data.buttons[i] : myButtons[i]) + '</span>' +
+        '<span class="btn-label">' + (data.labels ? data.labels[i] : myLabels[i]) + '</span>';
+      const level = i + 1;
+      btn.addEventListener('click', () => pickAction(level, btn));
+      row.appendChild(btn);
+    }
+
+    if (!timerInt) startTimer(data.duration || timeLeft);
+    show('scr-task');
+  });
+
+  // ====== PICK ACTION ======
+  function pickAction(level, btnEl) {
+    if (!canAct) return;
+    canAct = false;
+    sfxTap();
+    socket.emit('player-action', { level });
+    // Visual feedback on button press (will update on result)
+    btnEl.style.borderColor = 'var(--role)';
+    btnEl.style.background = 'rgba(255,255,255,0.15)';
+  }
+
+  // ====== ACTION RESULT ======
+  socket.on('action-result', data => {
+    stopTimer();
+    const ov = $('result-overlay');
+
+    if (data.result === 'perfect') {
+      sfxPerfect();
+      $('r-emoji').textContent = '\u{2728}';
+      $('r-msg').textContent = data.msg;
+      $('r-detail').textContent = 'Just the right amount!';
+      $('r-points').textContent = '+' + data.points + ' points';
+    } else if (data.result === 'close') {
+      sfxClose();
+      $('r-emoji').textContent = '\u{1F44D}';
+      $('r-msg').textContent = data.msg;
+      const needed = data.correctLevel;
+      $('r-detail').textContent = 'Needed: ' + (myButtons[needed-1] || needed);
+      $('r-points').textContent = '+' + data.points + ' points';
+    } else {
+      sfxWrong();
+      $('r-emoji').textContent = '\u{1F914}';
+      $('r-msg').textContent = data.msg;
+      const needed = data.correctLevel;
+      $('r-detail').textContent = 'Answer was: ' + (myButtons[needed-1] || needed);
+      $('r-points').textContent = '0 points';
+    }
+
+    ov.classList.add('active');
+    // Result overlay stays until next problem arrives (server sends after 2.5s)
+  });
+
+  // ====== ALL DONE ======
+  socket.on('all-done', data => {
+    sfxAllDone();
+    $('result-overlay').classList.remove('active');
+    $('d-body').innerHTML = 'Perfect: <strong>' + data.solved + '/' + data.total + '</strong><br>' +
+      'Score: <strong>' + data.score + '</strong><br>' +
+      'Health: <strong>' + data.health + '%</strong>';
+    show('scr-done');
   });
 
   // ====== ROUND END ======
-  socket.on('round-end', (data) => {
-    canAct = false; stopTimer();
+  socket.on('round-end', data => {
+    stopTimer();
+    $('result-overlay').classList.remove('active');
     const pct = data.total > 0 ? Math.round((data.solved/data.total)*100) : 0;
-    $('re-icon').textContent = pct >= 80 ? '\u{1F33B}' : pct >= 50 ? '\u{1F33F}' : '\u{1F940}';
+    $('re-icon').textContent = pct >= 70 ? '\u{1F33B}' : pct >= 40 ? '\u{1F33F}' : '\u{1F940}';
     $('re-head').textContent = 'Round ' + data.round + ' Done!';
-    $('re-body').innerHTML =
-      'Solved: <strong>' + data.solved + '/' + data.total + '</strong><br>' +
+    $('re-body').innerHTML = 'Solved: <strong>' + data.solved + '/' + data.total + '</strong><br>' +
       'Health: <strong>' + data.health + '%</strong><br>' +
       'Score: <strong>' + data.score + '</strong>';
     show('scr-rend');
   });
 
   // ====== GAME OVER ======
-  socket.on('game-over', (data) => {
-    canAct = false; stopTimer();
+  socket.on('game-over', data => {
+    stopTimer();
+    $('result-overlay').classList.remove('active');
     data.win ? sfxWin() : sfxLose();
     $('go-icon').textContent = data.rating.emoji;
     $('go-head').textContent = data.win ? 'You Win!' : 'Game Over';
@@ -549,112 +505,27 @@
     show('scr-over');
   });
 
-  socket.on('game-error', ({ message }) => { alert(message); });
+  socket.on('game-error', ({message}) => alert(message));
 
-  // ====== DRAW FUNCTIONS ======
-  function drawClues() {
-    const el = $('clue-list'); el.innerHTML = '';
-    if (!clues.length) { el.innerHTML = '<div style="opacity:0.4; padding:8px; font-size:1.1rem;">No tasks yet.</div>'; return; }
-    clues.forEach(c => {
-      const d = document.createElement('div');
-      d.className = 'clue' + (c.solved ? ' done' : '');
-      d.innerHTML = '<span class="clue-dot"></span><span>' + esc(c.clue) + '</span>';
-      el.appendChild(d);
-    });
-  }
-
-  function drawGrid() {
-    if (!garden) return;
-    const g = $('phone-grid'); g.innerHTML = '';
-    const targets = new Set(), solved = new Set();
-    clues.forEach(c => {
-      const k = c.row+','+c.col;
-      if (c.solved) solved.add(k); else targets.add(k);
-    });
-
-    for (let r = 0; r < 4; r++) {
-      for (let c = 0; c < 4; c++) {
-        const p = garden[r][c];
-        const d = document.createElement('div');
-        d.className = 'phone-cell';
-        const k = r+','+c;
-        if (targets.has(k)) d.classList.add('target');
-        else if (solved.has(k)) d.classList.add('done-cell');
-
-        let em = '';
-        if (p.plant) em = p.displayEmoji || '';
-        if (p.animal) {
-          em += (p.animal === 'rabbit' ? '\u{1F430}' : p.animal === 'bird' ? '\u{1F426}' : '\u{1F40C}');
-        }
-        d.innerHTML =
-          '<span class="cell-label">' + String.fromCharCode(65+r) + (c+1) + '</span>' +
-          '<span class="cell-emoji">' + em + '</span>';
-
-        // Simple visual hint per role
-        if (myRole === 'water' && p.moisture < 30) d.innerHTML += '<span class="cell-hint">\u{1F4A7}\u{2757}</span>';
-        if (myRole === 'sun' && p.sunlight > 75) d.innerHTML += '<span class="cell-hint">\u{2600}\u{FE0F}\u{2757}</span>';
-        if (myRole === 'seed' && !p.plant) d.innerHTML += '<span class="cell-hint">\u{1F331}</span>';
-        if (myRole === 'animal' && p.animal) d.innerHTML += '<span class="cell-hint">\u{26A0}\u{FE0F}</span>';
-
-        d.addEventListener('click', () => tapCell(r, c, d));
-        g.appendChild(d);
-      }
-    }
-  }
-
-  function tapCell(row, col, el) {
-    if (!canAct || cooldown) return;
-    sfxTap();
-    cooldown = true; setTimeout(() => cooldown = false, 600);
-    socket.emit('player-action', { row, col });
-
-    const isTarget = clues.some(c => !c.solved && c.row === row && c.col === col);
-    el.classList.add(isTarget ? 'pop' : 'shake');
-    setTimeout(() => { el.classList.remove('pop'); el.classList.remove('shake'); }, 500);
-  }
-
-  function setBanner() {
-    const banners = {
-      water: '\u{1F4A7} Tap the glowing box to water it!',
-      sun: '\u{2600}\u{FE0F} Tap the glowing box to add shade!',
-      seed: '\u{1F331} Tap the glowing box to plant!',
-      animal: '\u{1F6E1}\u{FE0F} Tap the glowing box to shoo!'
-    };
-    $('action-banner').textContent = banners[myRole] || 'Tap a glowing box!';
-  }
-
-  function updateDone() {
-    $('st-done').textContent = clues.filter(c => c.solved).length + '/' + clues.length;
-  }
-
+  // ====== TIMER ======
   function startTimer(dur) {
     stopTimer(); timeLeft = dur; showTime();
-    timerInt = setInterval(() => { timeLeft--; if (timeLeft < 0) timeLeft = 0; showTime(); }, 1000);
+    timerInt = setInterval(() => { timeLeft--; if (timeLeft<0) timeLeft=0; showTime(); }, 1000);
   }
   function stopTimer() { if (timerInt) { clearInterval(timerInt); timerInt = null; } }
   function showTime() {
     const m = Math.floor(timeLeft/60), s = timeLeft%60;
-    $('gt-timer').textContent = m + ':' + String(s).padStart(2,'0');
-    $('gt-timer').className = 'game-timer' + (timeLeft <= 30 ? ' warn' : '');
+    const el = $('t-timer');
+    if (el) { el.textContent = m+':'+String(s).padStart(2,'0'); el.className = 'task-timer'+(timeLeft<=30?' warn':''); }
   }
 
-  function showToast(msg, type) {
-    const t = $('toast');
-    t.textContent = msg;
-    t.className = 'toast ' + type + ' show';
-    setTimeout(() => t.classList.remove('show'), 2000);
+  function show(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    $(id).classList.add('active');
   }
 
-  function show(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); $(id).classList.add('active'); }
-
-  function roleIcon(r) {
-    return { water: '\u{1F4A7}', sun: '\u{2600}\u{FE0F}', seed: '\u{1F331}', animal: '\u{1F6E1}\u{FE0F}' }[r] || '';
-  }
-
-  function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
-
-  socket.on('time-sync', ({ timeLeft: t }) => { timeLeft = t; });
-  setInterval(() => { if (canAct) socket.emit('get-time'); }, 15000);
+  socket.on('time-sync', ({timeLeft:t}) => { timeLeft = t; });
+  setInterval(() => socket.emit('get-time'), 15000);
 })();
 </script>
 </body>
