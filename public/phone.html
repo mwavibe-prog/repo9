@@ -234,7 +234,39 @@
   .endscreen .e-stars { font-size: 2.4rem; }
   .endscreen .e-rating { font-size: 1.6rem; font-weight: 700; color: #FFD54F; }
   .endscreen .e-body { font-size: 1.4rem; line-height: 2.2; }
-  .endscreen .e-msg { font-size: 1.1rem; }
+  .endscreen .e-msg { font-size: 1.1rem; z-index: 2; }
+  .endscreen { position: relative; overflow: hidden; }
+
+  /* Confetti */
+  .confetti-box { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+  .confetti-p {
+    position: absolute; top: -16px;
+    animation: cfall linear forwards;
+  }
+  @keyframes cfall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0.7; }
+  }
+  .endscreen .e-icon, .endscreen .e-head, .endscreen .e-stars,
+  .endscreen .e-rating, .endscreen .e-body, .endscreen .encourage,
+  .endscreen .btn-again, .endscreen .cel-board-phone { z-index: 2; position: relative; }
+
+  /* Phone leaderboard in celebration */
+  .cel-board-phone {
+    width: 100%; max-width: 360px;
+    background: rgba(0,0,0,0.3); border-radius: 16px;
+    padding: 16px; border: 1px solid rgba(255,255,255,0.1);
+    max-height: 35vh; overflow-y: auto;
+  }
+  .cel-board-phone h4 { font-size: 1.1rem; text-align: center; margin-bottom: 8px; }
+  .p-cel-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 4px 8px; font-size: 1.05rem; line-height: 1.8;
+    border-radius: 8px;
+  }
+  .p-cel-row.me { background: rgba(255,255,255,0.1); font-weight: 800; }
+  .p-cel-row:nth-child(2) { font-weight: 800; }
+
   .btn-again {
     margin-top: 18px; padding: 16px 40px;
     background: linear-gradient(135deg, #43A047, #2E7D32);
@@ -373,24 +405,33 @@
     <div class="lb-rows" id="lb-rows"></div>
   </div>
 
-  <!-- ROUND END -->
+  <!-- ROUND END (with confetti) -->
   <div class="screen endscreen" id="scr-rend">
-    <div class="e-icon" id="re-icon">&#x1F33F;</div>
-    <div class="e-head" id="re-head">Round Done!</div>
+    <div class="confetti-box" id="confetti-re"></div>
+    <div class="e-icon" id="re-icon">&#x1F389;</div>
+    <div class="e-head" id="re-head">Time's Up!</div>
     <div class="encourage" id="re-encourage"></div>
     <div class="e-body" id="re-body"></div>
+    <div class="cel-board-phone" id="re-lb-box">
+      <h4>&#x1F3C6; Leaderboard</h4>
+      <div id="re-lb"></div>
+    </div>
     <div class="e-msg">Next round coming...</div>
   </div>
 
-  <!-- GAME OVER -->
+  <!-- GAME OVER (with confetti) -->
   <div class="screen endscreen" id="scr-over">
-    <div class="e-icon" id="go-icon">&#x1F338;</div>
+    <div class="confetti-box" id="confetti-go"></div>
+    <div class="e-icon" id="go-icon">&#x1F389;</div>
     <div class="e-head" id="go-head">Game Over!</div>
     <div class="e-stars" id="go-stars"></div>
     <div class="e-rating" id="go-rating"></div>
     <div class="encourage" id="go-encourage"></div>
     <div class="e-body" id="go-body"></div>
-    <div class="e-msg" id="go-msg"></div>
+    <div class="cel-board-phone" id="go-lb-box">
+      <h4>&#x1F3C6; Final Leaderboard</h4>
+      <div id="go-lb"></div>
+    </div>
     <button class="btn-again" onclick="location.reload()">Play Again</button>
   </div>
 
@@ -660,35 +701,35 @@
     }).join('');
   }
 
-  // ====== ROUND END ======
+  // ====== ROUND END → CELEBRATION ======
   socket.on('round-end', data => {
-    stopTimer();
+    stopTimer(); sfxWin();
     $('result-overlay').classList.remove('active');
     $('lb-popup').classList.remove('show');
 
-    // Personal stats
     const myRank = data.myRank || '?';
     const totalP = data.totalPlayers || '?';
-    $('re-icon').textContent = myRank <= 3 ? '\u{1F3C6}' : '\u{1F33B}';
-    $('re-head').textContent = 'Round ' + data.round + ' Done!';
+    $('re-icon').textContent = '\u{1F389}';
+    $('re-head').textContent = 'Time\u2019s Up!';
     $('re-encourage').textContent = data.encouragement || 'Great effort!';
     $('re-body').innerHTML =
       'Your rank: <strong>#' + myRank + '</strong> of ' + totalP + '<br>' +
       'Your score: <strong>' + (data.myScore || 0) + '</strong><br>' +
       '\u{2728} Perfect: <strong>' + (data.myPerfect || 0) + '</strong> &nbsp; \u{1FA99} Coins: <strong>' + (data.myCoins || 0) + '</strong>';
+    if (data.leaderboard) renderPhoneCelLB($('re-lb'), data.leaderboard);
+    phoneConfetti('confetti-re');
     show('scr-rend');
   });
 
-  // ====== GAME OVER ======
+  // ====== GAME OVER → CELEBRATION ======
   socket.on('game-over', data => {
-    stopTimer();
+    stopTimer(); sfxWin();
     $('result-overlay').classList.remove('active');
     $('lb-popup').classList.remove('show');
-    data.win ? sfxWin() : sfxLose();
 
     const myRank = data.myRank || '?';
-    $('go-icon').textContent = data.rating.emoji;
-    $('go-head').textContent = data.win ? 'You Win!' : 'Game Over';
+    $('go-icon').textContent = '\u{1F389}';
+    $('go-head').textContent = data.win ? 'You Win!' : 'Game Over!';
     $('go-stars').textContent = '\u{2B50}'.repeat(data.rating.stars);
     $('go-rating').textContent = data.rating.name;
     $('go-encourage').textContent = data.encouragement || 'Well played!';
@@ -696,9 +737,43 @@
       'Your rank: <strong>#' + myRank + '</strong><br>' +
       'Your score: <strong>' + (data.myScore || 0) + '</strong><br>' +
       '\u{2728} Perfect: <strong>' + (data.myPerfect || 0) + '</strong> &nbsp; \u{1FA99} Coins: <strong>' + (data.myCoins || 0) + '</strong>';
-    $('go-msg').textContent = data.message;
+    if (data.leaderboard) renderPhoneCelLB($('go-lb'), data.leaderboard);
+    phoneConfetti('confetti-go');
     show('scr-over');
   });
+
+  function renderPhoneCelLB(el, board) {
+    if (!board || !board.length) { el.innerHTML = ''; return; }
+    const myName = ($('w-name').textContent || '').replace('Hello, ', '').replace('!', '');
+    const medals = ['\u{1F947}', '\u{1F948}', '\u{1F949}'];
+    el.innerHTML = board.map((p, i) => {
+      const isMe = p.name === myName;
+      return '<div class="p-cel-row' + (isMe ? ' me' : '') + '">' +
+        '<span style="width:28px;text-align:center;">' + (i < 3 ? medals[i] : '#'+(i+1)) + '</span>' +
+        '<span style="color:' + p.roleColor + '">' + p.roleIcon + '</span>' +
+        '<span style="flex:1">' + esc(p.name) + (isMe ? ' (you)' : '') + '</span>' +
+        '<span style="font-weight:800">' + p.score + '</span>' +
+        '</div>';
+    }).join('');
+  }
+
+  function phoneConfetti(id) {
+    const c = $(id); c.innerHTML = '';
+    const colors = ['#FFD54F','#EF5350','#42A5F5','#66BB6A','#FF9800','#AB47BC','#26C6DA','#FF7043','#EC407A','#FFF176'];
+    for (let i = 0; i < 50; i++) {
+      const p = document.createElement('div');
+      p.className = 'confetti-p';
+      const col = colors[Math.floor(Math.random()*colors.length)];
+      p.style.left = Math.random()*100+'%';
+      p.style.background = col;
+      p.style.width = (6+Math.random()*8)+'px';
+      p.style.height = (6+Math.random()*8)+'px';
+      p.style.borderRadius = Math.random()>0.5 ? '50%' : '2px';
+      p.style.animationDuration = (2+Math.random()*3)+'s';
+      p.style.animationDelay = Math.random()*1.5+'s';
+      c.appendChild(p);
+    }
+  }
 
   socket.on('game-error', ({message}) => alert(message));
 

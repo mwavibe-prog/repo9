@@ -304,6 +304,54 @@
   .starting-overlay.active { display: flex; }
   .starting-text { font-size: 3.5rem; font-weight: 900; animation: zoom-pulse 1s ease-in-out infinite; }
   @keyframes zoom-pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.7; } }
+
+  /* ====== CONFETTI CELEBRATION ====== */
+  .celebrate {
+    display: none; position: fixed; inset: 0;
+    background: linear-gradient(160deg, #1a3a0a, #2E4F1F);
+    z-index: 200;
+    flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 16px; overflow: hidden;
+  }
+  .celebrate.active { display: flex; }
+  .celebrate h1 { font-size: 3.5rem; font-weight: 900; text-shadow: 0 4px 16px rgba(0,0,0,0.4); z-index: 2; }
+  .celebrate h2 { font-size: 1.8rem; font-weight: 700; opacity: 0.7; z-index: 2; }
+  .celebrate .cel-board {
+    z-index: 2; width: 90%; max-width: 600px;
+    background: rgba(0,0,0,0.3); border-radius: 20px;
+    padding: 24px 28px; border: 2px solid rgba(255,255,255,0.1);
+    max-height: 50vh; overflow-y: auto;
+  }
+  .celebrate .cel-board h3 { font-size: 1.5rem; margin-bottom: 12px; text-align: center; }
+  .cel-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 12px; font-size: 1.3rem; line-height: 1.6;
+    border-radius: 10px; margin-bottom: 4px;
+  }
+  .cel-row:nth-child(1) { background: rgba(255,215,0,0.15); font-size: 1.6rem; font-weight: 900; }
+  .cel-row:nth-child(2) { background: rgba(192,192,192,0.1); font-size: 1.4rem; font-weight: 700; }
+  .cel-row:nth-child(3) { background: rgba(205,127,50,0.1); font-size: 1.3rem; font-weight: 700; }
+  .cel-rank { width: 40px; text-align: center; }
+  .cel-name { flex: 1; }
+  .cel-pts { font-weight: 900; }
+  .cel-coins { opacity: 0.5; font-size: 0.85em; }
+  .celebrate .cel-stats { font-size: 1.4rem; line-height: 2; text-align: center; z-index: 2; }
+  .celebrate .cel-next { font-size: 1.1rem; opacity: 0.5; z-index: 2; }
+  .celebrate .btn-start { z-index: 2; }
+
+  /* Confetti particles */
+  .confetti-container { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 1; }
+  .confetti-piece {
+    position: absolute;
+    width: 12px; height: 12px;
+    top: -20px;
+    animation: confetti-fall linear forwards;
+  }
+  @keyframes confetti-fall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0.7; }
+  }
 </style>
 </head>
 <body>
@@ -408,30 +456,31 @@
     </div>
   </div>
 
-  <!-- ROUND END OVERLAY -->
-  <div class="overlay" id="round-end-overlay">
-    <div class="overlay-card" style="max-width:650px;">
-      <div class="big-emoji" id="round-end-emoji">&#x1F33F;</div>
-      <h2 id="round-end-title">Round Done!</h2>
-      <div class="stats" id="round-end-stats"></div>
-      <h3 style="margin:16px 0 8px;">&#x1F3C6; Leaderboard</h3>
-      <div id="round-lb" style="text-align:left; font-size:1.2rem; line-height:2;"></div>
-      <div class="countdown-text" id="round-end-countdown">Next round soon...</div>
+  <!-- CELEBRATION SCREEN (round end) -->
+  <div class="celebrate" id="celebrate-screen">
+    <div class="confetti-container" id="confetti-rend"></div>
+    <h1 id="cel-title">&#x1F389; Time's Up! &#x1F389;</h1>
+    <h2 id="cel-subtitle">Round 1 Complete</h2>
+    <div class="cel-board">
+      <h3>&#x1F3C6; Leaderboard</h3>
+      <div id="cel-lb"></div>
     </div>
+    <div class="cel-stats" id="cel-stats"></div>
+    <div class="cel-next" id="cel-next">Next round starting soon...</div>
   </div>
 
-  <!-- GAME OVER OVERLAY -->
-  <div class="overlay" id="gameover-overlay">
-    <div class="overlay-card" style="max-width:650px;">
-      <div class="big-emoji" id="gameover-emoji">&#x1F338;</div>
-      <h2 id="gameover-title">Game Over!</h2>
-      <div class="stars" id="gameover-stars"></div>
-      <div class="rating-name" id="gameover-rating"></div>
-      <div class="stats" id="gameover-stats"></div>
-      <h3 style="margin:16px 0 8px;">&#x1F3C6; Final Leaderboard</h3>
-      <div id="gameover-lb" style="text-align:left; font-size:1.2rem; line-height:2;"></div>
-      <button class="btn-start" onclick="location.reload()" style="margin-top:16px; font-size:1.4rem; padding:16px 40px;">Play Again</button>
+  <!-- GAME OVER CELEBRATION -->
+  <div class="celebrate" id="gameover-screen">
+    <div class="confetti-container" id="confetti-go"></div>
+    <h1 id="go-title2">&#x1F389; Game Over! &#x1F389;</h1>
+    <div class="stars" id="gameover-stars" style="font-size:3rem; z-index:2;"></div>
+    <div class="rating-name" id="gameover-rating" style="font-size:2rem; z-index:2;"></div>
+    <div class="cel-board">
+      <h3>&#x1F3C6; Final Leaderboard</h3>
+      <div id="gameover-lb"></div>
     </div>
+    <div class="cel-stats" id="go-stats2"></div>
+    <button class="btn-start" onclick="location.reload()" style="margin-top:12px; font-size:1.4rem; padding:16px 40px; z-index:2;">Play Again</button>
   </div>
 
   <!-- STARTING -->
@@ -593,43 +642,80 @@
     }).join('');
   }
 
-  // ====== ROUND END ======
+  // ====== ROUND END → CELEBRATION ======
   socket.on('round-end', (data) => {
-    stopTimer(); sfxRoundEnd();
+    stopTimer(); sfxWin();
     $('lb-overlay').classList.remove('active');
     $('score-display').textContent = data.score;
     updateHealth(data.health);
     if (data.garden) renderGarden(data.garden, []);
-    const pct = data.total > 0 ? Math.round((data.solved / data.total) * 100) : 0;
-    $('round-end-emoji').textContent = pct >= 80 ? '\u{1F33B}' : pct >= 50 ? '\u{1F33F}' : '\u{1F940}';
-    $('round-end-title').textContent = 'Round ' + data.round + ' Done!';
-    $('round-end-stats').innerHTML =
-      'Solved: <strong>' + data.solved + ' / ' + data.total + '</strong><br>' +
-      'Health: <strong>' + data.health + '%</strong><br>' +
-      'Score: <strong>' + data.score + '</strong>';
-    $('round-end-countdown').textContent = data.round < data.totalRounds && data.health > 0 ? 'Next round soon...' : '';
-    if (data.leaderboard) renderLB($('round-lb'), data.leaderboard);
-    $('round-end-overlay').classList.add('active');
+
+    $('cel-title').textContent = '\u{1F389} Time\u2019s Up! \u{1F389}';
+    $('cel-subtitle').textContent = 'Round ' + data.round + ' Complete';
+    $('cel-stats').innerHTML =
+      'Team Score: <strong>' + data.score + '</strong> &nbsp; Health: <strong>' + data.health + '%</strong>';
+    $('cel-next').textContent = data.round < data.totalRounds && data.health > 0 ? 'Next round starting soon...' : '';
+    if (data.leaderboard) renderCelLB($('cel-lb'), data.leaderboard);
+    spawnConfetti('confetti-rend');
+    $('celebrate-screen').classList.add('active');
+    // Auto-hide before next round
+    setTimeout(() => $('celebrate-screen').classList.remove('active'), 6500);
   });
 
-  // ====== GAME OVER ======
+  // ====== GAME OVER → CELEBRATION ======
   socket.on('game-over', (data) => {
     stopTimer();
-    $('round-end-overlay').classList.remove('active');
+    $('celebrate-screen').classList.remove('active');
     $('lb-overlay').classList.remove('active');
-    data.win ? sfxWin() : sfxLose();
-    $('gameover-emoji').textContent = data.rating.emoji;
-    $('gameover-title').textContent = data.win ? 'You Win!' : 'Game Over';
+    sfxWin();
+
+    $('go-title2').textContent = data.win ? '\u{1F389} You Win! \u{1F389}' : '\u{1F389} Game Over! \u{1F389}';
     $('gameover-stars').textContent = '\u{2B50}'.repeat(data.rating.stars);
     $('gameover-rating').textContent = data.rating.name;
-    $('gameover-stats').innerHTML =
-      'Score: <strong>' + data.score + '</strong><br>' +
-      '\u{1FA99} Coins: <strong>' + (data.coins || 0) + '</strong><br>' +
+    $('go-stats2').innerHTML =
+      'Team Score: <strong>' + data.score + '</strong> &nbsp; ' +
+      '\u{1FA99} Coins: <strong>' + (data.coins||0) + '</strong> &nbsp; ' +
       'Health: <strong>' + data.health + '%</strong>';
-    if (data.leaderboard) renderLB($('gameover-lb'), data.leaderboard);
-    $('gameover-overlay').classList.add('active');
+    if (data.leaderboard) renderCelLB($('gameover-lb'), data.leaderboard);
+    spawnConfetti('confetti-go');
+    $('gameover-screen').classList.add('active');
     if (data.garden) renderGarden(data.garden, []);
   });
+
+  function renderCelLB(el, board) {
+    if (!board || !board.length) { el.innerHTML = ''; return; }
+    const medals = ['\u{1F947}', '\u{1F948}', '\u{1F949}'];
+    el.innerHTML = board.map((p, i) => {
+      return '<div class="cel-row">' +
+        '<span class="cel-rank">' + (i < 3 ? medals[i] : '#'+(i+1)) + '</span>' +
+        '<span style="color:' + p.roleColor + '">' + p.roleIcon + '</span>' +
+        '<span class="cel-name">' + esc(p.name) + '</span>' +
+        '<span class="cel-pts">' + p.score + '</span>' +
+        '<span class="cel-coins">\u{1FA99}' + p.coins + '</span>' +
+        '</div>';
+    }).join('');
+  }
+
+  function spawnConfetti(containerId) {
+    const container = $(containerId);
+    container.innerHTML = '';
+    const colors = ['#FFD54F','#EF5350','#42A5F5','#66BB6A','#FF9800','#AB47BC','#26C6DA','#FF7043','#EC407A','#FFF176'];
+    const shapes = ['square','circle'];
+    for (let i = 0; i < 80; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      const color = colors[Math.floor(Math.random()*colors.length)];
+      const shape = shapes[Math.floor(Math.random()*shapes.length)];
+      piece.style.left = Math.random()*100 + '%';
+      piece.style.background = color;
+      piece.style.borderRadius = shape === 'circle' ? '50%' : '2px';
+      piece.style.width = (8 + Math.random()*10) + 'px';
+      piece.style.height = (8 + Math.random()*10) + 'px';
+      piece.style.animationDuration = (2 + Math.random()*3) + 's';
+      piece.style.animationDelay = Math.random()*2 + 's';
+      container.appendChild(piece);
+    }
+  }
 
   // ====== RENDER ======
   function renderGarden(garden, assigns) {
