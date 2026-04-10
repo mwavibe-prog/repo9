@@ -356,7 +356,7 @@
       </div>
       <div class="task-header-right">
         <span class="coin-count" id="t-coins">&#x1FA99; 0</span>
-        <span>R<span id="t-round">1</span>/2</span>
+        <span id="t-round"></span>
         <span class="task-timer" id="t-timer">1:00</span>
       </div>
     </div>
@@ -396,20 +396,7 @@
     <div class="lb-rows" id="lb-rows"></div>
   </div>
 
-  <!-- ROUND END (with confetti) -->
-  <div class="screen endscreen" id="scr-rend">
-    <div class="smiley">&#x1F60A;</div>
-    <div class="e-head" id="re-head">Time's Up!</div>
-    <div class="encourage" id="re-encourage"></div>
-    <div class="e-body" id="re-body"></div>
-    <div class="cel-board-phone" id="re-lb-box">
-      <h4>&#x1F3C6; Leaderboard</h4>
-      <div id="re-lb"></div>
-    </div>
-    <div class="e-msg">Next round coming...</div>
-  </div>
-
-  <!-- GAME OVER (with confetti) -->
+  <!-- GAME OVER -->
   <div class="screen endscreen" id="scr-over">
     <div class="smiley" style="font-size:6rem;">&#x1F60A;</div>
     <div class="e-head" id="go-head">You are awesome!</div>
@@ -689,26 +676,6 @@
         '</div>';
     }).join('');
   }
-
-  // ====== ROUND END → CELEBRATION ======
-  socket.on('round-end', data => {
-    stopTimer(); sfxWin();
-    $('result-overlay').classList.remove('active');
-    $('lb-popup').classList.remove('show');
-
-    const myRank = data.myRank || '?';
-    const totalP = data.totalPlayers || '?';
-    $('re-icon').textContent = '\u{1F389}';
-    $('re-head').textContent = 'Time\u2019s Up!';
-    $('re-encourage').textContent = data.encouragement || 'Great effort!';
-    $('re-body').innerHTML =
-      'Your rank: <strong>#' + myRank + '</strong> of ' + totalP + '<br>' +
-      'Your score: <strong>' + (data.myScore || 0) + '</strong><br>' +
-      '\u{2728} Perfect: <strong>' + (data.myPerfect || 0) + '</strong> &nbsp; \u{1FA99} Coins: <strong>' + (data.myCoins || 0) + '</strong>';
-    if (data.leaderboard) renderPhoneCelLB($('re-lb'), data.leaderboard);
-    sfxWin();
-    show('scr-rend');
-  });
 
   // ====== GAME OVER → CELEBRATION ======
   socket.on('game-over', data => {

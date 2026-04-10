@@ -386,10 +386,6 @@
   <div class="screen game" id="game-screen">
     <div class="side-panel">
       <div class="info-card">
-        <div class="label">Round</div>
-        <div class="round-val" id="round-display">1 / 5</div>
-      </div>
-      <div class="info-card">
         <div class="label">Time</div>
         <div class="timer-display" id="timer-display">1:00</div>
       </div>
@@ -445,19 +441,6 @@
       <h2>&#x1F3C6; Leaderboard</h2>
       <div id="lb-list" style="text-align:left; font-size:1.3rem; line-height:2.2;"></div>
     </div>
-  </div>
-
-  <!-- CELEBRATION SCREEN (round end) -->
-  <div class="celebrate" id="celebrate-screen">
-    <h1 style="font-size:8rem; z-index:2;">&#x1F60A;</h1>
-    <h1 id="cel-title">Time's Up!</h1>
-    <h2 id="cel-subtitle">Round 1 Complete</h2>
-    <div class="cel-board">
-      <h3>&#x1F3C6; Leaderboard</h3>
-      <div id="cel-lb"></div>
-    </div>
-    <div class="cel-stats" id="cel-stats"></div>
-    <div class="cel-next" id="cel-next">Next round starting soon...</div>
   </div>
 
   <!-- GAME OVER CELEBRATION -->
@@ -558,19 +541,16 @@
     }, 2800);
   });
 
-  // ====== ROUND START ======
+  // ====== GAME START ======
   socket.on('round-start', (data) => {
-    currentRound = data.round;
     assignments = data.assignments || [];
     timeLeft = data.duration;
     sfxRoundStart();
-    $('round-end-overlay').classList.remove('active');
-    $('round-display').textContent = data.round + ' / ' + data.totalRounds;
     $('score-display').textContent = data.score;
     updateHealth(data.health);
     renderGarden(data.garden, assignments);
     startTimer(data.duration);
-    addLog('Round ' + data.round + ' started!', '');
+    addLog('Game started! 1 minute!', '');
   });
 
   // ====== GARDEN UPDATE ======
@@ -633,30 +613,9 @@
     }).join('');
   }
 
-  // ====== ROUND END → CELEBRATION ======
-  socket.on('round-end', (data) => {
-    stopTimer(); sfxWin();
-    $('lb-overlay').classList.remove('active');
-    $('score-display').textContent = data.score;
-    updateHealth(data.health);
-    if (data.garden) renderGarden(data.garden, []);
-
-    $('cel-title').textContent = '\u{1F389} Time\u2019s Up! \u{1F389}';
-    $('cel-subtitle').textContent = 'Round ' + data.round + ' Complete';
-    $('cel-stats').innerHTML =
-      'Team Score: <strong>' + data.score + '</strong> &nbsp; Health: <strong>' + data.health + '%</strong>';
-    $('cel-next').textContent = data.round < data.totalRounds && data.health > 0 ? 'Next round starting soon...' : '';
-    if (data.leaderboard) renderCelLB($('cel-lb'), data.leaderboard);
-    sfxWin();
-    $('celebrate-screen').classList.add('active');
-    // Auto-hide before next round
-    setTimeout(() => $('celebrate-screen').classList.remove('active'), 6500);
-  });
-
   // ====== GAME OVER → CELEBRATION ======
   socket.on('game-over', (data) => {
     stopTimer();
-    $('celebrate-screen').classList.remove('active');
     $('lb-overlay').classList.remove('active');
     sfxWin();
 

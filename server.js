@@ -14,7 +14,7 @@ app.use(express.static('public'));
 const PORT = 3000;
 const GRID_SIZE = 4;
 const ROUND_DURATION = 60;
-const TOTAL_ROUNDS = 2;
+const TOTAL_ROUNDS = 1;
 const PROBLEMS_PER_ROUND = 40; // max tasks including distractors and coins
 
 const ROLES = ['water', 'sun', 'seed', 'animal'];
@@ -543,56 +543,21 @@ function endRound(game) {
   if (game.roundTimer) { clearInterval(game.roundTimer); game.roundTimer = null; }
 
   // Penalize unsolved problems
-  let totalProblems = 0, totalSolved = 0;
   for (const [, player] of game.players) {
     if (!player.problems) continue;
     for (const prob of player.problems) {
-      totalProblems++;
-      if (prob.solved) totalSolved++;
-      else {
+      if (!prob.solved) {
         game.health = Math.max(0, game.health - 4);
-        // Wilt unhelped plants
-        const plot = game.garden[prob.plotRow][prob.plotCol];
-        if (plot.plant && prob.level >= 2) plot.plant.stage = 'wilting';
+        if (prob.plotRow >= 0) {
+          const plot = game.garden[prob.plotRow][prob.plotCol];
+          if (plot.plant && prob.level >= 2) plot.plant.stage = 'wilting';
+        }
       }
     }
   }
 
-  if (totalSolved === totalProblems && totalProblems > 0) game.score += 20;
-
-  const board = getLeaderboard(game);
-
-  // Send TV the round-end with final leaderboard
-  io.to(game.tvSocketId).emit('round-end', {
-    round: game.round, totalRounds: TOTAL_ROUNDS,
-    solved: totalSolved, total: totalProblems,
-    score: game.score, health: game.health,
-    garden: serializeGarden(game.garden),
-    leaderboard: board
-  });
-
-  // Send each player their personal encouraging message
-  for (const [sid, player] of game.players) {
-    const rank = board.findIndex(b => b.name === player.name) + 1;
-    io.to(sid).emit('round-end', {
-      round: game.round, totalRounds: TOTAL_ROUNDS,
-      solved: totalSolved, total: totalProblems,
-      score: game.score, health: game.health,
-      myScore: player.score,
-      myRank: rank,
-      totalPlayers: game.players.size,
-      myPerfect: player.perfect,
-      myCoins: player.coins,
-      encouragement: getEncouragingMessage(player, rank, game.players.size),
-      leaderboard: board
-    });
-  }
-
-  if (game.round >= TOTAL_ROUNDS || game.health <= 0) {
-    setTimeout(() => endGame(game), 6000);
-  } else {
-    setTimeout(() => { if (game.state === 'playing') startRound(game); }, 7000);
-  }
+  // Go straight to game over celebration
+  endGame(game);
 }
 
 function endGame(game) {
